@@ -1,8 +1,10 @@
 @extends('layouts.admin')
 @section('title', 'Kikos - Managege Virtual-tour')
 @push('css')
-    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managevertualtour.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/OwlCarousel/assets/owl.carousel.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managevertualtour.css') }}">
+    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+    <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/OwlCarousel/owl.carousel.min.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -35,7 +37,7 @@
                     <a href="view-transaction-history1.html" class="wh-btn">View Transaction History</a>
                 </div>
                 <div class="col-md-6">
-                    <a href="{{ url('add-virtual-tour') }}" class="wh-btn">Add New Virtual Tour</a>
+                    <a href="{{ url('add-edit-virtual-tour') }}" class="wh-btn">Add New Virtual Tour</a>
                 </div>
             </div>
         </div>
@@ -50,7 +52,7 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total Amount Received</p>
-                                        <h2>$ 2589.99</h2>
+                                        <h2>$0</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/dollar-circle.svg') }}">
@@ -64,126 +66,41 @@
 
             <div class="booking-tour-section">
                 <div id="managevertualtour" class="owl-carousel owl-theme">
-                    <div class="item">
-                        <div class="managevertualtour-card">
-                            <div class="managevertualtour-card-media">
-                                <video autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                    disablepictureinpicture="" class="_2c9v _53mv" controls="" playinfullscreen="false"
-                                    playsinline="true"
-                                    src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                    width="100%" height="200"></video>
-                            </div>
-                            <div class="managevertualtour-card-content">
-                                <div class="managevertualtour-card-text">
-                                    <h3>Wildlife, Sea Cave & Reef Snorkel Captain Cook / Kealakekua Bay!</h3>
-                                    <p>KIKOS Circle Island Tour Takes Your Group On A Private 120 Mile Trip Around The
-                                        Scenic And Beautiful Island Of Oahu, Hawaii. </p>
-                                    <div class="price-text">Price: $23.00</div>
-                                </div>
-                                <div class="managevertualtour-card-action">
-                                    <a class="delete-btn" href="#">Delete</a>
-                                    <a class="edit-btn" href="#">Edit Tour</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="managevertualtour-card">
-                            <div class="managevertualtour-card-media">
-                                <video autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                    disablepictureinpicture="" class="_2c9v _53mv" controls="" playinfullscreen="false"
-                                    playsinline="true"
-                                    src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                    width="100%" height="200"></video>
-                            </div>
-                            <div class="managevertualtour-card-content">
-                                <div class="managevertualtour-card-text">
-                                    <h3>Wildlife, Sea Cave & Reef Snorkel Captain Cook / Kealakekua Bay!</h3>
-                                    <p>KIKOS Circle Island Tour Takes Your Group On A Private 120 Mile Trip Around The
-                                        Scenic And Beautiful Island Of Oahu, Hawaii. </p>
-                                    <div class="price-text">Price: $23.00</div>
-                                </div>
-                                <div class="managevertualtour-card-action">
-                                    <a class="delete-btn" href="#">Delete</a>
-                                    <a class="edit-btn" href="#">Edit Tour</a>
+                    @if ($tours->isEmpty())
+                        <tr>
+                            <td colspan="11" class="text-center">
+                                No record found
+                            </td>
+                        </tr>
+                    @elseif(!$tours->isEmpty())
+                        @foreach ($tours as $val)
+                            <div class="item">
+                                <div class="managevertualtour-card">
+                                    <div class="managevertualtour-card-media">
+                                        <audio autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
+                                            disablepictureinpicture="" class="_2c9v _53mv" controls=""
+                                            playinfullscreen="false" playsinline="true"
+                                            src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
+                                            width="100%" height="200"></audio>
+                                    </div>
+                                    <div class="managevertualtour-card-content">
+                                        <div class="managevertualtour-card-text">
+                                            <h3>{{ $val->name ?? '' }}</h3>
+                                            <p>{{ $val->description ?? '' }}</p>
+                                            <div class="price-text">Price: ${{ $val->price ?? '' }}</div>
+                                        </div>
+                                        <div class="managevertualtour-card-action">
+                                            <a class="delete-btn"
+                                                href="{{ url('delete-virtual-tour/' . encrypt_decrypt('encrypt', $val->id)) }}"onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                                            <a class="edit-btn"
+                                                href="{{ url('edit-virtual-tour/' . encrypt_decrypt('encrypt', $val->id)) }}">Edit
+                                                Tour</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="managevertualtour-card">
-                            <div class="managevertualtour-card-media">
-                                <video autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                    disablepictureinpicture="" class="_2c9v _53mv" controls="" playinfullscreen="false"
-                                    playsinline="true"
-                                    src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                    width="100%" height="200"></video>
-                            </div>
-                            <div class="managevertualtour-card-content">
-                                <div class="managevertualtour-card-text">
-                                    <h3>Wildlife, Sea Cave & Reef Snorkel Captain Cook / Kealakekua Bay!</h3>
-                                    <p>KIKOS Circle Island Tour Takes Your Group On A Private 120 Mile Trip Around The
-                                        Scenic And Beautiful Island Of Oahu, Hawaii. </p>
-                                    <div class="price-text">Price: $23.00</div>
-                                </div>
-                                <div class="managevertualtour-card-action">
-                                    <a class="delete-btn" href="#">Delete</a>
-                                    <a class="edit-btn" href="#">Edit Tour</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="managevertualtour-card">
-                            <div class="managevertualtour-card-media">
-                                <video autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                    disablepictureinpicture="" class="_2c9v _53mv" controls=""
-                                    playinfullscreen="false" playsinline="true"
-                                    src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                    width="100%" height="200"></video>
-                            </div>
-                            <div class="managevertualtour-card-content">
-                                <div class="managevertualtour-card-text">
-                                    <h3>Wildlife, Sea Cave & Reef Snorkel Captain Cook / Kealakekua Bay!</h3>
-                                    <p>KIKOS Circle Island Tour Takes Your Group On A Private 120 Mile Trip Around The
-                                        Scenic And Beautiful Island Of Oahu, Hawaii. </p>
-                                    <div class="price-text">Price: $23.00</div>
-                                </div>
-                                <div class="managevertualtour-card-action">
-                                    <a class="delete-btn" href="#">Delete</a>
-                                    <a class="edit-btn" href="#">Edit Tour</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="item">
-                        <div class="managevertualtour-card">
-                            <div class="managevertualtour-card-media">
-                                <video autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                    disablepictureinpicture="" class="_2c9v _53mv" controls=""
-                                    playinfullscreen="false" playsinline="true"
-                                    src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                    width="100%" height="200"></video>
-                            </div>
-                            <div class="managevertualtour-card-content">
-                                <div class="managevertualtour-card-text">
-                                    <h3>Wildlife, Sea Cave & Reef Snorkel Captain Cook / Kealakekua Bay!</h3>
-                                    <p>KIKOS Circle Island Tour Takes Your Group On A Private 120 Mile Trip Around The
-                                        Scenic And Beautiful Island Of Oahu, Hawaii. </p>
-                                    <div class="price-text">Price: $23.00</div>
-                                </div>
-                                <div class="managevertualtour-card-action">
-                                    <a class="delete-btn" href="#">Delete</a>
-                                    <a class="edit-btn" href="#">Edit Tour</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
 
@@ -247,49 +164,35 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="sno">1</div>
-                                                </td>
-                                                <td>Jane Doe</td>
-                                                <td>Wildlife, Sea Cave …</td>
-                                                <td>$59.00 <a class="infoprice" data-bs-toggle="modal" href="#infoprice"
-                                                        role="button"><i class="las la-info-circle"></i></a></td>
-                                                <td>03 Sep, 2023, 09:33:12 am</td>
-                                                <td>PayPal</td>
-                                                <td>76375873874</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div class="sno">2</div>
-                                                </td>
-                                                <td>Jane Doe</td>
-                                                <td>Hilo Shore Excursion…</td>
-                                                <td>$59.00 <a class="infoprice" data-bs-toggle="modal" href="#infoprice"
-                                                        role="button"><i class="las la-info-circle"></i></a></td>
-                                                <td>03 Sep, 2023, 09:33:12 am</td>
-                                                <td>PayPal</td>
-                                                <td>76375873874</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div class="sno">3</div>
-                                                </td>
-                                                <td>Jane Doe</td>
-                                                <td>Late Morning Gu…</td>
-                                                <td>$59.00 <a class="infoprice" data-bs-toggle="modal" href="#infoprice"
-                                                        role="button"><i class="las la-info-circle"></i></a></td>
-                                                <td>03 Sep, 2023, 09:33:12 am</td>
-                                                <td>PayPal</td>
-                                                <td>76375873874</td>
-                                            </tr>
-
+                                            @if ($bookings->isEmpty())
+                                                <tr>
+                                                    <td colspan="11" class="text-center">
+                                                        No record found
+                                                    </td>
+                                                </tr>
+                                            @elseif(!$bookings->isEmpty())
+                                                <?php $s_no = 1; ?>
+                                                @foreach ($bookings as $val)
+                                                    <tr>
+                                                        <td>
+                                                            <div class="sno">{{ $s_no }}</div>
+                                                        </td>
+                                                        <td>{{ $val->Users->fullname ?? '' }}</td>
+                                                        <td>{{ $val->Tour->title ?? '' }}</td>
+                                                        <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
+                                                                data-bs-toggle="modal" href="#infoprice" role="button"><i
+                                                                    class="las la-info-circle"></i></a></td>
+                                                        <td>{{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}</td>
+                                                        <td>PayPal</td>
+                                                        <td>76375873874</td>
+                                                    </tr>
+                                                    <?php $s_no++; ?>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="kik-table-pagination">
+                                {{-- <div class="kik-table-pagination">
                                     <ul class="kik-pagination">
                                         <li class="disabled" id="example_previous">
                                             <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
@@ -311,7 +214,7 @@
                                                 class="page-link">Next</a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

@@ -25,6 +25,7 @@ Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->nam
 Route::get('/add-tour', [App\Http\Controllers\HomeController::class, 'AddTour'])->name('AddTour');
 Route::get('/edit-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditTour'])->name('EditTour');
 Route::post('/SaveTour', [App\Http\Controllers\HomeController::class, 'SaveTour'])->name('SaveTour');
+Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'UpdateTour'])->name('UpdateTour');
 Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::get('/manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
@@ -34,4 +35,8 @@ Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::cl
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
 Route::get('/delete-tour/{id}', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
 Route::get('/manage-virtual-tour', [App\Http\Controllers\HomeController::class, 'ManageVirtualTour'])->name('ManageVirtualTour');
-Route::get('/add-virtual-tour', [App\Http\Controllers\HomeController::class, 'AddVirtualTour'])->name('AddVirtualTour');
+Route::get('/add-edit-virtual-tour', [App\Http\Controllers\HomeController::class, 'AddVirtualTour'])->name('AddVirtualTour');
+Route::post('/submit-virtual-tour', [App\Http\Controllers\HomeController::class, 'SaveVirtualTour'])->name('SaveVirtualTour');
+Route::post('/update-virtual-tour', [App\Http\Controllers\HomeController::class, 'UpdateVirtualTour'])->name('UpdateVirtualTour');
+Route::get('/edit-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditVirtualTour'])->name('EditVirtualTour');
+Route::get('/delete-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'DeleteVirtualTour'])->name('DeleteVirtualTour');

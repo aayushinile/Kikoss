@@ -464,7 +464,7 @@ class UserController extends Controller
             $user_id = Auth::user()->id;
             $booking = new TourBooking;
             $booking->tour_id = $request->tour_id;
-            $booking->tour_type = $request->tour_type;
+            $booking->tour_type = $request->tour_type;/*1-Normal Tour, 2:Virtual tour */
             $booking->user_id = $user_id;
             $booking->booking_date = $request->booking_date;
             $booking->no_adults = $request->no_adults;/*Number of adults*/

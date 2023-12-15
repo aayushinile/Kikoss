@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('virtual_tours', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
+            $table->string('minute')->nullable();
             $table->text('audio_file');
-            $table->text('video_file');
+            $table->text('thumbnail_file');
             $table->text('description');
             $table->float('price')->nullable();
             $table->string('cencellation_policy',500)->nullable();

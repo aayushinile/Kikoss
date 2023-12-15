@@ -1,7 +1,12 @@
 @extends('layouts.admin')
 @section('title', 'Kikos - Dashboard')
 @push('css')
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
+    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+    <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <script src="{{ assets('assets/admin-plugins/apexcharts/apexcharts.min.js') }}" type="text/javascript"></script>
+    <script src="{{ assets('assets/admin-js/dashboard-function.js') }}" type="text/javascript"></script>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
