@@ -32,7 +32,10 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total Amount Received:</p>
-                                        <h2>$0</h2>
+                                        <<<<<<< HEAD <h2>$0</h2>
+                                            =======
+                                            <h2>$ 2589.99</h2>
+                                            >>>>>>> 57a6af69051810cd795d8177c90f97855bc9fd84
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/dollar-circle.svg') }}">
@@ -140,7 +143,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($Tourrequests->isEmpty())
+                                            <<<<<<< HEAD @if ($Tourrequests->isEmpty())
                                                 <tr>
                                                     <td colspan="11" class="text-center">
                                                         No record found
@@ -178,12 +181,122 @@
                                                     </tr>
                                                     <?php $s_no++; ?>
                                                 @endforeach
-                                            @endif
+                                                @endif
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="d-flex justify-content-left">
                                     {{ $Tourrequests->links('pagination::bootstrap-4') }}
+                                    =======
+                                    <tr>
+                                        <td>
+                                            <div class="sno">1</div>
+                                        </td>
+                                        <td>Jane Doe</td>
+                                        <td>North Shore</td>
+                                        <td>8 Hours</td>
+                                        <td>16/02/2023</td>
+                                        <td>
+                                            <div class="status-text Pending-status"><i class="las la-hourglass-start"></i>
+                                                Pending for Approval</div>
+                                        </td>
+                                        <td>
+                                            <div class="action-btn-info">
+                                                <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    <i class="las la-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item view-btn" data-bs-toggle="modal"
+                                                        href="#BookingRequest" role="button"><i class="las la-eye"></i>
+                                                        View</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <div class="sno">2</div>
+                                        </td>
+                                        <td>Jane Doe</td>
+                                        <td>North Shore</td>
+                                        <td>8 Hours</td>
+                                        <td>16/02/2023</td>
+                                        <td>
+                                            <div class="status-text Pending-status"><i class="las la-hourglass-start"></i>
+                                                Pending for Approval</div>
+                                        </td>
+                                        <td>
+                                            <div class="action-btn-info">
+                                                <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    <i class="las la-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item view-btn" data-bs-toggle="modal"
+                                                        href="#BookingRequest" role="button"><i class="las la-eye"></i>
+                                                        View</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td>
+                                            <div class="sno">3</div>
+                                        </td>
+                                        <td>Jane Doe</td>
+                                        <td>North Shore</td>
+                                        <td>8 Hours</td>
+                                        <td>16/02/2023</td>
+                                        <td>
+                                            <div class="status-text Pending-status"><i class="las la-hourglass-start"></i>
+                                                Pending for Approval</div>
+                                        </td>
+                                        <td>
+                                            <div class="action-btn-info">
+                                                <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    <i class="las la-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item view-btn" data-bs-toggle="modal"
+                                                        href="#BookingRequest" role="button"><i class="las la-eye"></i>
+                                                        View</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+
+                                    </tbody>
+                                    </table>
+                                </div>
+                                <div class="kik-table-pagination">
+                                    <ul class="kik-pagination">
+                                        <li class="disabled" id="example_previous">
+                                            <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
+                                                class="page-link">Previous</a>
+                                        </li>
+                                        <li class="active">
+                                            <a href="#" class="page-link">1</a>
+                                        </li>
+                                        <li class="">
+                                            <a href="#" aria-controls="example" data-dt-idx="2" tabindex="0"
+                                                class="page-link">2</a>
+                                        </li>
+                                        <li class="">
+                                            <a href="#" aria-controls="example" data-dt-idx="3" tabindex="0"
+                                                class="page-link">3</a>
+                                        </li>
+                                        <li class="next" id="example_next">
+                                            <a href="#" aria-controls="example" data-dt-idx="7" tabindex="0"
+                                                class="page-link">Next</a>
+                                        </li>
+                                    </ul>
+                                    >>>>>>> 57a6af69051810cd795d8177c90f97855bc9fd84
                                 </div>
                             </div>
                         </div>
@@ -220,7 +333,8 @@
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
                                 <div class="request-id-text">Booking ID:<span id="TourID"></span></div>
-                                <div class="request-status-text"><i class="las la-hourglass-start"></i> Pending for
+                                <div class="request-status-text"><i class="las la-hourglass-start"></i> Pending
+                                    for
                                     Approval</div>
                             </div>
                             <div class="kik-request-item-card-body">
@@ -354,4 +468,7 @@
             // $('.mix-2').append(imageElement);
         }
     </script>
+
+    </div>
+
 @endsection
