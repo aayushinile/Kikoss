@@ -2,6 +2,8 @@
 @section('title', 'Kikos - Tour')
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/tour.css') }}">
+    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+    <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -13,18 +15,20 @@
                 <h3>Add New Tour</h3>
             </div>
             <div class="addtour-form">
-                {{-- <form action="{{ $data ? route('UpdateTour') : route('SaveTour') }}" method="POST"
-                    enctype="multipart/form-data"id="add_edit_tour"> --}}
-                <form action="{{ route('SaveTour') }}" method="POST" enctype="multipart/form-data" id="add_edit_tour">
+                <form action="{{ $data ? route('UpdateTour') : route('SaveTour') }}" method="POST"
+                    enctype="multipart/form-data"id="add_edit_tour">
                     @csrf
                     <div class="row">
-                        <input type="hidden" name="userid" value="{{ $data->id ?? '' }}">
+                        <input type="hidden" name="pid" value="{{ $data->id ?? '' }}">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <h4>Tour Title</h4>
                                 <input type="text" class="form-control" name="title"
                                     placeholder="Enter Tour Title Here…" value="{{ $data ? $data->title : old('title') }}">
                             </div>
+                            @error('title')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -32,6 +36,9 @@
                                 <input type="text" class="form-control" name="name"
                                     placeholder="Enter Tour Name Here…" value="{{ $data ? $data->name : old('name') }}">
                             </div>
+                            @error('name')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-12">
                             <div class="row">
@@ -46,6 +53,9 @@
                                                 placeholder="Enter Price/Person(in $)"
                                                 value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                         </div>
+                                        @error('age_11_price')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -60,6 +70,9 @@
                                                 placeholder="Enter Price/Person(in $)"
                                                 value="{{ $data ? $data->age_60_price : old('age_60_price') }}">
                                         </div>
+                                        @error('age_60_price')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -74,6 +87,9 @@
                                                 placeholder="Enter Price/Person(in $)"
                                                 value="{{ $data ? $data->under_10_age_price : old('under_10_age_price') }}">
                                         </div>
+                                        @error('under_10_age_price')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -87,6 +103,9 @@
                                         <input type="number" class="form-control txtDate" name="duration"
                                             placeholder="0 Hours" value="{{ $data ? $data->duration : old('duration') }}">
                                     </div>
+                                    @error('duration')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 {{-- <div class="col-md-4">
                                     <div class="form-group">
@@ -111,6 +130,9 @@
                                                 value="{{ $data ? $data->total_people : old('total_people') }}">
                                             <span>Person</span>
                                         </div>
+                                        @error('total_people')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -123,6 +145,9 @@
                                 <textarea type="text" rows="7" cols="80" class="form-control" name="description"
                                     placeholder="Description…">{{ $data ? $data->description : old('description') }}</textarea>
                             </div>
+                            @error('description')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-12">
@@ -131,6 +156,9 @@
                                 <textarea type="text" rows="7" cols="80" class="form-control" name="cancellation_policy"
                                     placeholder="Enter Cancellation Policy…">{{ $data ? $data->cancellation_policy : old('cancellation_policy') }}</textarea>
                             </div>
+                            @error('cancellation_policy')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -138,6 +166,9 @@
                                 <input type="file" class="file-form-control" name="thumbnail[]"
                                     accept=".png, .jpg, .jpeg" multiple>
                             </div>
+                            @error('thumbnail')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-12">
@@ -174,7 +205,7 @@
         });
     </script>
     {{-- form validation --}}
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $.validator.addMethod("phoneValid", function(value) {
                 return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(value);
@@ -217,5 +248,5 @@
                 }
             })
         });
-    </script>
+    </script> --}}
 @endpush

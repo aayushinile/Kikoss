@@ -5,15 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> @yield('title', config('app.name'))</title>
-    @stack('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/header-footer.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
-    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
-    <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
-    <script src="{{ assets('assets/admin-plugins/apexcharts/apexcharts.min.js') }}" type="text/javascript"></script>
-    <script src="{{ assets('assets/admin-js/dashboard-function.js') }}" type="text/javascript"></script>
-    <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    @stack('css')
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 
 <body class="main-site ccj-panel">
@@ -307,11 +301,28 @@
             @yield('content')
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
         integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function() {
+            if ("{{ Session::has('success') }}") {
+                toastr.success(" {{ Session::get('success') }} ");
+            }
+            if ("{{ Session::has('error') }}") {
+                toastr.error(" {{ Session::get('error') }} ");
+            }
+            if ("{{ Session::has('warn') }}") {
+                toastr.warning(" {{ Session::get('warn') }} ");
+            }
+        });
+        $(document).ready(function() {
+            $("#preloader").hide();
+        });
+    </script>
+
+
     @stack('js')
 </body>
 
