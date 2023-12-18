@@ -9,6 +9,8 @@ use App\Models\TourBooking;
 use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
 use App\Models\VirtualTour;
+use App\Models\PhotoBooth;
+use App\Models\PhotoBoothMedia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,17 +70,15 @@ class HomeController extends Controller
         return view('admin.add-edit-virtual-tour',compact('data'));
     }
     
-    public function DeleteTour($id)
+    public function DeleteTour(Request $request)
     {
-        $id = encrypt_decrypt('decrypt',$id);
-        $data = Tour::where('id',$id)->update(['status'=>3]);/*3:Delete*/
+        $data = Tour::where('id',$request->id)->update(['status'=>3]);/*3:Delete*/
         return redirect()->back()->with('success', 'Tour deleted successfully');
     }
     
-    public function DeleteVirtualTour($id)
+    public function DeleteVirtualTour(Request $request)
     {
-        $id = encrypt_decrypt('decrypt',$id);
-        $data = VirtualTour::where('id',$id)->update(['status'=>3]);/*0:Pending,1:Approved, 3:Delete*/
+        $data = VirtualTour::where('id',$request->id)->update(['status'=>3]);/*0:Pending,1:Approved, 3:Delete*/
         return redirect()->back()->with('success', 'Virtual Tour deleted successfully');
     }
     
@@ -349,4 +349,218 @@ class HomeController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+    
+    /*listing of tour Photo/Video */
+    public function ManagePhotoBooth()
+    {
+        try {
+            $PhotoBooths = PhotoBooth::where('status',1)->orderBy('id','DESC')->get();
+            $bookings = TourBooking::where('tour_type',2)->where('status',0)->orderBy('id','DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            return view('admin.manage-photo-booth',compact('PhotoBooths','bookings'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Add a details of Photo/Video tour*/
+    public function AddPhoto()
+    {
+        try {
+            $tours = Tour::where('status',1)->orderBy('id','DESC')->get();
+            $data=null;
+            return view('admin.add-edit-photo-booth',compact('tours','data'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Add a details of Photo/Video tour*/
+    public function TaxiBookingRequest()
+    {
+        try {
+            $tours = VirtualTour::where('status',1)->orderBy('id','DESC')->get();
+            $bookings = TourBooking::where('tour_type',2)->where('status',0)->orderBy('id','DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            return view('admin.taxi-booking-request',compact('tours','bookings'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Listing of virtual tour transaction history*/
+    public function VirtualTransactionHistory()
+    {
+        try {
+            $tours = VirtualTour::where('status',1)->orderBy('id','DESC')->get();
+            $bookings = TourBooking::where('tour_type',2)->where('status',0)->orderBy('id','DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            return view('admin.virtual-transaction-history',compact('tours','bookings'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Listing of virtual tour transaction history*/
+    public function PhotoTransactionHistory()
+    {
+        try {
+            $tours = VirtualTour::where('status',1)->orderBy('id','DESC')->get();
+            $bookings = TourBooking::where('tour_type',2)->where('status',0)->orderBy('id','DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            return view('admin.photo-transaction-history',compact('tours','bookings'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Search live users*/
+    public function loadSectors(Request $request)
+    {
+        $users = [];
+
+        if($request->has('q')){
+            $search = $request->q;
+            $users =User::select("id", "fullname")->where('status',1)->where('type',2)
+            		->where('fullname', 'LIKE', "%$search%")
+            		->get();
+        }else{
+            
+            $users =User::select("id", "fullname")->where('status',1)->where('type',2)
+            		->get();
+        }
+        return response()->json($users);
+    }
+    
+    /*Save Photo Booth*/
+    public function SavePhotoBooth(Request $request)
+    {
+        try {
+            
+            $validator = Validator::make($request->all(), [
+                'tour_id' => 'required',
+                'title' => 'required|string|max:255|min:1',
+                'price' => 'required',
+                'description' => 'required',
+                'cancellation_policy' => 'required',
+                //'image[]' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
+            $boothID = PhotoBooth::insertGetId([
+                'title' => $request->title,
+                'users_id' => implode(',', $request->users),
+                'price' => $request->price,
+                'tour_id' => $request->tour_id,
+                'description' => $request->description,
+                'cancellation_policy' => $request->cancellation_policy,
+                'status' => 1,
+            ]);
+            if ($files=$request->file('image')){
+                foreach ($files as $j => $file){
+                    $destination = public_path('upload/photo-booth');
+                    $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move($destination, $name);
+                    $Attributes = PhotoBoothMedia::create([
+                        'booth_id' => $boothID,
+                        'media_type' => 'Image',
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
+            }
+            if ($files=$request->file('video')){
+                foreach ($files as $j => $file){
+                    $destination = public_path('upload/video-booth');
+                    $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move($destination, $name);
+                    $Attributes = PhotoBoothMedia::create([
+                        'booth_id' => $boothID,
+                        'media_type' => 'video',
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
+            }
+            
+            return redirect('manage-photo-booth')->with('success', 'Photo Booth Created successfully');
+            
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
+    /*Update Photo Booth*/
+    public function UpdatePhotoBooth(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'tour_id' => 'required',
+                'title' => 'required|string|max:255|min:1',
+                'price' => 'required',
+                'description' => 'required',
+                'cancellation_policy' => 'required',
+                //'image[]' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
+            $photo = PhotoBooth::find($request->pid);
+            if ($file=$request->file('image')){
+                $destination = public_path('upload/photo-booth');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $photo->audio_file = $name;
+                $Attributes = PhotoBoothMedia::create([
+                    'booth_id' => $request->pid,
+                    'media_type' => 'Image',
+                    'media' => $name,
+                    'status' => 1,
+                ]);
+            }
+            if ($files=$request->file('video')){
+                $destination_file = public_path('upload/video-booth');
+                $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $files->extension();
+                $files->move($destination_file, $name_file);
+                $photo->thumbnail_file = $name_file;
+                $Attributes = PhotoBoothMedia::create([
+                    'booth_id' => $request->pid,
+                    'media_type' => 'video',
+                    'media' => $name,
+                    'status' => 1,
+                ]);
+            }
+            
+            $photo->tour_id = $request->tour_id;
+            $photo->title = $request->title;
+            $photo->price = $request->price;
+            $photo->description = $request->description;
+            $photo->cancellation_policy = $request->cancellation_policy;
+            $photo->save();
+            return redirect('manage-photo-booth')->with('success', 'Photo Booth Updated successfully');
+            
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
+    public function EditPhotoBooth($id)
+    {
+        $id = encrypt_decrypt('decrypt',$id);
+        $tours = Tour::where('status',1)->orderBy('id','DESC')->get();
+        $data = PhotoBooth::where('id',$id)->first();
+        return view('admin.add-edit-photo-booth',compact('data','tours'));
+    }
+    
+    public function DeletePhotoBooth(Request $request)
+    {
+        try {
+            $data = PhotoBooth::where('id',$request->photo_booth_id)->update(['status'=>3]);/*0:Active, 1:Active, 3:Delete*/
+            return redirect()->back()->with('success', 'Photo booth deleted successfully');
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
 }

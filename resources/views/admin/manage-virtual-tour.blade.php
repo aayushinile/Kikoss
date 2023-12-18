@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#managevertualtour').owlCarousel({
-                loop: true,
+                loop: false,
                 margin: 10,
                 nav: false,
                 dots: false,
@@ -34,7 +34,7 @@
         <div class="page-breadcrumb-action wd4">
             <div class="row g-2">
                 <div class="col-md-6">
-                    <a href="view-transaction-history1.html" class="wh-btn">View Transaction History</a>
+                    <a href="{{ url('virtual-transaction-history') }}" class="wh-btn">View Transaction History</a>
                 </div>
                 <div class="col-md-6">
                     <a href="{{ url('add-edit-virtual-tour') }}" class="wh-btn">Add New Virtual Tour</a>
@@ -90,8 +90,9 @@
                                             <div class="price-text">Price: ${{ $val->price ?? '' }}</div>
                                         </div>
                                         <div class="managevertualtour-card-action">
-                                            <a class="delete-btn"
-                                                href="{{ url('delete-virtual-tour/' . encrypt_decrypt('encrypt', $val->id)) }}"onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                                            <a class="delete-btn" href=""data-bs-toggle="modal"
+                                                data-bs-target="#deletepopup"
+                                                onclick='GetData("{{ $val->id }}","{{ $val->name }}")'>Delete</a>
                                             <a class="edit-btn"
                                                 href="{{ url('edit-virtual-tour/' . encrypt_decrypt('encrypt', $val->id)) }}">Edit
                                                 Tour</a>
@@ -221,6 +222,41 @@
                 </div>
             </div>
         </div>
-
     </div>
+    <!-- delete popup -->
+    <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
+                            </div>
+                            <h3>Are you sure? want to delete</h3>
+                            <h4 id="Name"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('DeleteVirtualTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="photo_booth_id">
+                                    <button class="yesbtn"type="submit">Yes Confirm Delete</button>
+                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                        aria-label="Close">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------- Append delete Popup Jquery -------------------->
+    <script>
+        function GetData(IDS, Name) {
+            document.getElementById("Name").innerText =
+                Name;
+            document.getElementById("photo_booth_id").value = IDS;
+        }
+    </script>
 @endsection

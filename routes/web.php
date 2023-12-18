@@ -33,10 +33,22 @@ Route::get('/tour-inquiry-request', [App\Http\Controllers\HomeController::class,
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
-Route::get('/delete-tour/{id}', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
+Route::post('/delete-tour', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
 Route::get('/manage-virtual-tour', [App\Http\Controllers\HomeController::class, 'ManageVirtualTour'])->name('ManageVirtualTour');
 Route::get('/add-edit-virtual-tour', [App\Http\Controllers\HomeController::class, 'AddVirtualTour'])->name('AddVirtualTour');
 Route::post('/submit-virtual-tour', [App\Http\Controllers\HomeController::class, 'SaveVirtualTour'])->name('SaveVirtualTour');
 Route::post('/update-virtual-tour', [App\Http\Controllers\HomeController::class, 'UpdateVirtualTour'])->name('UpdateVirtualTour');
 Route::get('/edit-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditVirtualTour'])->name('EditVirtualTour');
-Route::get('/delete-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'DeleteVirtualTour'])->name('DeleteVirtualTour');
+Route::post('/delete-virtual-tour', [App\Http\Controllers\HomeController::class, 'DeleteVirtualTour'])->name('DeleteVirtualTour');
+
+Route::get('/manage-photo-booth', [App\Http\Controllers\HomeController::class, 'ManagePhotoBooth'])->name('ManagePhotoBooth');
+Route::get('/add-photo-booth', [App\Http\Controllers\HomeController::class, 'AddPhoto'])->name('AddPhoto');
+Route::get('/edit-photo-booth/{id}', [App\Http\Controllers\HomeController::class, 'EditPhotoBooth'])->name('EditPhotoBooth');
+Route::post('/delete-photo-booth', [App\Http\Controllers\HomeController::class, 'DeletePhotoBooth'])->name('DeletePhotoBooth');
+Route::post('/submit-photo-booth', [App\Http\Controllers\HomeController::class, 'SavePhotoBooth'])->name('SavePhotoBooth');
+Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 'UpdatePhotoBooth'])->name('UpdatePhotoBooth');
+
+Route::get('/taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
+Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
+Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
+Route::get('/load-sectors', [App\Http\Controllers\HomeController::class,'loadSectors'])->name('load-sectors');

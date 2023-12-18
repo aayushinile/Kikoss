@@ -67,9 +67,11 @@
                                             <p>23 People Occupancy Left</p>
                                         </div>
                                         <div class="booking-tour-card-action">
-                                            <a class="delete-btn"
+                                            {{-- <a class="delete-btn"
                                                 href="{{ url('delete-tour/' . encrypt_decrypt('encrypt', $val->id)) }}"
-                                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a> --}}
+                                            <a class="delete-btn" data-bs-toggle="modal" data-bs-target="#deletepopup"
+                                                onclick='GetData("{{ $val->id }}","{{ $val->title }}")'>Delete</a>
                                             <a class="edit-btn"
                                                 href="{{ url('edit-tour/' . encrypt_decrypt('encrypt', $val->id)) }}">Edit
                                                 Tour</a>
@@ -267,7 +269,8 @@
                                                     d="M12 17.0625H6C3.2625 17.0625 1.6875 15.4875 1.6875 12.75V6.375C1.6875 3.6375 3.2625 2.0625 6 2.0625H12C14.7375 2.0625 16.3125 3.6375 16.3125 6.375V12.75C16.3125 15.4875 14.7375 17.0625 12 17.0625ZM6 3.1875C3.855 3.1875 2.8125 4.23 2.8125 6.375V12.75C2.8125 14.895 3.855 15.9375 6 15.9375H12C14.145 15.9375 15.1875 14.895 15.1875 12.75V6.375C15.1875 4.23 14.145 3.1875 12 3.1875H6Z"
                                                     fill="#3DA1E3" />
                                             </svg>
-                                        <p id="booking_date"></p>
+                                            <span id="booking_date">
+                                            </span>
                                         </p>
                                         <div class="duration-time-text">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19"
@@ -279,7 +282,8 @@
                                                     d="M11.7825 12.4476C11.685 12.4476 11.5875 12.4251 11.4975 12.3651L9.17248 10.9776C8.59498 10.6326 8.16748 9.87507 8.16748 9.20757V6.13257C8.16748 5.82507 8.42248 5.57007 8.72998 5.57007C9.03748 5.57007 9.29248 5.82507 9.29248 6.13257V9.20757C9.29248 9.47757 9.51748 9.87507 9.74998 10.0101L12.075 11.3976C12.345 11.5551 12.4275 11.9001 12.27 12.1701C12.1575 12.3501 11.97 12.4476 11.7825 12.4476Z"
                                                     fill="#3DA1E3" />
                                             </svg>
-                                            <p id="duration"></p>
+                                            <span id="duration">
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -318,7 +322,42 @@
             </div>
         </div>
     </div>
-    <!-------------------- Approval-Product-Jquery -------------------->
+    <!-- delete popup -->
+    <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
+                            </div>
+                            <h3>Are you sure? want to delete</h3>
+                            <h4 id="Name"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('DeleteTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="photo_booth_id">
+                                    <button class="yesbtn"type="submit">Yes Confirm Delete</button>
+                                    <button class="Cancelbtn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------- Append delete Popup Jquery -------------------->
+    <script>
+        function GetData(IDS, Name) {
+            document.getElementById("Name").innerText =
+                Name;
+            document.getElementById("photo_booth_id").value = IDS;
+        }
+    </script>
+    <!-------------------- Append Popup-Jquery -------------------->
     <script>
         function accept_tour(tour_id, title, booking_date, duration, total_amount) {
             // if (image == '') {
@@ -358,7 +397,5 @@
             // $('.mix-2').append(imageElement);
         }
     </script>
-
-    </div>
 
 @endsection

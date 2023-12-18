@@ -3,6 +3,33 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\User;
+use App\Models\PhotoBoothMedia;
+
+if (!function_exists('PhotoCount')) {
+    function PhotoCount($id)
+    {
+        $image_count = PhotoBoothMedia::where('booth_id',$id)->where('media_type','Image')->count();
+        return $image_count;
+    }
+}
+
+if (!function_exists('VideoCount')) {
+    function VideoCount($id)
+    {
+        $video_count = PhotoBoothMedia::where('booth_id',$id)->where('media_type','Video')->count();
+        return $video_count;
+    }
+}
+
+if (!function_exists('UserNameBooth')) {
+    function UserNameBooth($id)
+    {
+
+        $user = User::where('id',$id)->first();
+        $name = $user->fullname;
+        return $name;
+    }
+}
 
 if (!function_exists('successMsg')) {
     function successMsg($msg, $data = [])

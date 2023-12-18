@@ -65,7 +65,8 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <h4>Description</h4>
-                                <textarea type="text" class="form-control" name="description" placeholder="Description…">{{ $data ? $data->description : old('description') }}</textarea>
+                                <textarea type="text" class="form-control" rows="7" cols="80" name="description"
+                                    placeholder="Description…">{{ $data ? $data->description : old('description') }}</textarea>
                             </div>
                             @error('description')
                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -75,7 +76,8 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <h4>Cancellation Policy</h4>
-                                <textarea type="text" class="form-control" name="cencellation_policy" placeholder="Enter Cancellation Policy…">{{ $data ? $data->cencellation_policy : old('cencellation_policy') }}</textarea>
+                                <textarea type="text" class="form-control" rows="7" cols="80" name="cencellation_policy"
+                                    placeholder="Enter Cancellation Policy…">{{ $data ? $data->cencellation_policy : old('cencellation_policy') }}</textarea>
                             </div>
                             @error('cencellation_policy')
                                 <div class="alert alert-danger">{{ $message }}</div>

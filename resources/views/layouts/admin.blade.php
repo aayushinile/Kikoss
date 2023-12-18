@@ -120,8 +120,8 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="service-scheduler.html">
+                        <li class="nav-item @if ($currentURL == 'ManagePhotoBooth') active @endif">
+                            <a class="nav-link" href="{{ url('manage-photo-booth') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -143,8 +143,8 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="manage-jobs.html">
+                        <li class="nav-item @if ($currentURL == 'TaxiBookingRequest') active @endif">
+                            <a class="nav-link" href="{{ url('taxi-booking-request') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">

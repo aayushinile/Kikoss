@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('cancellation_policy')->nullable();
             $table->string('thumbnail',255)->nullable();
-            $table->string('status',45)->nullable();
+            $table->string('status',45)->nullable()->default(1);
             $table->timestamps();
         });
     }
