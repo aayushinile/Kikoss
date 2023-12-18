@@ -1,7 +1,47 @@
 @extends('layouts.admin')
 @section('title', 'Kikos - Dashboard')
 @push('css')
+    <style>
+        .special-date {
+            background-color: #ffcc00 !important;
+            /* Set your desired background color */
+        }
+    </style>
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     var calendarEl = document.getElementById('calendar_id');
+        //     var calendar = new FullCalendar.Calendar(calendarEl, {
+        //         initialView: 'dayGridMonth'
+        //     });
+        //     calendar.render();
+        //     calendar.on('dateClick', function(info) {
+        //         console.log('clicked on ' + info.dateStr);
+        //     });
+        // });
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar_id');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                dayRender: function(info) {
+                    var specialDates = ['2023-12-25', '2023-12-31']; // Add your special dates here
+
+                    var dateString = moment(info.date).format('YYYY-MM-DD');
+
+                    if (specialDates.includes(dateString)) {
+                        info.dayEl.classList.add('special-date');
+                    }
+                },
+                dateClick: function(info) {
+                    console.log('clicked on ' + info.dateStr);
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -108,6 +148,7 @@
                                 <h4 class="heading-title">Tour Booking Requests</h4>
                             </div>
                             <div class="btn-option-info">
+
                             </div>
                         </div>
                     </div>
@@ -205,13 +246,14 @@
                                 <h4 class="heading-title">Tours Availability Calendar</h4>
                             </div>
                             <div class="btn-option-info">
+
                             </div>
                         </div>
                     </div>
 
                     <div class="kikcard">
                         <div class="card-body">
-
+                            <div id="calendar_id"></div>
                         </div>
                     </div>
                 </div>
@@ -279,4 +321,7 @@
             </div>
         </div>
     </div>
+
+
+
 @endsection

@@ -307,23 +307,7 @@
             @yield('content')
         </div>
     </div>
-    <script>
-        var base_url = "{{ url('/') }}";
-        $(document).ready(function() {
-            if ("{{ Session::has('success') }}") {
-                toastr.success(" {{ Session::get('success') }} ");
-            }
-            if ("{{ Session::has('error') }}") {
-                toastr.error(" {{ Session::get('error') }} ");
-            }
-            if ("{{ Session::has('warn') }}") {
-                toastr.warning(" {{ Session::get('warn') }} ");
-            }
-        });
-        $(document).ready(function() {
-            $("#preloader").hide();
-        });
-    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
         integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
