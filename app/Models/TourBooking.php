@@ -10,11 +10,15 @@ class TourBooking extends Model
     use HasFactory;
     function Users()
     {
-        return $this->hasOne('App\Models\User','id','user_id');
+        return $this->hasOne('App\Models\User', 'id', 'user_id');
     }
-    
+
     function Tour()
     {
-        return $this->hasOne('App\Models\Tour','id','tour_id');
+        return $this->hasOne('App\Models\Tour', 'id', 'tour_id');
+    }
+    function booth()
+    {
+        return $this->hasOne(PhotoBooth::class, 'id', 'tour_id');
     }
 }
