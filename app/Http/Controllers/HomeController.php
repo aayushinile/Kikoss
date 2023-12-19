@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\YourExport;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -88,7 +89,14 @@ class HomeController extends Controller
             $item->transaction = $transaction ? $transaction : null;
         }
 
-        // Count the total number of tour bookings for the user
+
+        $taxi_booking_requests = DB::table('book_taxis')->where("user_id", $data->id)->when(request()->has('date'), function ($query) {
+            return $query->whereDate('booking_time', Carbon::parse(request('date')));
+        })->orderBy("id", "desc")->paginate(config("app.records_per_page"));
+
+        foreach ($taxi_booking_requests as $item) {
+            $item->user = User::find($item->user_id);
+        }
 
 
         // Retrieve user payment methods and convert them to an array
@@ -98,7 +106,7 @@ class HomeController extends Controller
         $total_amount = DB::table("payment_details")->whereIn("user_payment_method_id", $user_payment_methods)->where("status", 1)->sum("amount");
 
         // Pass data to the 'admin.user-detail' view
-        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount'));
+        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount', 'taxi_booking_requests'));
     }
 
     public function AddTour()
@@ -429,7 +437,14 @@ class HomeController extends Controller
         try {
             $tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->get();
             $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.taxi-booking-request', compact('tours', 'bookings'));
+            $taxi_booking_requests = DB::table('book_taxis')->when(request()->has('date'), function ($query) {
+                return $query->whereDate('booking_time', Carbon::parse(request('date')));
+            })->orderBy("id", "desc")->paginate(config("app.records_per_page"));
+
+            foreach ($taxi_booking_requests as $item) {
+                $item->user = User::find($item->user_id);
+            }
+            return view('admin.taxi-booking-request', compact('tours', 'bookings', 'taxi_booking_requests'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -591,7 +606,7 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /*Edit Photo Booth*/
     public function EditPhotoBooth($id)
     {
@@ -600,7 +615,7 @@ class HomeController extends Controller
         $data = PhotoBooth::where('id', $id)->first();
         return view('admin.add-edit-photo-booth', compact('data', 'tours'));
     }
-    
+
     /*Delete Photo Booth*/
     public function DeletePhotoBooth(Request $request)
     {
@@ -611,23 +626,23 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /* Profile Admin*/
     public function profile()
     {
         try {
             $data = Auth::user();
-            return view('admin.profile',compact('data'));
+            return view('admin.profile', compact('data'));
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /* Function for change password with login or without login*/
-    public function UpdatePassword(Request $request) 
+    public function UpdatePassword(Request $request)
     {
         try {
-            $data=array();
+            $data = array();
             $new_password = $request->new_password;
             $old_password = $request->old_password;
             $validator = Validator::make($request->all(), [
@@ -639,30 +654,28 @@ class HomeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $user = Auth::user();
-            if(!empty($old_password))
-            {
+            if (!empty($old_password)) {
                 /*Checking old password is same or not */
                 if ((Hash::check($request->old_password, $user->password)) == false) {
                     return redirect()->back()->with('error', 'Check your old password.');
                 }
             }
-            $id = User::where('id',$user->id)->update(['password'=>Hash::make($new_password)]);
-            
-            if(!empty($id))
-            {
+            $id = User::where('id', $user->id)->update(['password' => Hash::make($new_password)]);
+
+            if (!empty($id)) {
                 return redirect()->back()->with('success', 'Password change successfully');
-            }else{
+            } else {
                 return redirect()->back()->with('error', 'Something went wrong!');
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-    
+
     /* Function for change password with login or without login*/
-    public function UpdateProfile(Request $request) 
+    public function UpdateProfile(Request $request)
     {
         //dd(55);
         try {
@@ -676,13 +689,13 @@ class HomeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-                
-            
-            $users = User::where('id',$user->id)->first();
+
+
+            $users = User::where('id', $user->id)->first();
             $users->email = $request->email;
             $users->fullname = $request->fullname;
             $users->mobile = $request->mobile;
-            if ($file=$request->file('user_profile')){
+            if ($file = $request->file('user_profile')) {
                 $destination = public_path('upload/profile');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
@@ -690,10 +703,8 @@ class HomeController extends Controller
             }
             $users->save();
             return redirect()->back()->with('success', 'Profile uploaded successfully');
-            
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-    
 }

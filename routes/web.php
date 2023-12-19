@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,8 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+// Ajax route to toggle user status
+Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 'toggleUserStatus'])->name('toggleUserStatus');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
@@ -48,10 +51,14 @@ Route::post('/delete-photo-booth', [App\Http\Controllers\HomeController::class, 
 Route::post('/submit-photo-booth', [App\Http\Controllers\HomeController::class, 'SavePhotoBooth'])->name('SavePhotoBooth');
 Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 'UpdatePhotoBooth'])->name('UpdatePhotoBooth');
 
+
+
+Route::get('taxi_booking_request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
+
 Route::get('/taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
 Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
-Route::get('/load-sectors', [App\Http\Controllers\HomeController::class,'loadSectors'])->name('load-sectors');
-Route::get('/profile', [App\Http\Controllers\HomeController::class,'profile'])->name('Profile');
-Route::post('/update-password', [App\Http\Controllers\HomeController::class,'UpdatePassword'])->name('UpdatePassword');
-Route::post('/update-profile', [App\Http\Controllers\HomeController::class,'UpdateProfile'])->name('UpdateProfile');
+Route::get('/load-sectors', [App\Http\Controllers\HomeController::class, 'loadSectors'])->name('load-sectors');
+Route::get('/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('Profile');
+Route::post('/update-password', [App\Http\Controllers\HomeController::class, 'UpdatePassword'])->name('UpdatePassword');
+Route::post('/update-profile', [App\Http\Controllers\HomeController::class, 'UpdateProfile'])->name('UpdateProfile');

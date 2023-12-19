@@ -73,106 +73,80 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="sno">1</div>
-                                            </td>
-                                            <td>Jane Doe</td>
-                                            <td>TR0619879238351</td>
-                                            <td>03 Sep, 2023, 09:33:12 am</td>
-                                            <td>8642 Yule Street, Arvada CO 80007</td>
-                                            <td>597 East Miracle Drive, Fayetteville AR 72701</td>
-                                            <td>05 KM</td>
-                                            <td> Big Bang Hotel </td>
-                                            <td>
-                                                <div class="action-btn-info">
-                                                    <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="las la-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item view-btn" href="users-detail.html"><i
-                                                                class="las la-eye"></i> View</a>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        @forelse ($taxi_booking_requests as $i=> $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="sno">{{ $i + 1 }}</div>
+                                                </td>
+                                                <td>{{ $item->user ? $item->user->fullname : 'N/A' }}</td>
+                                                <td>TR0619879238351</td>
+                                                <td>{{ date('d M, Y, h:i:s a', strtotime($item->booking_time)) }}
 
-                                        <tr>
-                                            <td>
-                                                <div class="sno">2</div>
-                                            </td>
-                                            <td>Jane Doe</td>
-                                            <td>TR0619879238351</td>
-                                            <td>03 Sep, 2023, 09:33:12 am</td>
-                                            <td>8642 Yule Street, Arvada CO 80007</td>
-                                            <td>597 East Miracle Drive, Fayetteville AR 72701</td>
-                                            <td>05 KM</td>
-                                            <td> Big Bang Hotel </td>
-                                            <td>
-                                                <div class="action-btn-info">
-                                                    <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="las la-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item view-btn" href="users-detail.html"><i
-                                                                class="las la-eye"></i> View</a>
+                                                <td>{{ $item->pickup_location }}</td>
+                                                <td>{{ $item->drop_location }}</td>
+
+                                                <td>{{ $item->distance }} KM</td>
+                                                <td> {{ $item->hotel_name }} </td>
+                                                <td>
+                                                    <div class="action-btn-info">
+                                                        <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="las la-ellipsis-v"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item view-btn" href="users-detail.html"><i
+                                                                    class="las la-eye"></i> View</a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" align="center"> No Booking requests</td>
+                                            </tr>
+                                        @endforelse
 
 
-                                        <tr>
-                                            <td>
-                                                <div class="sno">3</div>
-                                            </td>
-                                            <td>Jane Doe</td>
-                                            <td>TR0619879238351</td>
-                                            <td>03 Sep, 2023, 09:33:12 am</td>
-                                            <td>8642 Yule Street, Arvada CO 80007</td>
-                                            <td>597 East Miracle Drive, Fayetteville AR 72701</td>
-                                            <td>05 KM</td>
-                                            <td> Big Bang Hotel </td>
-                                            <td>
-                                                <div class="action-btn-info">
-                                                    <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="las la-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item view-btn" href="users-detail.html"><i
-                                                                class="las la-eye"></i> View</a>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
 
                                     </tbody>
                                 </table>
                             </div>
                             <div class="kik-table-pagination">
                                 <ul class="kik-pagination">
-                                    <li class="disabled" id="example_previous">
-                                        <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
-                                            class="page-link">Previous</a>
-                                    </li>
-                                    <li class="active">
-                                        <a href="#" class="page-link">1</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="2" tabindex="0"
-                                            class="page-link">2</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="3" tabindex="0"
-                                            class="page-link">3</a>
-                                    </li>
-                                    <li class="next" id="example_next">
-                                        <a href="#" aria-controls="example" data-dt-idx="7" tabindex="0"
-                                            class="page-link">Next</a>
-                                    </li>
+                                    {{-- Previous Page Link --}}
+                                    @if ($taxi_booking_requests->onFirstPage())
+                                        <li class="disabled">
+                                            <span>Previous</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $taxi_booking_requests->previousPageUrl() }}"
+                                                aria-controls="example" tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() - 2 }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($taxi_booking_requests->getUrlRange(1, $taxi_booking_requests->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $taxi_booking_requests->currentPage() ? 'active' : '' }}">
+                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
+                                                class="page-link"
+                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($taxi_booking_requests->hasMorePages())
+                                        <li>
+                                            <a href="{{ $taxi_booking_requests->nextPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="disabled">
+                                            <span>Next</span>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
