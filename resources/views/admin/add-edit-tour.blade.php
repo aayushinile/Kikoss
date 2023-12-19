@@ -45,7 +45,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <div class="kikcheckbox1">
-                                            <input type="checkbox" id="People Ages 11+" name="age_11">
+                                            <input type="checkbox" id="People Ages 11+"
+                                                name="age_11"@if (!empty($data)) checked @endif>
                                             <label for="People Ages 11+">People Ages 11+</label>
                                         </div>
                                         <div class="form-group-input">
@@ -62,7 +63,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <div class="kikcheckbox1">
-                                            <input type="checkbox" name="age_60" id="Senior Ages 60+">
+                                            <input type="checkbox" name="age_60" id="Senior Ages 60+"
+                                                @if (!empty($data)) checked @endif>
                                             <label for="Senior Ages 60+">Senior Ages 60+</label>
                                         </div>
                                         <div class="form-group-input">
@@ -79,7 +81,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <div class="kikcheckbox1">
-                                            <input type="checkbox" name="age_under_10" id="Children Ages 10 & Under">
+                                            <input type="checkbox" name="age_under_10"
+                                                id="Children Ages 10 & Under"@if (!empty($data)) checked @endif>
                                             <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
                                         </div>
                                         <div class="form-group-input">

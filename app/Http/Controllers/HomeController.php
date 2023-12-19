@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Tour;
 use App\Models\TourBooking;
@@ -462,7 +464,7 @@ class HomeController extends Controller
                     $file->move($destination, $name);
                     $Attributes = PhotoBoothMedia::create([
                         'booth_id' => $boothID,
-                        'media_type' => 'Image',
+                        'media_type' => 'Image',/* media_type:Image/Video */
                         'media' => $name,
                         'status' => 1,
                     ]);
@@ -475,7 +477,7 @@ class HomeController extends Controller
                     $file->move($destination, $name);
                     $Attributes = PhotoBoothMedia::create([
                         'booth_id' => $boothID,
-                        'media_type' => 'video',
+                        'media_type' => 'video',/* media_type:Image/Video */
                         'media' => $name,
                         'status' => 1,
                     ]);
@@ -545,6 +547,7 @@ class HomeController extends Controller
         }
     }
     
+    /*Edit Photo Booth*/
     public function EditPhotoBooth($id)
     {
         $id = encrypt_decrypt('decrypt',$id);
@@ -553,6 +556,7 @@ class HomeController extends Controller
         return view('admin.add-edit-photo-booth',compact('data','tours'));
     }
     
+    /*Delete Photo Booth*/
     public function DeletePhotoBooth(Request $request)
     {
         try {
@@ -560,6 +564,90 @@ class HomeController extends Controller
             return redirect()->back()->with('success', 'Photo booth deleted successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
+    /* Profile Admin*/
+    public function profile()
+    {
+        try {
+            $data = Auth::user();
+            return view('admin.profile',compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
+    /* Function for change password with login or without login*/
+    public function UpdatePassword(Request $request) 
+    {
+        try {
+            $data=array();
+            $new_password = $request->new_password;
+            $old_password = $request->old_password;
+            $validator = Validator::make($request->all(), [
+                'old_password' => 'required|min:8',
+                'new_password' => 'required|min:8',
+                'confirm_new_password' => 'required|same:new_password',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
+            $user = Auth::user();
+            if(!empty($old_password))
+            {
+                /*Checking old password is same or not */
+                if ((Hash::check($request->old_password, $user->password)) == false) {
+                    return redirect()->back()->with('error', 'Check your old password.');
+                }
+            }
+            $id = User::where('id',$user->id)->update(['password'=>Hash::make($new_password)]);
+            
+            if(!empty($id))
+            {
+                return redirect()->back()->with('success', 'Password change successfully');
+            }else{
+                return redirect()->back()->with('error', 'Something went wrong!');
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /* Function for change password with login or without login*/
+    public function UpdateProfile(Request $request) 
+    {
+        //dd(55);
+        try {
+            $user = Auth::user();
+            $validator = Validator::make($request->all(), [
+                'fullname' => 'required|string|max:255|min:1',
+                'email' => 'required|email',
+                'mobile' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+                
+            
+            $users = User::where('id',$user->id)->first();
+            $users->email = $request->email;
+            $users->fullname = $request->fullname;
+            $users->mobile = $request->mobile;
+            if ($file=$request->file('user_profile')){
+                $destination = public_path('upload/profile');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $users->user_profile = $name;
+            }
+            $users->save();
+            return redirect()->back()->with('success', 'Profile uploaded successfully');
+            
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
         }
     }
     

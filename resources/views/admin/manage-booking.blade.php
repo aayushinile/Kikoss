@@ -63,13 +63,11 @@
                                     </div>
                                     <div class="booking-tour-card-content">
                                         <div class="manage-tour-card-text">
-                                            <h3>{{ $val->title ?? '' }} <span> {{ $val->total_people ?? '' }}</span></h3>
+                                            <h3>{{ $val->title ?? '' }} <span> Total {{ $val->total_people ?? '' }}</span>
+                                            </h3>
                                             <p>23 People Occupancy Left</p>
                                         </div>
                                         <div class="booking-tour-card-action">
-                                            {{-- <a class="delete-btn"
-                                                href="{{ url('delete-tour/' . encrypt_decrypt('encrypt', $val->id)) }}"
-                                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a> --}}
                                             <a class="delete-btn" data-bs-toggle="modal" data-bs-target="#deletepopup"
                                                 onclick='GetData("{{ $val->id }}","{{ $val->title }}")'>Delete</a>
                                             <a class="edit-btn"
@@ -340,7 +338,8 @@
                                     @csrf
                                     <input type="hidden" value="" name="id" id="photo_booth_id">
                                     <button class="yesbtn"type="submit">Yes Confirm Delete</button>
-                                    <button class="Cancelbtn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                    <button class="Cancelbtn" data-bs-dismiss="modal"
+                                        type="button"aria-label="Close">Cancel</button>
                                 </form>
                             </div>
                         </div>

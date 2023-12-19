@@ -24,11 +24,14 @@
                                 <h4>Select Tour</h4>
                                 <select class="form-control" name="tour_id" required>
                                     <option value="">Select Tour</option>
-                                    @foreach ($tours as $tour)
-                                        <option
-                                            value="{{ $tour->id }}"@if ($tour->id == $data->tour_id) selected='selected' @else @endif>
-                                            {{ $tour->name }}</option>
-                                    @endforeach
+                                    @if (!$tours->isEmpty())
+                                        @foreach ($tours as $tour)
+                                            <option
+                                                value="{{ $tour->id }}" @if ($data ? $tour->id == $data->tour_id) selected='selected' @else @endif>
+                                                {{ $tour->name }}</option>
+                                        @endforeach
+                                    @endif
+
                                 </select>
                             </div>
                             @error('tour_id')

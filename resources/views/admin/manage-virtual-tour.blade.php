@@ -77,11 +77,15 @@
                             <div class="item">
                                 <div class="managevertualtour-card">
                                     <div class="managevertualtour-card-media">
-                                        <audio autobuffer="true" x-webkit-airplay="allow" controlslist="nodownload"
-                                            disablepictureinpicture="" class="_2c9v _53mv" controls=""
-                                            playinfullscreen="false" playsinline="true"
-                                            src="https://video.fdel15-1.fna.fbcdn.net/v/t42.1790-2/202926350_103484455255802_4466985038386042348_n.mp4?_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=55d0d3&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&amp;_nc_ohc=wMIDuUyVrlsAX9th7eJ&amp;_nc_rml=0&amp;_nc_ht=video.fdel15-1.fna&amp;oh=00_AfDWxFuHqKQBDNWqzhZQio12XMiiD-wdoVaowWH7w6--GQ&amp;oe=657F9D34"
-                                            width="100%" height="200"></audio>
+                                        <img src="{{ assets('upload/virtual-thumbnail/' . $val->thumbnail_file) }}"
+                                            width="100%" height="200">
+                                    </div>
+                                    <div class="managevertualtour-card-audio">
+                                        <audio width="100%" controls>
+                                            <source src="{{ assets('upload/virtual-audio/' . $val->audio_file) }}"
+                                                type="audio/mpeg">
+                                            Your browser does not support the audio tag.
+                                        </audio>
                                     </div>
                                     <div class="managevertualtour-card-content">
                                         <div class="managevertualtour-card-text">
@@ -242,7 +246,7 @@
                                     <input type="hidden" value="" name="id" id="photo_booth_id">
                                     <button class="yesbtn"type="submit">Yes Confirm Delete</button>
                                     <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
-                                        aria-label="Close">Cancel</button>
+                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
                                 </form>
                             </div>
                         </div>

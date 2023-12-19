@@ -25,8 +25,9 @@ h4.heading-title {font-size: 16px;font-weight: 600;margin: 0;padding: 0;color: #
 .side-profile-total-icon {width: 40px;height: 40px;margin-right: 10px;line-height: 40px;}
 .side-profile-total-icon img {height: 32px;}
 
-
-
+.myprofile-form-section {background-color: #ffffff; border: none; border-radius: 0.4rem; box-shadow: 0 0.15rem 0.1rem rgba(0, 0, 0, 0.04); position: relative; margin-bottom:1rem }
+.myprofile-form-heading {padding: 1rem; border-bottom: 1px solid #e8ecf2; display: flex; justify-content: space-between; align-items: center; }
+.myprofile-form-heading h3 {font-size: 16px; font-weight: 700; margin: 0; padding: 0; color: var(--black); }
 .myprofile-form{padding: 1rem}
 .myprofile-form .form-group{margin-bottom: 1rem}
 .myprofile-form .form-group h4 {font-size: 13px; color: #393e56; font-weight: 600; margin: 0 0 5px 0; padding: 0; }

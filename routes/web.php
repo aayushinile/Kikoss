@@ -52,3 +52,6 @@ Route::get('/taxi-booking-request', [App\Http\Controllers\HomeController::class,
 Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
 Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
 Route::get('/load-sectors', [App\Http\Controllers\HomeController::class,'loadSectors'])->name('load-sectors');
+Route::get('/profile', [App\Http\Controllers\HomeController::class,'profile'])->name('Profile');
+Route::post('/update-password', [App\Http\Controllers\HomeController::class,'UpdatePassword'])->name('UpdatePassword');
+Route::post('/update-profile', [App\Http\Controllers\HomeController::class,'UpdateProfile'])->name('UpdateProfile');

@@ -46,7 +46,7 @@
                                 <span class="menu-title">Dashboard</span>
                             </a>
                         </li>
-                        <li class="nav-item @if ($currentURL == 'Users') active @endif">
+                        <li class="nav-item @if ($currentURL == 'Users' || $currentURL == 'UserDetail') active @endif">
                             <a class="nav-link" href="{{ url('users') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -105,7 +105,11 @@
                                 <span class="menu-title">Manage Booking</span>
                             </a>
                         </li>
-                        <li class="nav-item @if ($currentURL == 'ManageVirtualTour' || $currentURL == 'AddVirtualTour') active @endif">
+                        <li class="nav-item @if (
+                            $currentURL == 'ManageVirtualTour' ||
+                                $currentURL == 'AddVirtualTour' ||
+                                $currentURL == 'VirtualTransactionHistory' ||
+                                $currentURL == 'EditVirtualTour') active @endif">
                             <a class="nav-link" href="{{ url('manage-virtual-tour') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -120,7 +124,11 @@
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'ManagePhotoBooth') active @endif">
+                        <li class="nav-item @if (
+                            $currentURL == 'ManagePhotoBooth' ||
+                                $currentURL == 'PhotoTransactionHistory' ||
+                                $currentURL == 'EditPhotoBooth' ||
+                                $currentURL == 'AddPhoto') active @endif">
                             <a class="nav-link" href="{{ url('manage-photo-booth') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -174,7 +182,7 @@
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'Tours' || $currentURL == 'AddTour') active @endif">
+                        <li class="nav-item @if ($currentURL == 'Tours' || $currentURL == 'AddTour' || $currentURL == 'EditTour') active @endif">
                             <a class="nav-link" href="{{ url('tours') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -248,11 +256,11 @@
                         <ul class="navbar-nav">
                             <li class="nav-item noti-dropdown dropdown">
                                 <a class="nav-link  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="noti-icon">
+                                    {{-- <div class="noti-icon">
                                         <img src="{{ assets('assets/admin-images/notification.svg') }}"
                                             alt="user">
                                         <span class="noti-badge">3</span>
-                                    </div>
+                                    </div> --}}
                                 </a>
                                 <div class="dropdown-menu">
 
@@ -273,7 +281,7 @@
                                     </div>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <a href="#" class="dropdown-item">
+                                    <a href="{{ url('profile') }}" class="dropdown-item">
                                         <i class="las la-user"></i> Profile
                                     </a>
                                     <a href="{{ route('logout') }}"
