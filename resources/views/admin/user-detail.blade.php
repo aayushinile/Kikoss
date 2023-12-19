@@ -3,6 +3,8 @@
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/user.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
 @section('content')
@@ -88,7 +90,7 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total Amount Received:</p>
-                                        <h2>$0</h2>
+                                        <h2>${{ $total_amount }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/dollar-circle.svg') }}">
@@ -104,7 +106,7 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Tour Booked</p>
-                                        <h2>0</h2>
+                                        <h2>{{ $normal_tours->total() }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/Total-Tour-booked.svg') }}">
@@ -122,7 +124,7 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Virtual Tour Purchased</p>
-                                        <h2>0</h2>
+                                        <h2>{{ $virtual_tours->total() }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/Virtual-tour.svg') }}">
@@ -138,10 +140,11 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total purchased</p>
-                                        <h2>0</h2>
+                                        <h2>{{ $normal_tours->total() + $virtual_tours->total() + $PhotoBooths->total() }}
+                                        </h2>
                                     </div>
                                     <div class="overview-content-icon">
-                                        <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">
+                                        <img src="{{ assets('assets/admin-images/PhotoBooths.svg') }}">
                                     </div>
                                 </div>
                             </div>
@@ -180,34 +183,51 @@
                                         <div class="search-filter">
                                             <div class="row g-1">
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 d-flex">
+
+
+                                                    <div class="mt-2">
+                                                        <a
+                                                            href="{{ url('user-details/' . encrypt_decrypt('encrypt', $data->id)) }}"><i
+                                                                class="fa fa-undo" aria-hidden="true"></i></a>
+                                                        &nbsp;
+                                                    </div>
                                                     <div class="form-group">
-                                                        <input type="date" name="" class="form-control">
+
+                                                        <input type="date"
+                                                            value="{{ request()->has('date') ? request('date') : '' }}"
+                                                            onchange="location.replace('{{ url('user-details/' . encrypt_decrypt('encrypt', $data->id)) }}?date='+this.value)"
+                                                            name="date" class="form-control">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gr">Download report</a>
+                                                        <a class="btn-gr">Download report</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-bl">Tour Booking</a>
+                                                        <a onclick="getCheck(this)" data-type="normal_tours"
+                                                            class="btn-bl">Tour
+                                                            Booking</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-bla">Virtual Tour</a>
+                                                        <a class="btn-bla" onclick="getCheck(this)"
+                                                            data-type="virtual_tours">Virtual
+                                                            Tour</a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group" onclick="getCheck(this)"
+                                                        data-type="photo_booth">
+                                                        <a class="btn-br">Photo Booth</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-br">Photo Booth</a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <a href="#" class="btn-gra">Taxi Booking</a>
+                                                        <a class="btn-gra">Taxi Booking</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -216,7 +236,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body normal_tours">
                             <div class="kik-table">
                                 <table class="table xp-table  " id="customer-table">
                                     <thead>
@@ -234,85 +254,244 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="sno">1</div>
-                                            </td>
-                                            <td>North Shore</td>
-                                            <td>8 Hours</td>
-                                            <td>16/02/2023</td>
-                                            <td>$559.00</td>
-                                            <td> 4 People </td>
-                                            <td> 03 Sep, 2023, 09:33:12 am </td>
-                                            <td> PayPal </td>
-                                            <td>
-                                                <div class="status-text confirmed-status"><i
-                                                        class="las la-check-circle"></i> Confirmed</div>
-                                            </td>
-                                            <td> 76375873874 </td>
-                                        </tr>
+                                        @forelse ($normal_tours as $i => $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="sno">{{ $i + 1 }}</div>
+                                                </td>
+                                                <td>{{ $item->Tour->name }}</td>
+                                                <td>{{ $item->Tour->duration }} Hours</td>
+                                                <td>{{ date('d/m/y', strtotime($item->booking_date)) }}</td>
+                                                <td>${{ $item->total_amount }}.00</td>
+                                                <td> {{ $item->no_adults + $item->senior_citizen + $item->no_childerns }}
+                                                    People </td>
+                                                <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
+                                                </td>
+                                                <td> {{ $item->payment_provider }} </td>
+                                                <td>
+                                                    <div class="status-text confirmed-status"><i
+                                                            class="las la-check-circle"></i> {{ $item->status }}</div>
+                                                </td>
+                                                <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" align="center">No tours found</td>
+                                            </tr>
+                                        @endforelse
 
-                                        <tr>
-                                            <td>
-                                                <div class="sno">2</div>
-                                            </td>
-                                            <td>North Shore</td>
-                                            <td>8 Hours</td>
-                                            <td>16/02/2023</td>
-                                            <td>$559.00</td>
-                                            <td> 4 People </td>
-                                            <td> 03 Sep, 2023, 09:33:12 am </td>
-                                            <td> PayPal </td>
-                                            <td>
-                                                <div class="status-text rejected-status"><i
-                                                        class="las la-times-circle"></i> Rejected (Refund Initiated)</div>
-                                            </td>
-                                            <td> 76375873874 </td>
-                                        </tr>
 
-                                        <tr>
-                                            <td>
-                                                <div class="sno">3</div>
-                                            </td>
-                                            <td>North Shore</td>
-                                            <td>8 Hours</td>
-                                            <td>16/02/2023</td>
-                                            <td>$559.00</td>
-                                            <td> 4 People </td>
-                                            <td> 03 Sep, 2023, 09:33:12 am </td>
-                                            <td> PayPal </td>
-                                            <td>
-                                                <div class="status-text confirmed-status"><i
-                                                        class="las la-check-circle"></i> Confirmed</div>
-                                            </td>
-                                            <td> 76375873874 </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="kik-table-pagination">
                                 <ul class="kik-pagination">
-                                    <li class="disabled" id="example_previous">
-                                        <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
-                                            class="page-link">Previous</a>
-                                    </li>
-                                    <li class="active">
-                                        <a href="#" class="page-link">1</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="2" tabindex="0"
-                                            class="page-link">2</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="3" tabindex="0"
-                                            class="page-link">3</a>
-                                    </li>
-                                    <li class="next" id="example_next">
-                                        <a href="#" aria-controls="example" data-dt-idx="7" tabindex="0"
-                                            class="page-link">Next</a>
-                                    </li>
+                                    {{-- Previous Page Link --}}
+                                    @if ($normal_tours->onFirstPage())
+                                        <li class="disabled">
+                                            <span>Previous</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $normal_tours->previousPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $normal_tours->currentPage() - 2 }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($normal_tours->getUrlRange(1, $normal_tours->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $normal_tours->currentPage() ? 'active' : '' }}">
+                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
+                                                class="page-link"
+                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($normal_tours->hasMorePages())
+                                        <li>
+                                            <a href="{{ $normal_tours->nextPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $normal_tours->currentPage() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="disabled">
+                                            <span>Next</span>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
+
+                        </div>
+                        <div class="card-body virtual_tours d-none">
+                            <div class="kik-table">
+                                <table class="table xp-table  " id="customer-table">
+                                    <thead>
+                                        <tr class="table-hd">
+                                            <th>Sr No.</th>
+                                            <th>Tour Name & Duration</th>
+
+                                            <th>Amount Paid</th>
+
+                                            <th>Amount Recieved On</th>
+
+                                            <th>Payment Made Via</th>
+                                            <th>Transaction ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($virtual_tours as $i => $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="sno">{{ $i + 1 }}</div>
+                                                </td>
+                                                <td>{{ $item->Tour->name }}</td>
+
+                                                <td>${{ $item->total_amount }}.00</td>
+
+                                                <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
+                                                </td>
+
+                                                <td> {{ $item->payment_provider }} </td>
+
+                                                <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" align="center">No tours found</td>
+                                            </tr>
+                                        @endforelse
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="kik-table-pagination">
+                                <ul class="kik-pagination">
+                                    {{-- Previous Page Link --}}
+                                    @if ($virtual_tours->onFirstPage())
+                                        <li class="disabled">
+                                            <span>Previous</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $virtual_tours->previousPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $virtual_tours->currentPage() - 2 }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($virtual_tours->getUrlRange(1, $virtual_tours->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $virtual_tours->currentPage() ? 'active' : '' }}">
+                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
+                                                class="page-link"
+                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($virtual_tours->hasMorePages())
+                                        <li>
+                                            <a href="{{ $virtual_tours->nextPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $virtual_tours->currentPage() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="disabled">
+                                            <span>Next</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+
+                        </div>
+                        <div class="card-body photo_booth d-none">
+                            <div class="kik-table">
+                                <table class="table xp-table  " id="customer-table">
+                                    <thead>
+                                        <tr class="table-hd">
+                                            <th>Sr No.</th>
+                                            <th>Tour Name & Duration</th>
+
+                                            <th>Amount Paid</th>
+
+                                            <th>Amount Recieved On</th>
+                                            <th>Media Purchase</th>
+                                            <th>Payment Made Via</th>
+                                            <th>Transaction ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($PhotoBooths as $i => $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="sno">{{ $i + 1 }}</div>
+                                                </td>
+                                                <td>{{ $item->booth && $item->booth->TourNameBooth ? $item->booth->TourNameBooth->name : 'N/A' }}
+                                                </td>
+
+                                                <td>${{ $item->total_amount }}.00</td>
+
+                                                <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
+                                                </td>
+                                                <td> 4 Photos , 5 videos </td>
+                                                <td> {{ $item->payment_provider }} </td>
+
+                                                <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" align="center">No tours found</td>
+                                            </tr>
+                                        @endforelse
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="kik-table-pagination">
+                                <ul class="kik-pagination">
+                                    {{-- Previous Page Link --}}
+                                    @if ($PhotoBooths->onFirstPage())
+                                        <li class="disabled">
+                                            <span>Previous</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $PhotoBooths->previousPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $PhotoBooths->currentPage() - 2 }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($PhotoBooths->getUrlRange(1, $PhotoBooths->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $PhotoBooths->currentPage() ? 'active' : '' }}">
+                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
+                                                class="page-link"
+                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($PhotoBooths->hasMorePages())
+                                        <li>
+                                            <a href="{{ $PhotoBooths->nextPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $PhotoBooths->currentPage() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="disabled">
+                                            <span>Next</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -321,4 +500,13 @@
         </div>
 
     </div>
+    <script>
+        function getCheck(ele) {
+            $(".card-body").addClass("d-none")
+            $(`.${ele.getAttribute('data-type')}`).removeClass("d-none");
+
+
+
+        }
+    </script>
 @endsection
