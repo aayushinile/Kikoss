@@ -4,7 +4,9 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/user.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    </head>
+    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/b-html5-2.4.2/datatables.min.css" rel="stylesheet">
+
+    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/b-html5-2.4.2/datatables.min.js"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
 @section('content')
@@ -67,8 +69,9 @@
                                             <p>Inactive</p>
                                             <div class="">
                                                 <label class="toggle" for="myToggle">
-                                                    <input class="toggle__input" name="" type="checkbox"
-                                                        id="myToggle">
+                                                    <input class="toggle__input"
+                                                        @if ($data->status == 'Active') checked @endif name=""
+                                                        type="checkbox" id="myToggle">
                                                     <div class="toggle__fill"></div>
                                                 </label>
                                             </div>
@@ -202,7 +205,8 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a class="btn-gr">Download report</a>
+                                                        <a class="btn-gr" id="xport" onclick="exportToCSV(this)"
+                                                            data-id="normal_tours">Download report</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
@@ -227,7 +231,8 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a class="btn-gra">Taxi Booking</a>
+                                                        <a class="btn-gra" onclick="getCheck(this)"
+                                                            data-type="taxi_bookings">Taxi Booking</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -238,7 +243,7 @@
                         </div>
                         <div class="card-body normal_tours">
                             <div class="kik-table">
-                                <table class="table xp-table  " id="customer-table">
+                                <table class="table xp-table  " id="normal_tours">
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
@@ -327,7 +332,7 @@
                         </div>
                         <div class="card-body virtual_tours d-none">
                             <div class="kik-table">
-                                <table class="table xp-table  " id="customer-table">
+                                <table class="table xp-table  " id="virtual_tours">
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
@@ -411,7 +416,7 @@
                         </div>
                         <div class="card-body photo_booth d-none">
                             <div class="kik-table">
-                                <table class="table xp-table  " id="customer-table">
+                                <table class="table xp-table  " id="photo_booth">
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
@@ -493,6 +498,90 @@
                             </div>
 
                         </div>
+                        <div class="card-body taxi_bookings d-none">
+                            <div class="kik-table">
+                                <table class="table xp-table  " id="taxi_bookings">
+                                    <thead>
+                                        <tr class="table-hd">
+                                            <th>Sr No.</th>
+                                            <th>Name</th>
+                                            <th>Booking ID</th>
+                                            <th>Booking Date & Time</th>
+                                            <th>Pickup Location</th>
+                                            <th>Drop Off Location</th>
+                                            <th>Travel Distanse </th>
+                                            <th>Hotel Name</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($taxi_booking_requests as $i=> $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="sno">{{ $i + 1 }}</div>
+                                                </td>
+                                                <td>{{ $item->user ? $item->user->fullname : 'N/A' }}</td>
+                                                <td>TR0619879238351</td>
+                                                <td>{{ date('d M, Y, h:i:s a', strtotime($item->booking_time)) }}
+
+                                                <td>{{ $item->pickup_location }}</td>
+                                                <td>{{ $item->drop_location }}</td>
+
+                                                <td>{{ $item->distance }} KM</td>
+                                                <td> {{ $item->hotel_name }} </td>
+
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" align="center"> No Booking requests</td>
+                                            </tr>
+                                        @endforelse
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="kik-table-pagination">
+                                <ul class="kik-pagination">
+                                    {{-- Previous Page Link --}}
+                                    @if ($taxi_booking_requests->onFirstPage())
+                                        <li class="disabled">
+                                            <span>Previous</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $taxi_booking_requests->previousPageUrl() }}"
+                                                aria-controls="example" tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() - 2 }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($taxi_booking_requests->getUrlRange(1, $taxi_booking_requests->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $taxi_booking_requests->currentPage() ? 'active' : '' }}">
+                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
+                                                class="page-link"
+                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($taxi_booking_requests->hasMorePages())
+                                        <li>
+                                            <a href="{{ $taxi_booking_requests->nextPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="disabled">
+                                            <span>Next</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -504,9 +593,81 @@
         function getCheck(ele) {
             $(".card-body").addClass("d-none")
             $(`.${ele.getAttribute('data-type')}`).removeClass("d-none");
+            $("#xport").attr("data-id", ele.getAttribute('data-type'));
 
 
+        }
+        $(document).ready(function() {
+            $('#myToggle').on('change', function() {
 
+                var newStatus = this.checked ? 'Active' : 'Inactive';
+
+                $.ajax({
+                    url: '/toggleUserStatus',
+                    type: 'POST',
+                    data: {
+                        user_id: {{ $data->id }},
+                        status: newStatus,
+                        _token: '{{ csrf_token() }}'
+                    }, // Add CSRF token
+                    success: function(response) {
+                        // Update the UI or perform other actions based on the response
+                        console.log('User status toggled to: ' + response.status);
+                        if (response.success) {
+                            toastr.success(response.message);
+
+                        } else {
+                            toastr.error(response.message)
+
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error toggling user status:', error);
+                    }
+                });
+            });
+        });
+
+        function exportToCSV(ele) {
+            // Get table data
+            var table = document.getElementById(ele.getAttribute("data-id"));
+            var rows = table.querySelectorAll('tbody tr');
+
+            // Create CSV content
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += headersToCSV(table);
+            csvContent += rowsToCSV(rows);
+
+            // Create and trigger a download link
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", ele.getAttribute("data-id") + '.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function headersToCSV(table) {
+            var headers = [];
+            var headerCols = table.querySelectorAll('thead th');
+            for (var i = 0; i < headerCols.length; i++) {
+                headers.push(headerCols[i].innerText);
+            }
+            return headers.join(',') + '\n';
+        }
+
+        function rowsToCSV(rows) {
+            var csv = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = [];
+                var cols = rows[i].querySelectorAll('td');
+                for (var j = 0; j < cols.length; j++) {
+                    row.push(cols[j].innerText);
+                }
+                csv.push(row.join(','));
+            }
+            return csv.join('\n');
         }
     </script>
 @endsection

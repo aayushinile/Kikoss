@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,8 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+// Ajax route to toggle user status
+Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 'toggleUserStatus'])->name('toggleUserStatus');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
@@ -47,6 +50,10 @@ Route::get('/edit-photo-booth/{id}', [App\Http\Controllers\HomeController::class
 Route::post('/delete-photo-booth', [App\Http\Controllers\HomeController::class, 'DeletePhotoBooth'])->name('DeletePhotoBooth');
 Route::post('/submit-photo-booth', [App\Http\Controllers\HomeController::class, 'SavePhotoBooth'])->name('SavePhotoBooth');
 Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 'UpdatePhotoBooth'])->name('UpdatePhotoBooth');
+
+
+
+Route::get('taxi_booking_request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 
 Route::get('/taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
