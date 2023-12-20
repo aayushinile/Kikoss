@@ -55,3 +55,4 @@ Route::get('/load-sectors', [App\Http\Controllers\HomeController::class,'loadSec
 Route::get('/profile', [App\Http\Controllers\HomeController::class,'profile'])->name('Profile');
 Route::post('/update-password', [App\Http\Controllers\HomeController::class,'UpdatePassword'])->name('UpdatePassword');
 Route::post('/update-profile', [App\Http\Controllers\HomeController::class,'UpdateProfile'])->name('UpdateProfile');
+Route::get('/tour-detail/{id}', [App\Http\Controllers\HomeController::class,'TourDetails'])->name('TourDetails');

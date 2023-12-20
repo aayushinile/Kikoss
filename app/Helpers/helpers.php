@@ -65,6 +65,7 @@ if (!function_exists('encrypt_decrypt')) {
     }
 }
 
+/* Upload Image */
 if (!function_exists('imageUpload')) {
     function imageUpload($request, $path, $name)
     {
@@ -76,10 +77,25 @@ if (!function_exists('imageUpload')) {
     }
 }
 
+/* Handle and path accoding to local and live */
 if (!function_exists('assets')) {
     function assets($path)
     {
-        //return asset('public/'.$path);
-        return asset($path);
+        //return asset('public/'.$path); /* For live server */
+        return asset($path);/* For local server(When project run on local comment first path) */
+    }
+}
+
+/*Calculate Distance in KM accoding to pickup_lat_long and drop_lat_long */
+if (!function_exists('getDistanceFromLatLonInKm')) {
+    function getDistanceFromLatLonInKm($lat1, $lon1, $lat2, $lon2)
+    {
+        $R = 6371;
+        $dLat = ($lat2 - $lat1) * (3.14159 / 180);
+        $dLon = ($lon2 - $lon1) * (3.14159 / 180);
+        $a = sin($dLat / 2) * sin($dLat / 2) + cos(($lat1) * (3.14159 / 180)) * cos(($lat2) * (3.14159 / 180)) * sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $d = $R * $c;
+        return $d;
     }
 }

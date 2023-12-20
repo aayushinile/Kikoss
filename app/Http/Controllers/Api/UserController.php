@@ -14,6 +14,8 @@ use App\Models\Tour;
 use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
 use App\Models\TourBooking;
+use App\Models\VirtualTour;
+use App\Models\TaxiBooking;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -484,6 +486,163 @@ class UserController extends Controller
             
             $data['status']=true;
             $data['message']="Boooked successfully";
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing Virtual tour data with or without login */
+    public function VirtualTourListing() 
+    {
+        try {
+            $tours = VirtualTour::where('status',1)->orderBy('id','ASC')->get();//Get all datas of Virtual-Tour
+            if(count($tours) > 0){
+                $response = array();/*Store data an array */
+                foreach ($tours as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['minute'] = $value->minute;
+                    $temp['name'] = $value->name;
+                    $temp['price'] = $value->price;
+                    $temp['description'] = $value->description;
+                    $temp['cancellation_policy'] = $value->cancellation_policy;
+                    $temp['audio'] = asset('public/upload/virtual-audio/'.$value->audio_file);/*Audio file of virtual tour*/
+                    $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/'.$value->thumbnail_file);/*Thumbnail file of virtual tour*/
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Virtual tour listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Virtual tour Details  */
+    public function VirtualTourDetail(Request $request) 
+    {
+        try {
+            //Virtual detail accoding to virtual tour id
+            $tour = VirtualTour::where('id',$request->id)->first();
+            if(!empty($tour)){
+                $tourImage = array();
+                $temp['id'] = $tour->id;
+                $temp['minute'] = $tour->minute;
+                $temp['name'] = $tour->name;
+                $temp['price'] = $tour->name;
+                $temp['description'] = $tour->description;
+                $temp['cancellation_policy'] = $tour->cancellation_policy;
+                $temp['audio'] = asset('public/upload/virtual-audio/'.$tour->audio_file);/*Audio file of virtual tour*/
+                $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/'.$tour->thumbnail_file);/*Thumbnail file of virtual tour*/
+            }else{
+                $temp = '';
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Virtual Tour Detail';
+            $data['data'] = $temp;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Taxi booking api  */
+    public function bookingTaxi(Request $request) 
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'booking_date_time' => 'required',
+                'fullname' => 'required|string|max:255',
+                'pickup_location' => 'required',
+                'pickup_lat_long'=> 'required',
+                'drop_location'=> 'required',
+                'drop_lat_long'=> 'required',
+                'mobile'=> 'required',
+                'hotel_name'=> 'required|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()],404);
+            }
+            $user_id = Auth::user()->id;
+            $booking_id = rand(10000000,99999999);/*Generate random booking  ID*/
+            /*Create taxi booking with booking id*/
+            $distance = getDistanceFromLatLonInKm($value->lat, $value->long, $request->lat, $request->long);
+            $Distance = number_format((float)$distance, 2, '.', '') . " Km"; 
+            $distance_int = round((int)$distance);
+            
+            $pickup_lat_long = $pickup_lat.','.$pickup_long;
+            $drop_lat_long = $drop_lat.','.$drop_long;
+            
+            
+            $bookingID = TaxiBooking::insertGetId([
+                'booking_time' => $request->booking_date_time,/*Date and Time */
+                'user_id' => $user_id,
+                'booking_id' => $booking_id,
+                'fullname' => $request->fullname,
+                'pickup_location' => $request->pickup_location,
+                'pickup_lat_long' => $request->pickup_lat_long,
+                'drop_location' => $request->drop_location,
+                'drop_lat_long' => $request->drop_lat_long,
+                'mobile' => $request->mobile,
+                'hotel_name' => $request->hotel_name,
+                'distance' => 10,
+                'status' => 0,
+                'created_at' => date("Y-m-d h:i:s")
+            ]);
+            if($bookingID){
+                $data['status'] = true;
+                $data['message'] = 'Booking request send successfully';
+            }else{
+                $data['status'] = false;
+                $data['message'] = 'Something went wrong';
+            }
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing List of Booking Taxi */
+    public function TaxiBookingListing() 
+    {
+        try {
+            $user_id = Auth::user()->id;
+            $bookings = TaxiBooking::where('user_id',$user_id)->orderBy('id','ASC')->get();
+            if(count($bookings) > 0){
+                $response = array();
+                foreach ($bookings as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['booking_id'] = $value->booking_id;
+                    $temp['booking_time'] = $value->booking_time;
+                    $temp['user_id'] = $value->user_id;
+                    $temp['pickup_location'] = $value->pickup_location;
+                    $temp['pickup_lat_long'] = $value->pickup_lat_long;
+                    $temp['drop_location'] = $value->drop_location;
+                    $temp['drop_lat_long'] = $value->drop_lat_long;
+                    $temp['mobile'] = $value->mobile;
+                    $temp['hotel_name'] = $value->hotel_name;
+                    $temp['book_taxicol'] = $value->book_taxicol;
+                    $temp['distance'] = $value->distance;
+                    $temp['status'] = $value->status;
+                    $temp['created_at'] = $value->created_at;
+                    $temp['TimeAgo'] = $value->created_at->diffForHumans();/*Calculate time ago*/
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Booking Listing';
+            $data['data'] = $response;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

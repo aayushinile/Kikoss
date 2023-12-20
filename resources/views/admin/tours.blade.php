@@ -40,7 +40,8 @@
                                                 US${{ $val->age_11_price }}</div>
                                         </div>
                                         <div class="manage-tour-card-action">
-                                            <a href="#">View</a>
+                                            <a
+                                                href="{{ url('tour-detail/' . encrypt_decrypt('encrypt', $val->id)) }}">View</a>
                                         </div>
                                     </div>
                                 </div>

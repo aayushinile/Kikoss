@@ -37,6 +37,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // Showing All datas of app like tourbooking
         $Tourrequests = TourBooking::where('status', 0)->orderBy('id', 'DESC')->paginate(10);
         return view('admin.home', compact('Tourrequests'));
     }
@@ -103,22 +104,40 @@ class HomeController extends Controller
 
     public function AddTour()
     {
-        $data = null;
-        return view('admin.add-edit-tour', compact('data'));
+        try {
+            // vIEW PAGE OF ADD TOUR WITH NULL DATA(mANAGE ADD EDIT BOTH)
+            $data = null;
+            return view('admin.add-edit-tour', compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
     }
 
     public function EditTour($id)
     {
-        $id = encrypt_decrypt('decrypt', $id);
-        $data = Tour::where('id', $id)->first();
-        return view('admin.add-edit-tour', compact('data'));
+        try {
+            // Decrypt the TOUR ID using the encrypt_decrypt function
+            $id = encrypt_decrypt('decrypt', $id);
+            // VIEW PAGE OF EDIT TOUR WITH NULL DATA(ACCODING TO TOUR ID)
+            $data = Tour::where('id', $id)->first();
+            return view('admin.add-edit-tour', compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
     }
-
+    
+    // View page of virtual tour
     public function EditVirtualTour($id)
     {
-        $id = encrypt_decrypt('decrypt', $id);
-        $data = VirtualTour::where('id', $id)->first();
-        return view('admin.add-edit-virtual-tour', compact('data'));
+        try {
+            // Decrypt the Virtual TOUR ID using the encrypt_decrypt function
+            $id = encrypt_decrypt('decrypt', $id);
+            // Showing data accoding to virtual tour id 
+            $data = VirtualTour::where('id', $id)->first();
+            return view('admin.add-edit-virtual-tour', compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
     }
 
     public function DeleteTour(Request $request)
@@ -459,18 +478,19 @@ class HomeController extends Controller
         }
     }
 
-    /*Search live users*/
+    /*Search live listing of users*/
     public function loadSectors(Request $request)
     {
         $users = [];
 
-        if ($request->has('q')) {
+        if ($request->has('q')) {/*Search request data*/
             $search = $request->q;
+            /*Listing all active users accoding to search data*/
             $users = User::select("id", "fullname")->where('status', 1)->where('type', 2)
                 ->where('fullname', 'LIKE', "%$search%")
                 ->get();
         } else {
-
+            /*Listing all active users*/
             $users = User::select("id", "fullname")->where('status', 1)->where('type', 2)
                 ->get();
         }
@@ -495,9 +515,10 @@ class HomeController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            /*Save all input data of photobooth */
             $boothID = PhotoBooth::insertGetId([
                 'title' => $request->title,
-                'users_id' => implode(',', $request->users),
+                'users_id' => implode(',', $request->users),/*Multiple user id change into implode like 2,3,4 */
                 'price' => $request->price,
                 'tour_id' => $request->tour_id,
                 'description' => $request->description,
@@ -505,6 +526,7 @@ class HomeController extends Controller
                 'status' => 1,
             ]);
             if ($files = $request->file('image')) {
+                /*Save Multiple photos */
                 foreach ($files as $j => $file) {
                     $destination = public_path('upload/photo-booth');
                     $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
@@ -518,6 +540,7 @@ class HomeController extends Controller
                 }
             }
             if ($files = $request->file('video')) {
+                /*Save Multiple videos */
                 foreach ($files as $j => $file) {
                     $destination = public_path('upload/video-booth');
                     $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
@@ -553,31 +576,37 @@ class HomeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+            /*Update photo booth data */
             $photo = PhotoBooth::find($request->pid);
             if ($file = $request->file('image')) {
-                $destination = public_path('upload/photo-booth');
-                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
-                $file->move($destination, $name);
-                $photo->audio_file = $name;
-                $Attributes = PhotoBoothMedia::create([
-                    'booth_id' => $request->pid,
-                    'media_type' => 'Image',
-                    'media' => $name,
-                    'status' => 1,
-                ]);
+                /*Save Multiple photo */
+                foreach ($files as $j => $file) {
+                    $destination = public_path('upload/photo-booth');
+                    $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move($destination, $name);
+                    $photo->audio_file = $name;
+                    $Attributes = PhotoBoothMedia::create([
+                        'booth_id' => $request->pid,/* Photobooth ID */
+                        'media_type' => 'Image',/* media_type:Image/Video */
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
             }
             if ($files = $request->file('video')) {
-                $destination_file = public_path('upload/video-booth');
-                $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $files->extension();
-                $files->move($destination_file, $name_file);
-                $photo->thumbnail_file = $name_file;
-                $Attributes = PhotoBoothMedia::create([
-                    'booth_id' => $request->pid,
-                    'media_type' => 'video',
-                    'media' => $name,
-                    'status' => 1,
-                ]);
+                /*Save Multiple videos */
+                foreach ($files as $j => $file) {
+                    $destination_file = public_path('upload/video-booth');
+                    $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $files->move($destination_file, $name_file);
+                    $photo->thumbnail_file = $name_file;
+                    $Attributes = PhotoBoothMedia::create([
+                        'booth_id' => $request->pid,/* Photo booth ID */
+                        'media_type' => 'video',/* media_type:Image/Video */
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
             }
 
             $photo->tour_id = $request->tour_id;
@@ -664,7 +693,6 @@ class HomeController extends Controller
     /* Function for change password with login or without login*/
     public function UpdateProfile(Request $request) 
     {
-        //dd(55);
         try {
             $user = Auth::user();
             $validator = Validator::make($request->all(), [
@@ -677,12 +705,12 @@ class HomeController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
                 
-            
             $users = User::where('id',$user->id)->first();
             $users->email = $request->email;
             $users->fullname = $request->fullname;
             $users->mobile = $request->mobile;
             if ($file=$request->file('user_profile')){
+                /*Upload Admin profile*/
                 $destination = public_path('upload/profile');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
@@ -693,6 +721,20 @@ class HomeController extends Controller
             
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    // Tour Details
+    public function TourDetails($id)
+    {
+        try {
+            // Decrypt the TOUR ID using the encrypt_decrypt function
+            $id = encrypt_decrypt('decrypt', $id);
+            // Showing data accoding to virtual tour id 
+            $data = Tour::where('id', $id)->first();
+            return view('admin.tour-details', compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
         }
     }
     

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('book_taxis', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('booking_time')->nullable();
+            $table->string('fullname')->nullable();
+            $table->string('booking_id')->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->string('pickup_location',500)->nullable();
             $table->string('pickup_lat_long',200)->nullable();

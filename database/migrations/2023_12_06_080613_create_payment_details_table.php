@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('payment_provider',45)->nullable();
             $table->float('amount')->nullable();
             $table->integer('status')->nullable();
+            $table->integer('booking_id')->nullable();
             $table->timestamps();
         });
     }

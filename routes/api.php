@@ -21,12 +21,14 @@ Route::post('verify-otp', [UserController::class, 'verifyotp']);
 Route::post('change-password', [UserController::class, 'change_password']);
 Route::get('home', [UserController::class, 'home']);
 Route::post('tour-detail', [UserController::class, 'tour_detail']);
+Route::get('virtual-tour-listing', [UserController::class, 'VirtualTourListing']);
+Route::post('virtual-tour-detail', [UserController::class, 'VirtualTourDetail']);
 Route::post('callback-request', [UserController::class, 'callback_request']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [UserController::class, 'userDetails']);
     Route::get('profiles', [UserController::class, 'userDetailss']);
     Route::post('update-profile', [UserController::class, 'updateProfile']);
     Route::post('booking-tour', [UserController::class, 'bookingTour']);
-    
-    
+    Route::post('booking-taxi', [UserController::class, 'bookingTaxi']);
+    Route::get('taxi-booking-list', [UserController::class, 'TaxiBookingListing']);
 });
