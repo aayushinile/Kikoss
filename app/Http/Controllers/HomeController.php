@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 class HomeController extends Controller
 {
@@ -113,6 +114,7 @@ class HomeController extends Controller
         }
     }
 
+    //Edit tour
     public function EditTour($id)
     {
         try {
@@ -120,7 +122,8 @@ class HomeController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             // VIEW PAGE OF EDIT TOUR WITH NULL DATA(ACCODING TO TOUR ID)
             $data = Tour::where('id', $id)->first();
-            return view('admin.add-edit-tour', compact('data'));
+            $images = TourAttribute::where('tour_id', $id)->get();/*Get all Images od Photo Booth*/ 
+            return view('admin.add-edit-tour', compact('data','images'));
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
@@ -140,12 +143,15 @@ class HomeController extends Controller
         }
     }
 
+    //Delete Tour
     public function DeleteTour(Request $request)
     {
+        //Update status of tour
         $data = Tour::where('id', $request->id)->update(['status' => 3]);/*3:Delete*/
-        return redirect()->back()->with('success', 'Tour deleted successfully');
+        return redirect('tours')->with('success', 'Tour deleted successfully');
     }
 
+    //Delete Virtual Tour
     public function DeleteVirtualTour(Request $request)
     {
         $data = VirtualTour::where('id', $request->id)->update(['status' => 3]);/*0:Pending,1:Approved, 3:Delete*/
@@ -255,6 +261,32 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
+    /*Delete image/video of Photo Booth*/
+    public function DeleteTourImage($id)
+    {
+        try {
+            // Decrypt the tour ID using the encrypt_decrypt function
+            $id = encrypt_decrypt('decrypt', $id);
+            $tour = TourAttribute::where('id', $id)->first();/*Get first data of media  tour*/
+            $image_count = TourAttribute::where('tour_id', $tour->tour_id)->count();
+            if($image_count >1)
+            {
+                if (file_exists(public_path('upload/tour-thumbnail/'.$tour->attribute_name))) {
+                    unlink(public_path('upload/tour-thumbnail/'.$tour->attribute_name));/*Delete Photo booth image from file*/
+                }
+                $data = TourAttribute::where('id', $id)->delete();/*Delete Photo booth images or videos*/
+                $message = 'Tour image deleted successfully';//sesions mesages
+                $type = 'success';//sesions type
+            }else{
+                $message = 'Unable to delete last image';//sesions mesages
+                $type = 'error';//sesions type
+            }
+            return redirect()->back()->with($type, $message);
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+
 
     public function SaveVirtualTour(Request $request)
     {
@@ -434,9 +466,11 @@ class HomeController extends Controller
     public function AddPhoto()
     {
         try {
-            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $data = null;
-            return view('admin.add-edit-photo-booth', compact('tours', 'data'));
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();/*Get listing of tour*/
+            $data = null;/*Empty booth data to handle add page*/
+            $images = [];/*Empty Images to handle add page*/
+            $videos = [];/*Empty Videos to handle add page*/
+            return view('admin.add-edit-photo-booth', compact('tours', 'data','images','videos'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -524,6 +558,7 @@ class HomeController extends Controller
                 'description' => $request->description,
                 'cancellation_policy' => $request->cancellation_policy,
                 'status' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
             if ($files = $request->file('image')) {
                 /*Save Multiple photos */
@@ -578,17 +613,16 @@ class HomeController extends Controller
             }
             /*Update photo booth data */
             $photo = PhotoBooth::find($request->pid);
-            if ($file = $request->file('image')) {
+            if ($files = $request->file('image')) {
                 /*Save Multiple photo */
                 foreach ($files as $j => $file) {
                     $destination = public_path('upload/photo-booth');
-                    $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
-                    $file->move($destination, $name);
-                    $photo->audio_file = $name;
+                    $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move($destination, $name_file);
                     $Attributes = PhotoBoothMedia::create([
                         'booth_id' => $request->pid,/* Photobooth ID */
                         'media_type' => 'Image',/* media_type:Image/Video */
-                        'media' => $name,
+                        'media' => $name_file,
                         'status' => 1,
                     ]);
                 }
@@ -598,12 +632,11 @@ class HomeController extends Controller
                 foreach ($files as $j => $file) {
                     $destination_file = public_path('upload/video-booth');
                     $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
-                    $files->move($destination_file, $name_file);
-                    $photo->thumbnail_file = $name_file;
+                    $file->move($destination_file, $name_file);
                     $Attributes = PhotoBoothMedia::create([
                         'booth_id' => $request->pid,/* Photo booth ID */
                         'media_type' => 'video',/* media_type:Image/Video */
-                        'media' => $name,
+                        'media' => $name_file,
                         'status' => 1,
                     ]);
                 }
@@ -627,7 +660,9 @@ class HomeController extends Controller
         $id = encrypt_decrypt('decrypt', $id);
         $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
         $data = PhotoBooth::where('id', $id)->first();
-        return view('admin.add-edit-photo-booth', compact('data', 'tours'));
+        $images = PhotoBoothMedia::where('media_type','Image')->where('booth_id', $id)->get();/*Get all Images od Photo Booth*/ 
+        $videos = PhotoBoothMedia::where('media_type','Video')->where('booth_id', $id)->get();/*Get all videoes od Photo Booth*/ 
+        return view('admin.add-edit-photo-booth', compact('data', 'tours','images','videos'));
     }
     
     /*Delete Photo Booth*/
@@ -636,6 +671,49 @@ class HomeController extends Controller
         try {
             $data = PhotoBooth::where('id', $request->photo_booth_id)->update(['status' => 3]);/*0:Active, 1:Active, 3:Delete*/
             return redirect()->back()->with('success', 'Photo booth deleted successfully');
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
+    }
+    
+    /*Delete image/video of Photo Booth*/
+    public function DeletePhotoBoothImage($id)
+    {
+        try {
+            // Decrypt the Photo Booth ID using the encrypt_decrypt function
+            $id = encrypt_decrypt('decrypt', $id);
+            $media = PhotoBoothMedia::where('id', $id)->first();/*Get first data of media  Photo booth*/
+            if($media->media_type == 'Image')
+            {
+                $image_count = PhotoBoothMedia::where('media_type','Image')->where('booth_id', $media->booth_id)->count();
+                if($image_count >1)
+                {
+                    if (file_exists(public_path('upload/photo-booth/'.$media->media))) {
+                        unlink(public_path('upload/photo-booth/'.$media->media));/*Delete Photo booth image from file*/
+                    }
+                    $data = PhotoBoothMedia::where('id', $id)->delete();/*Delete Photo booth images or videos*/
+                    $message = 'Photo booth image deleted successfully';//sesions mesages
+                    $type = 'success';//sesions type
+                }else{
+                    $message = 'Unable to delete last image';//sesions mesages
+                    $type = 'error';//sesions type
+                }
+            }else{
+                $video_count = PhotoBoothMedia::where('media_type','Video')->where('booth_id', $media->booth_id)->count();
+                if($video_count >1)
+                {
+                    if (file_exists(public_path('upload/video-booth/'.$media->media))) {
+                        unlink(public_path('upload/video-booth/'.$media->media));/*Delete Photo booth image from file*/
+                    }
+                    $message = 'Photo booth video deleted successfully';//sesions mesages
+                    $type = 'success';//sesions type 
+                    $data = PhotoBoothMedia::where('id', $id)->delete();/*Delete Photo booth images or videos*/
+                }else{
+                    $message = 'Unable to delete last video';//sesions mesages
+                    $type = 'error';//sesions type
+                }
+            }
+            return redirect()->back()->with($type, $message);
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }

@@ -172,6 +172,25 @@
                             @error('thumbnail')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
+                            <div class="uploaded-section">
+                                <div class="row">
+                                    @foreach ($images as $val)
+                                        <div class="col-md-4">
+                                            <div class="uploaded-media-card">
+                                                <div class="uploaded-media">
+                                                    <img
+                                                        src="{{ assets('upload/tour-thumbnail/' . $val->attribute_name) }}">
+                                                </div>
+                                                <div class="uploaded-action">
+                                                    <a
+                                                        href="{{ url('delete-tour-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                            class="las la-trash"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-md-12">
