@@ -53,9 +53,7 @@ Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 
 
 
 
-Route::get('taxi_booking_request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
-
-Route::get('/taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
+Route::get('taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
 Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
 Route::get('/load-sectors', [App\Http\Controllers\HomeController::class,'loadSectors'])->name('load-sectors');
@@ -63,3 +61,5 @@ Route::get('/profile', [App\Http\Controllers\HomeController::class,'profile'])->
 Route::post('/update-password', [App\Http\Controllers\HomeController::class,'UpdatePassword'])->name('UpdatePassword');
 Route::post('/update-profile', [App\Http\Controllers\HomeController::class,'UpdateProfile'])->name('UpdateProfile');
 Route::get('/tour-detail/{id}', [App\Http\Controllers\HomeController::class,'TourDetails'])->name('TourDetails');
+Route::get('/delete-booth-video-image/{id}', [App\Http\Controllers\HomeController::class,'DeletePhotoBoothImage'])->name('DeletePhotoBoothImage');
+Route::get('/delete-tour-image/{id}', [App\Http\Controllers\HomeController::class,'DeleteTourImage'])->name('DeleteTourImage');

@@ -16,6 +16,9 @@ use App\Models\CallbackRequest;
 use App\Models\TourBooking;
 use App\Models\VirtualTour;
 use App\Models\TaxiBooking;
+use App\Models\PhotoBooth;
+use App\Models\PhotoBoothMedia;
+
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -71,7 +74,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'fullname' => 'required|string|max:255',
                 'email' => 'required|email|unique:users',
-                'mobile' => 'required|digits:10|numeric|unique:users',
+                'mobile' => 'required|unique:users',
                 'password' => 'required|min:8',
                 'c_password' => 'required|min:8|same:password',
             ]);
@@ -621,7 +624,7 @@ class UserController extends Controller
                 foreach ($bookings as $key => $value) {
                     $temp['id'] = $value->id;
                     $temp['booking_id'] = $value->booking_id;
-                    $temp['booking_time'] = $value->booking_time;
+                    $temp['booking_time'] = date('d M, Y - g:i A', strtotime($value->booking_time));
                     $temp['user_id'] = $value->user_id;
                     $temp['pickup_location'] = $value->pickup_location;
                     $temp['pickup_lat_long'] = $value->pickup_lat_long;
@@ -632,7 +635,7 @@ class UserController extends Controller
                     $temp['book_taxicol'] = $value->book_taxicol;
                     $temp['distance'] = $value->distance;
                     $temp['status'] = $value->status;
-                    $temp['created_at'] = $value->created_at;
+                    $temp['created_at'] = date('d M, Y - g:i A', strtotime($value->created_at));
                     $temp['TimeAgo'] = $value->created_at->diffForHumans();/*Calculate time ago*/
                     $response[] = $temp;
                 }
@@ -648,4 +651,83 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+    
+    /*Showing all Photo booth listing */
+    public function PhotoBoothListing() 
+    {
+        try {
+            $photos = PhotoBooth::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
+            if(count($photos) > 0){
+                $response = array();/*Store data an array */
+                foreach ($photos as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['tour_id'] = $value->tour_id;
+                    $tour = Tour::where('id',$value->tour_id)->first();
+                    $temp['tour_name'] = $tour->name;/*Tour Name*/
+                    $temp['title'] = $value->title;/*Photo Booth Title*/
+                    $temp['price'] = $value->price;/*Photo Booth Price*/
+                    $temp['description'] = $value->description;
+                    $temp['cancellation_policy'] = $value->cancellation_policy;
+                    $image = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->first();
+                    $temp['image'] = $image->media;/*Image file of Photo Booth */
+                    $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
+                    $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
+                    $temp['purchase_image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
+                    $temp['purchase_video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Photo booth listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Photo booth Details  */
+    public function PhotoBoothDetails(Request $request) 
+    {
+        try {
+            //Photo booth detail accoding to booth id
+            $value = PhotoBooth::where('id',$request->id)->first();
+            if(!empty($value)){
+                $tourImage = array();
+                $temp['id'] = $value->id;
+                $temp['tour_id'] = $value->tour_id;
+                $tour = Tour::where('id',$value->tour_id)->first();
+                $temp['tour_name'] = $tour->name;/*Tour Name*/
+                $temp['title'] = $value->title;/*Photo Booth Title*/
+                $temp['price'] = $value->price;/*Photo Booth Price*/
+                $temp['description'] = $value->description;
+                $temp['cancellation_policy'] = $value->cancellation_policy;
+                $temp['uploaded_date'] = date('d M, Y - g:i A', strtotime($value->created_at));
+                $images = PhotoBoothMedia::where('booth_id',$value->id)->get();/*Find all images and video accoding to photo booth id */
+                foreach ($images as $key => $val) {
+                    if($val->media_type == 'Image'){
+                        $tourImage[] = asset('public/upload/photo-booth/'.$val->media);/*Images save in array */
+                    }else{
+                        $tourImage[] = asset('public/upload/video-booth/'.$val->media);/*Video save in array */
+                    }
+                }
+                $temp['all_image_video'] = $tourImage;/*Image video listing of photo booth in array */
+                $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();/*Count of all images photo booth  */
+                $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();/*Count of all videos photo booth  */
+            }else{
+                $temp = '';
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Photo Booth Detail';
+            $data['data'] = $temp;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
 }

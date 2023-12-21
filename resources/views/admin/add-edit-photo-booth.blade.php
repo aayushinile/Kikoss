@@ -26,8 +26,8 @@
                                     <option value="">Select Tour</option>
                                     @if (!$tours->isEmpty())
                                         @foreach ($tours as $tour)
-                                            <option
-                                                value="{{ $tour->id }}" @if ($data ? $tour->id == $data->tour_id) selected='selected' @else @endif>
+                                            <option value="{{ $tour->id }}"
+                                                @if ($data ? $tour->id == $data->tour_id : '') selected='selected' @else @endif>
                                                 {{ $tour->name }}</option>
                                         @endforeach
                                     @endif
@@ -76,13 +76,17 @@
                                     <div class="col-md-8">
                                         <ul class="tag-area">
                                             <?php
-                                            $users = explode(',', $data->users_id);
+                                            if (!empty($data)) {
+                                                $users = explode(',', $data->users_id);
+                                            }
                                             
                                             ?>
-                                            @foreach ($users as $item)
-                                                <li class="tag">{{ UserNameBooth($item) }}<span class="cross"
-                                                        data-index="0"></span></li>
-                                            @endforeach
+                                            @if (!empty($data))
+                                                @foreach ($users as $item)
+                                                    <li class="tag">{{ UserNameBooth($item) }}<span class="cross"
+                                                            data-index="0"></span></li>
+                                                @endforeach
+                                            @endif
 
                                         </ul>
                                     </div>
@@ -120,21 +124,61 @@
                             <div class="form-group">
                                 <h4>Browse & Upload Photos</h4>
                                 <input type="file" class="file-form-control" name="image[]" accept=".png, .jpg, .jpeg"
-                                    multiple>
+                                    multiple @if (empty($data)) required @endif>
                             </div>
                             @error('image')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
+                            <div class="uploaded-section">
+                                <div class="row">
+                                    @foreach ($images as $val)
+                                        <div class="col-md-4">
+                                            <div class="uploaded-media-card">
+                                                <div class="uploaded-media">
+                                                    <img src="{{ assets('upload/photo-booth/' . $val->media) }}">
+                                                </div>
+                                                <div class="uploaded-action">
+                                                    <a
+                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                            class="las la-trash"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
                                 <h4>Browse & Upload Videos</h4>
-                                <input type="file" class="file-form-control" name="video[]" accept=".mp4" multiple>
+                                <input type="file" class="file-form-control" name="video[]" accept=".mp4"
+                                    @if (empty($data)) required @endif multiple>
                             </div>
                             @error('video')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
+                            <div class="uploaded-section">
+                                <div class="row">
+                                    @foreach ($videos as $value)
+                                        <div class="col-md-4">
+                                            <div class="uploaded-media-card">
+                                                <div class="uploaded-media">
+                                                    <video controls width="100%" height="110px">
+                                                        <source src="{{ assets('upload/video-booth/' . $value->media) }}"
+                                                            type="video/mp4" />
+                                                    </video>
+                                                </div>
+                                                <div class="uploaded-action">
+                                                    <a
+                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $value->id)) }}"><i
+                                                            class="las la-trash"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-md-12">
@@ -157,7 +201,7 @@
             $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
         });
         $('.livesearch').select2({
-            placeholder: 'Select tags',
+            placeholder: 'Select Users',
             ajax: {
                 url: "{{ route('load-sectors') }}",
                 dataType: 'json',

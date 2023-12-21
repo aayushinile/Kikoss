@@ -19,7 +19,7 @@ return new class extends Migration
             $table->tinyInteger('mailverified')->nullable();
             $table->string('mobile',255)->nullable();
             $table->string('password',255)->nullable();
-            $table->string('status',10)->nullable();
+            $table->string('status',10)->nullable()->default(1);
             $table->integer('type')->default(2)->comment('1:Admin,2:User');
             $table->timestamps();
         });

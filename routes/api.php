@@ -31,4 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('booking-tour', [UserController::class, 'bookingTour']);
     Route::post('booking-taxi', [UserController::class, 'bookingTaxi']);
     Route::get('taxi-booking-list', [UserController::class, 'TaxiBookingListing']);
+    Route::get('photo-booth-listing', [UserController::class, 'PhotoBoothListing']);
+    Route::post('photo-booth-details', [UserController::class, 'PhotoBoothDetails']);
+    Route::post('purchased-photo-booth-listing', [UserController::class, 'PurchasedPhotoBoothListing']);
 });
