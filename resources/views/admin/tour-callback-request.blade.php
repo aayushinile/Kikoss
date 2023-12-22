@@ -7,7 +7,7 @@
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
-        <h4>Manage Booking</h4>
+        <h4>Tour Callback Request</h4>
     </div>
     <div class="body-main-content">
 
@@ -19,7 +19,7 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <div class="mr-auto">
-                                    <h4 class="heading-title">Tour Inquiry Requests</h4>
+                                    <h4 class="heading-title">Tour Callback Requests</h4>
                                 </div>
                                 <div class="btn-option-info wd8">
                                     <div class="search-filter">
@@ -28,7 +28,8 @@
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <div class="search-form-group">
-                                                        <input type="text" name="" class="form-control"
+                                                        <input type="text" name="Search" id="search"
+                                                            class="form-control"
                                                             placeholder="Search User name, Amount & Status">
                                                         <span class="search-icon"><img
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
@@ -93,7 +94,8 @@
                                                     <td>{{ $val->name }}</td>
                                                     <td>{{ $val->TourName->name }}</td>
                                                     <td>{{ $val->TourName->duration }} Hours</td>
-                                                    <td>{{ $val->preferred_time }}</td>
+                                                    <td>{{ date('d M, Y, h:i:s a', strtotime($val->preferred_time)) }}
+                                                    </td>
                                                     <td>{{ $val->note }}</td>
                                                 </tr>
                                                 <?php $s_no++; ?>
@@ -112,4 +114,38 @@
         </div>
 
     </div>
+    {{-- Live Search of callback request --}}
+    <script>
+        $(document).ready(function() {
+
+            //fetch_customer_data();
+            function fetch_customer_data(query = '') {
+                let _token = $("input[name='_token']").val();
+
+                $.ajax({
+                    url: '{{ url('live_callbacks') }}',
+                    method: 'GET',
+                    data: {
+                        query: query,
+                        _token: _token,
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                        $('tbody').html(
+                            data);
+                    }
+                });
+            }
+
+            $(document).on('keyup', '#search', function() {
+
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+    </script>
 @endsection

@@ -61,6 +61,32 @@
                             </div>
                         </div>
 
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <h4>Time Duration</h4>
+                                <div class="People-form-group">
+                                    <input type="number" class="form-control" name="duration"
+                                        value="{{ $data ? $data->duration : old('duration') }}"placeholder="0">
+
+                                </div>
+                                @error('duration')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <h4>Short Description</h4>
+                                <textarea type="text" class="form-control" rows="5" cols="60" name="short_description"
+                                    placeholder="Short Description…">{{ $data ? $data->short_description : old('short_description') }}</textarea>
+                            </div>
+                            @error('short_description')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">

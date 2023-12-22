@@ -22,9 +22,11 @@ return new class extends Migration
             $table->float('age_11_price')->nullable();
             $table->float('age_60_price')->nullable();
             $table->float('under_10_age_price')->nullable();
+            $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->text('cancellation_policy')->nullable();
             $table->string('thumbnail',255)->nullable();
+            $table->string('what_to_bring',255)->nullable();
             $table->string('status',45)->nullable()->default(1);
             $table->timestamps();
         });

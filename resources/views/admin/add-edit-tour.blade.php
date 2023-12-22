@@ -110,6 +110,17 @@
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <h4>What To Bring</h4>
+                                        <input type="text" class="form-control txtDate" name="what_to_bring"
+                                            placeholder="What To Bring"
+                                            value="{{ $data ? $data->what_to_bring : old('what_to_bring') }}">
+                                    </div>
+                                    @error('duration')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 {{-- <div class="col-md-4">
                                     <div class="form-group">
                                         <h4>Start Date</h4>
@@ -141,6 +152,16 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <h4>Short Description</h4>
+                                <textarea type="text" rows="7" cols="80" class="form-control" name="short_description"
+                                    placeholder="Short Description…">{{ $data ? $data->short_description : old('short_description') }}</textarea>
+                            </div>
+                            @error('short description')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -152,6 +173,8 @@
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
+
+
 
                         <div class="col-md-12">
                             <div class="form-group">

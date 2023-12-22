@@ -32,7 +32,7 @@ Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'Update
 Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::get('/manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
-Route::get('/tour-inquiry-request', [App\Http\Controllers\HomeController::class, 'InquiryRequest'])->name('InquiryRequest');
+Route::get('/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
@@ -65,3 +65,4 @@ Route::get('/delete-booth-video-image/{id}', [App\Http\Controllers\HomeControlle
 Route::get('/delete-tour-image/{id}', [App\Http\Controllers\HomeController::class,'DeleteTourImage'])->name('DeleteTourImage');
 Route::get('/live_tours', [App\Http\Controllers\HomeController::class, 'live_tours'])->name('live_tours');
 Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_users'])->name('live_users');
+Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');

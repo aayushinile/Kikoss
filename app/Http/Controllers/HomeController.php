@@ -174,9 +174,11 @@ class HomeController extends Controller
                 'name' => 'required|string|max:255|min:1',
                 'total_people' => 'required',
                 'duration' => 'required',
+                'what_to_bring' => 'required',
                 'age_11_price' => 'required',
                 'age_60_price' => 'required',
                 'under_10_age_price' => 'required',
+                'short_description' => 'required|string|min:3|max:1000',
                 'description' => 'required|string|min:3|max:1000',
                 'cancellation_policy' => 'required|min:3|max:1000',
             ]);
@@ -189,10 +191,12 @@ class HomeController extends Controller
                 'name' => $request->name,
                 'total_people' => $request->total_people,
                 'duration' => $request->duration,
+                'what_to_bring' => $request->what_to_bring,
                 'age_11_price' => $request->age_11_price,
                 'age_60_price' => $request->age_60_price,
                 'under_10_age_price' => $request->under_10_age_price,
                 'description' => $request->description,
+                'short_description' => $request->short_description,
                 'cancellation_policy' => $request->cancellation_policy,
                 'status' => 1,
             ]);
@@ -223,10 +227,12 @@ class HomeController extends Controller
                 'name' => 'required|string|max:255|min:1',
                 'total_people' => 'required',
                 'duration' => 'required',
+                'what_to_bring' => 'required',
                 'age_11_price' => 'required',
                 'age_60_price' => 'required',
                 'under_10_age_price' => 'required',
                 'description' => 'required|string|min:3|max:1000',
+                'short_description' => 'required|string|min:3|max:1000',
                 'cancellation_policy' => 'required|min:3|max:1000',
             ]);
 
@@ -240,9 +246,11 @@ class HomeController extends Controller
             $tour->name = $request->name;
             $tour->total_people = $request->total_people;
             $tour->duration = $request->duration;
+            $tour->what_to_bring = $request->what_to_bring;
             $tour->age_11_price = $request->age_11_price;
             $tour->age_60_price = $request->age_60_price;
             $tour->under_10_age_price = $request->under_10_age_price;
+            $tour->short_description = $request->short_description;
             $tour->description = $request->description;
             $tour->cancellation_policy = $request->cancellation_policy;
             if ($files = $request->file('thumbnail')) {
@@ -297,7 +305,9 @@ class HomeController extends Controller
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required',
                 'minute' => 'required',
+                'duration' => 'required',
                 'description' => 'required',
+                'short_description' => 'required',
                 'cencellation_policy' => 'required',
                 'audio' => 'required|max:5120',
                 'thumbnail' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -323,7 +333,9 @@ class HomeController extends Controller
             $Tour->name = $request->name;
             $Tour->price = $request->price;
             $Tour->minute = $request->minute;
+            $Tour->duration = $request->duration;
             $Tour->description = $request->description;
+            $Tour->short_description = $request->short_description;
             $Tour->cencellation_policy = $request->cencellation_policy;
             $Tour->status = 1;
             $Tour->save();
@@ -343,7 +355,9 @@ class HomeController extends Controller
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required',
                 'minute' => 'required',
+                'duration' => 'required',
                 'description' => 'required',
+                'short_description' => 'required',
                 'cencellation_policy' => 'required',
                 'audio' => 'max:5120',
                 'thumbnail' => 'image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -376,7 +390,9 @@ class HomeController extends Controller
             $Tour->name = $request->name;
             $Tour->price = $request->price;
             $Tour->minute = $request->minute;
+            $Tour->duration = $request->duration;
             $Tour->description = $request->description;
+            $Tour->short_description = $request->short_description;
             $Tour->cencellation_policy = $request->cencellation_policy;
             $Tour->save();
             return redirect('manage-virtual-tour')->with('success', 'Virtual Tour Updated successfully');
@@ -418,11 +434,11 @@ class HomeController extends Controller
     }
 
     /*Callback request listing */
-    public function InquiryRequest()
+    public function CallbackRequest()
     {
         try {
             $datas = CallbackRequest::where('status', 1)->orderBy('id', 'DESC')->paginate(10);
-            return view('admin.tour-inquiry-request', compact('datas'));
+            return view('admin.tour-callback-request', compact('datas'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -919,6 +935,44 @@ class HomeController extends Controller
                     </div>
                 </td>
             </tr>';
+           }
+        }else{
+            $table_data = '<tr>
+                <td colspan="10">
+                    <h5 style="text-align: center">No Record Found</h5>
+                </td>
+            </tr>';
+        }
+        echo json_encode($table_data);
+    }
+    
+    //Live Search of Callback listing
+    public function live_callbacks(Request $request)
+    {
+        $query = $request['query'];
+
+        $datas = CallbackRequest::where('name','like','%' .$query. '%')
+                    ->orderBy('id','DESC')
+                    ->limit(20)
+                    ->get();
+        $i=1;
+        $table_data = '';
+        if($datas->count() > 0)
+        {
+            foreach ($datas as $val) 
+            {                
+                $table_data .= '
+                <tr>
+                    <td>
+                        <div class="sno">'. $i++ .'</div>
+                    </td>
+                    <td>'. $val->name .'</td>
+                    <td>'. $val->TourName->name .'</td>
+                    <td>'. $val->TourName->duration .' Hours</td>
+                    <td>'.date('d M, Y, h:i:s a', strtotime($val->preferred_time)) .'
+                    </td>
+                    <td>'. $val->note .'</td>
+                </tr>';
            }
         }else{
             $table_data = '<tr>

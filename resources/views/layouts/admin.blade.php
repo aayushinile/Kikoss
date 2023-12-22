@@ -215,8 +215,8 @@
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'InquiryRequest') active @endif">
-                            <a class="nav-link" href="{{ url('tour-inquiry-request') }}">
+                        <li class="nav-item @if ($currentURL == 'CallbackRequest') active @endif">
+                            <a class="nav-link" href="{{ url('tour-callback-request') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">

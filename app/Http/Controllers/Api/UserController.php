@@ -113,7 +113,7 @@ class UserController extends Controller
             $success['email'] = $user->email;
             $success['mobile'] = ($user->mobile) ?? '';
             $success['status'] = $user->status;
-            $success['profile'] = '';
+            $success['profile'] = $user->user_profile ? asset('public/upload/profile/'.$user->user_profile) : '';;
             $success['confirmed_tour'] = 02;
             $success['virtual_audio_purchased'] = 06;
             $success['total_purchased_video'] = 40;
@@ -132,7 +132,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all() , [
                 'fullname' => 'required|string|max:255',
                 'email' =>   ['required','email',Rule::unique('users')->ignore($user->id)],
-                'mobile' => ['required','digits:10','numeric',Rule::unique('users')->ignore($user->id)],
+                'mobile' => ['required',Rule::unique('users')->ignore($user->id)],
                 'image' => 'image|mimes:jpeg,png,jpg|max:2048',
             ]);
             if ($validator->fails())
@@ -140,14 +140,16 @@ class UserController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()],404);
             }
             
-            if(isset($request->image))
-            {
-                $newImage = imageUpload('upload/profile/',$request->image);
-                if(!empty($request->image))
-                {
-                    $user->user_profile = $newImage;
+            if ($file = $request->file('image')) {
+                if (file_exists(public_path('upload/profile/'.$user->user_profile))) {
+                    unlink(public_path('upload/profile/'.$user->user_profile));/*Delete Photo booth image from file*/
                 }
+                $destination = public_path('upload/profile');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $user->user_profile = $name;
             }
+            
             $user->fullname = $request->fullname;
             $user->mobile = $request->mobile;
             $user->email = $request->email;
@@ -160,7 +162,7 @@ class UserController extends Controller
                 $success['email'] = $user->email;
                 $success['mobile'] = ($user->mobile) ?? '';
                 $success['status'] = $user->status;
-                $success['user_profile'] = ($user->user_profile) ?? '';
+                $success['user_profile'] = $user->user_profile ? asset('public/upload/profile/'.$user->user_profile) : '';
                 $data['status'] =true;
                 $data['message'] = 'Profile Details Update Successfully';
                 $data['data'] = $success;
@@ -212,24 +214,25 @@ class UserController extends Controller
         }
     }
     
+    /*Showing tour data with or without login */
     public function tour_detail(Request $request) 
     {
         try {
-            $tour = Tour::where('id',$request->tour_id)->first();
+            $tour = Tour::where('id',$request->tour_id)->first();/*Get tour data accoding to id */
             if(!empty($tour)){
                 $tourImage = array();
                 $temp['id'] = $tour->id;
                 $temp['title'] = $tour->title;
                 $temp['name'] = $tour->name;
-                $temp['age_11_price'] = $tour->age_11_price;
-                $temp['age_60_price'] = $tour->age_60_price;
-                $temp['under_10_age_price'] = $tour->under_10_age_price;
-                $temp['duration'] = $tour->duration;
-                $temp['total_people_occupancy'] = $tour->total_people;
+                $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
+                $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
+                $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
+                $temp['duration'] = $tour->duration;/* Tour Time */
+                $temp['total_people_occupancy'] = $tour->total_people;/* Total person booked for tour */
                 $temp['description'] = $tour->description;
                 $temp['cancellation_policy'] = $tour->cancellation_policy;
-                $temp['short_description'] = 'Scenic, private tour around the beautiful island of Oahu!';
-                $temp['what_to_bring'] = 'Do not forget your sunscreen or camera!';
+                $temp['short_description'] = $tour->short_description;
+                $temp['what_to_bring'] = $tour->what_to_bring;
                 $images = TourAttribute::where('tour_id',$tour->id)->get();
                 foreach ($images as $key => $val) {
                     $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
@@ -538,10 +541,15 @@ class UserController extends Controller
                 $tourImage = array();
                 $temp['id'] = $tour->id;
                 $temp['minute'] = $tour->minute;
+                $temp['duration'] = $tour->duration ?? '';
                 $temp['name'] = $tour->name;
-                $temp['price'] = $tour->name;
+                $temp['price'] = $tour->price;
                 $temp['description'] = $tour->description;
-                $temp['cancellation_policy'] = $tour->cancellation_policy;
+                $temp['short_description'] = $tour->short_description?? '';
+                $temp['cancellation_policy'] = $tour->cancellation_policy ?? '';
+                $temp['uploaded_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
+                $temp['purchase_user_count'] = 2.1.'M';
+                $temp['purchase_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
                 $temp['audio'] = asset('public/upload/virtual-audio/'.$tour->audio_file);/*Audio file of virtual tour*/
                 $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/'.$tour->thumbnail_file);/*Thumbnail file of virtual tour*/
             }else{
@@ -561,6 +569,8 @@ class UserController extends Controller
     public function bookingTaxi(Request $request) 
     {
         try {
+            
+            //Validation for Taxi booking
             $validator = Validator::make($request->all(), [
                 'booking_date_time' => 'required',
                 'fullname' => 'required|string|max:255',
@@ -576,14 +586,15 @@ class UserController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()],404);
             }
             $user_id = Auth::user()->id;
-            $booking_id = rand(10000000,99999999);/*Generate random booking  ID*/
             /*Create taxi booking with booking id*/
-            $distance = getDistanceFromLatLonInKm($value->lat, $value->long, $request->lat, $request->long);
+            $booking_id = rand(10000000,99999999);/*Generate random booking  ID*/
+            
+            /*Calculate Distance in KM*/
+            $pick_lat_lng = explode(',', $request->pickup_lat_long, 2);/*Expload the data */
+            $drop_lat_long = explode(',', $request->drop_lat_long, 2);/*Expload the data */
+            $distance = getDistanceFromLatLonInKm($pick_lat_lng[0], $pick_lat_lng[1], $drop_lat_long[0], $drop_lat_long[1]);
             $Distance = number_format((float)$distance, 2, '.', '') . " Km"; 
             $distance_int = round((int)$distance);
-            
-            $pickup_lat_long = $pickup_lat.','.$pickup_long;
-            $drop_lat_long = $drop_lat.','.$drop_long;
             
             
             $bookingID = TaxiBooking::insertGetId([
@@ -597,7 +608,7 @@ class UserController extends Controller
                 'drop_lat_long' => $request->drop_lat_long,
                 'mobile' => $request->mobile,
                 'hotel_name' => $request->hotel_name,
-                'distance' => 10,
+                'distance' => $distance_int,
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
             ]);
