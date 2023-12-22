@@ -228,6 +228,8 @@ class UserController extends Controller
                 $temp['total_people_occupancy'] = $tour->total_people;
                 $temp['description'] = $tour->description;
                 $temp['cancellation_policy'] = $tour->cancellation_policy;
+                $temp['short_description'] = 'Scenic, private tour around the beautiful island of Oahu!';
+                $temp['what_to_bring'] = 'Do not forget your sunscreen or camera!';
                 $images = TourAttribute::where('tour_id',$tour->id)->get();
                 foreach ($images as $key => $val) {
                     $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
@@ -416,7 +418,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all() , [
                 'tour_id' => 'required|integer',
                 'name' => 'required|string|max:255|min:1',
-                'mobile' => 'required|numeric|min:10',
+                'mobile' => 'required',
                 'timezone' => 'required',
                 'preferred_time' => 'required',/*Date and Time*/
                 'note' => 'required|min:3|max:1000',

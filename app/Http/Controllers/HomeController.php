@@ -13,6 +13,7 @@ use App\Models\CallbackRequest;
 use App\Models\VirtualTour;
 use App\Models\PhotoBooth;
 use App\Models\PhotoBoothMedia;
+use App\Models\TaxiBooking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -100,7 +101,8 @@ class HomeController extends Controller
         $total_amount = DB::table("payment_details")->whereIn("user_payment_method_id", $user_payment_methods)->where("status", 1)->sum("amount");
 
         // Pass data to the 'admin.user-detail' view
-        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount'));
+        $taxi_booking_requests = TaxiBooking::orderBy('id', 'DESC')->paginate(10);//Get all request taxi booking
+        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount','taxi_booking_requests'));
     }
 
     public function AddTour()
@@ -332,9 +334,11 @@ class HomeController extends Controller
         }
     }
 
+    //Udpate virtual tour
     public function UpdateVirtualTour(Request $request)
     {
         try {
+            //Validation of virtual tour
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required',
@@ -351,12 +355,18 @@ class HomeController extends Controller
 
             $Tour = VirtualTour::find($request->pid);
             if ($file = $request->file('audio')) {
+                if (file_exists(public_path('upload/virtual-audio/'.$Tour->audio_file))) {
+                    unlink(public_path('upload/virtual-audio/'.$Tour->audio_file));/*Delete audio file of virtual tour */
+                }
                 $destination = public_path('upload/virtual-audio');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
                 $Tour->audio_file = $name;
             }
             if ($files = $request->file('thumbnail')) {
+                if (file_exists(public_path('upload/virtual-thumbnail/'.$Tour->thumbnail_file))) {
+                    unlink(public_path('upload/virtual-thumbnail/'.$Tour->thumbnail_file));/*Delete thumbnail file of virtual tour */
+                }
                 $destination_file = public_path('upload/virtual-thumbnail');
                 $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $files->extension();
                 $files->move($destination_file, $name_file);
@@ -480,9 +490,8 @@ class HomeController extends Controller
     public function TaxiBookingRequest()
     {
         try {
-            $tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.taxi-booking-request', compact('tours', 'bookings'));
+            $bookings = TaxiBooking::orderBy('id', 'DESC')->paginate(10);//Get all request taxi booking
+            return view('admin.taxi-booking-request', compact('bookings'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -815,5 +824,110 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
+
+    //Live Search of tours
+    public function live_tours(Request $request)
+    {
+        $query = $request['query'];
+
+        $datas = Tour::where('title','like','%' .$query. '%')
+                    ->orderBy('id','DESC')
+                    ->limit(50)
+                    ->get();
+        $i=1;
+        $table_data = '';
+        if($datas->count() > 0)
+        {
+            foreach ($datas as $val) 
+            {                
+                $table_data .= '
+                    <div class="col-md-4">
+                        <div class="manage-tour-card">
+                            <div class="manage-tour-card-media">
+                                <img src="'. assets('assets/admin-images/IMG_9838.jpg') .'">
+                            </div>
+                            <div class="manage-tour-card-content">
+                                <div class="manage-tour-card-text">
+                                    <h3>'.$val->title ?? ''.'}</h3>
+                                    <p>'.$val->name ?? '' .' • '. $val->duration .' Hours</p>
+                                    <div class="price-text">US${{ $val->under_10_age_price }} –
+                                        US$'. $val->age_11_price .'</div>
+                                    </div>
+                                    <div class="manage-tour-card-action">
+                                        <a href="' .url('tour-detail/' . encrypt_decrypt('encrypt', $val->id)) . '">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>';
+           }
+        }else{
+            $table_data = '<tr>
+                <td colspan="10">
+                    <h5 style="text-align: center">No Record Found</h5>
+                </td>
+            </tr>';
+        }
+        echo json_encode($table_data);
+    }
     
+    //Live Search of users
+    public function live_users(Request $request)
+    {
+        $query = $request['query'];
+
+        $datas = User::where('fullname','like','%' .$query. '%')
+                    ->where('type','!=',1)
+                    ->orderBy('id','DESC')
+                    ->limit(50)
+                    ->get();
+        $i=1;
+        $table_data = '';
+        if($datas->count() > 0)
+        {
+            foreach ($datas as $val) 
+            {                
+                $table_data .= '
+                <tr>
+                    <td>
+                       '. $i++ .'
+                    </td>
+                    <td>
+                        '. $val->fullname  .'
+                    </td>
+
+                    <td>
+                        '. $val->email  .'
+                    </td>
+                    <td>
+                        '. $val->mobile  .'
+                    </td>
+                    <td>
+                        '. date('d M, Y, h:i:s a', strtotime($val->created_at)) .'
+                    </td>
+                <td>
+                    <div class="action-btn-info">
+                        <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="las la-ellipsis-v"></i>
+                        </a>
+                        <div class="dropdown-menu">
+                           
+                            <a class="dropdown-item view-btn"
+                                href="'. url('user-details/' . encrypt_decrypt('encrypt', $val->id)) .'"><i
+                                    class="las la-eye"></i> View</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>';
+           }
+        }else{
+            $table_data = '<tr>
+                <td colspan="10">
+                    <h5 style="text-align: center">No Record Found</h5>
+                </td>
+            </tr>';
+        }
+        echo json_encode($table_data);
+    }
+
 }

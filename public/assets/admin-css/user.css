@@ -7,12 +7,12 @@
 h4.heading-title {font-size: 16px;font-weight: 600;margin: 0;padding: 0;color: #27282a;}
 .btn-option-info{margin-left: auto;}
 
-
 .search-filter .search-form-group{position: relative;}
-.search-filter .search-form-group input.form-control {position: relative;box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);background:#fff;color: #6c7383;border-radius: 5px;font-weight: 400;font-size: 12px;box-sizing: border-box;padding: 10px 15px 10px 40px;border: none;width: 100%;}
-.search-filter .search-form-group span.search-icon {position: absolute;top: 50%;left: 10px;pointer-events: none;transform: translateY(-50%) scaleX(-1);color: #6362e7;font-size: 18px;}
+.search-filter .form-group input.form-control {position: relative;box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);background:#fff;color: #6c7383;border-radius: 5px;font-weight: 400;font-size: 12px;box-sizing: border-box;padding: 10px 15px 10px 40px;border:  1px solid var(--gray);width: 100%;}
 .search-filter .form-group input.form-control {position: relative;box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);background:#fff;color: var(--black);border-radius: 5px;font-weight: 400;font-size: 12px;box-sizing: border-box;padding: 10px 15px 10px 15px;border: 1px solid var(--gray);width: 100%;}
-.search-filter .form-group select.form-control {appearance: revert;position: relative;box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);background:#fff;color: #6c7383;border-radius: 5px;font-weight: 400;font-size: 12px;box-sizing: border-box;padding: 10px 15px 10px 15px;border: none;width: 100%;}
+.search-filter .form-group select.form-control {appearance: revert;position: relative;box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);background:#fff;color: #6c7383;border-radius: 5px;font-weight: 400;font-size: 12px;box-sizing: border-box;padding: 11px 15px 11px 15px;border:  1px solid var(--gray);width: 100%;}
+.search-filter .search-form-group span.search-icon {position: absolute;top: 50%;left: 10px;pointer-events: none;transform: translateY(-50%) scaleX(-1);color: #6362e7;font-size: 18px;}
+.search-filter .search-form-group input.form-control{padding: 10px 15px 10px 40px}
 
 
 

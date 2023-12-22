@@ -6,7 +6,7 @@
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
 @section('content') <div class="page-breadcrumb-title-section">
-        <h4>Add Photo Booth</h4>
+        <h4>{{ $data ? 'Edit' : 'Add' }} Photo Booth</h4>
     </div>
     <div class="body-main-content">
         <div class="addVirtualtour-section">

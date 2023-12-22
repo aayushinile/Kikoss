@@ -8,6 +8,19 @@
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>User Management</h4>
+        <div class="search-filter wd4">
+            <div class="row g-1">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="search-form-group">
+                            <input type="text" name="Search" id="search" class="form-control"
+                                placeholder="Search by Name">
+                            <span class="search-icon"><img src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="body-main-content">
         <div class="booking-availability-section">
@@ -23,6 +36,7 @@
                                             <th>Name</th>
                                             <th>Email ID</th>
                                             <th>Contact number</th>
+                                            <th>Created Date</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -51,14 +65,17 @@
                                                         {{ $val->mobile ?? '' }}
                                                     </td>
                                                     <td>
+                                                        {{ date('d M, Y, h:i:s a', strtotime($val->created_at)) }}
+                                                    </td>
+                                                    <td>
                                                         <div class="action-btn-info">
                                                             <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
                                                                 aria-expanded="false">
                                                                 <i class="las la-ellipsis-v"></i>
                                                             </a>
                                                             <div class="dropdown-menu">
-                                                                <a class="dropdown-item view-btn" href="#"><i
-                                                                        class="las la-eye"></i> Restrict</a>
+                                                                {{-- <a class="dropdown-item view-btn" href="#"><i
+                                                                        class="las la-eye"></i> Restrict</a> --}}
                                                                 <a class="dropdown-item view-btn"
                                                                     href="{{ url('user-details/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
                                                                         class="las la-eye"></i> View</a>
@@ -78,9 +95,41 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
+    {{-- Live Search of users --}}
+    <script>
+        $(document).ready(function() {
+
+            //fetch_customer_data();
+            function fetch_customer_data(query = '') {
+
+                let _token = $("input[name='_token']").val();
+
+                $.ajax({
+                    url: '{{ url('live_users') }}',
+                    method: 'GET',
+                    data: {
+                        query: query,
+                        _token: _token,
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                        $('tbody').html(
+                            data);
+                    }
+                });
+            }
+
+            $(document).on('keyup', '#search', function() {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+    </script>
 @endsection

@@ -12,7 +12,7 @@
     <div class="body-main-content">
         <div class="addVirtualtour-section">
             <div class="addVirtualtour-heading">
-                <h3>Add New Virtual Tour</h3>
+                <h3>{{ $data ? 'Edit' : 'Add' }} Virtual Tour</h3>
             </div>
             <div class="addVirtualtour-form">
                 <form action="{{ $data ? route('UpdateVirtualTour') : route('SaveVirtualTour') }}" method="POST"
@@ -92,6 +92,20 @@
                             @error('audio')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
+                            @if ($data ? $data->audio_file : '')
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <audio controls>
+                                            <source src="horse.ogg" type="audio/ogg">
+                                            <source src="{{ assets('upload/virtual-audio/' . $data->audio_file) }}"
+                                                type="audio/mpeg"> Your
+                                            browser does
+                                            not support the audio
+                                            element.
+                                        </audio>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="col-md-6">
@@ -103,21 +117,17 @@
                             @error('thumbnail')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
-                        </div>
-                        @if ($data ? $data->audio_file : '')
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <audio controls>
-                                        <source src="horse.ogg" type="audio/ogg">
-                                        <source src="{{ assets('upload/virtual-audio/' . $data->audio_file) }}"
-                                            type="audio/mpeg"> Your
-                                        browser does
-                                        not support the audio
-                                        element.
-                                    </audio>
+                            @if ($data ? $data->thumbnail_file : '')
+                                <div class="col-md-4">
+                                    <div class="uploaded-media-card">
+                                        <div class="uploaded-media">
+                                            <img src="{{ assets('upload/virtual-thumbnail/' . $data->thumbnail_file) }}">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
+
 
 
 

@@ -12,7 +12,7 @@
     <div class="body-main-content">
         <div class="addtour-section">
             <div class="create-addtour-heading">
-                <h3>Add New Tour</h3>
+                <h3>{{ $data ? 'Edit' : 'Add' }} Tour</h3>
             </div>
             <div class="addtour-form">
                 <form action="{{ $data ? route('UpdateTour') : route('SaveTour') }}" method="POST"
@@ -174,21 +174,24 @@
                             @enderror
                             <div class="uploaded-section">
                                 <div class="row">
-                                    @foreach ($images as $val)
-                                        <div class="col-md-4">
-                                            <div class="uploaded-media-card">
-                                                <div class="uploaded-media">
-                                                    <img
-                                                        src="{{ assets('upload/tour-thumbnail/' . $val->attribute_name) }}">
-                                                </div>
-                                                <div class="uploaded-action">
-                                                    <a
-                                                        href="{{ url('delete-tour-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
-                                                            class="las la-trash"></i></a>
+                                    @if (isset($images))
+
+                                        @foreach ($images as $val)
+                                            <div class="col-md-4">
+                                                <div class="uploaded-media-card">
+                                                    <div class="uploaded-media">
+                                                        <img
+                                                            src="{{ assets('upload/tour-thumbnail/' . $val->attribute_name) }}">
+                                                    </div>
+                                                    <div class="uploaded-action">
+                                                        <a
+                                                            href="{{ url('delete-tour-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                class="las la-trash"></i></a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    @endif
                                 </div>
                             </div>
                         </div>

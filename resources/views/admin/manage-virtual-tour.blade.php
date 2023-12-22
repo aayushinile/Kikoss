@@ -187,7 +187,8 @@
                                                         <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
                                                                 data-bs-toggle="modal" href="#infoprice" role="button"><i
                                                                     class="las la-info-circle"></i></a></td>
-                                                        <td>{{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}</td>
+                                                        <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                        </td>
                                                         <td>PayPal</td>
                                                         <td>76375873874</td>
                                                     </tr>

@@ -69,17 +69,17 @@
                                             <th>Drop Off Location</th>
                                             <th>Travel Distanse </th>
                                             <th>Hotel Name</th>
-                                            <th>Action</th>
+                                            {{-- <th>Action</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($taxi_booking_requests as $i=> $item)
+                                        @forelse ($bookings as $i=> $item)
                                             <tr>
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
-                                                <td>{{ $item->user ? $item->user->fullname : 'N/A' }}</td>
-                                                <td>TR0619879238351</td>
+                                                <td>{{ $item->Username ? $item->Username->fullname : 'N/A' }}</td>
+                                                <td>{{ $item->booking_id ?? 'N/A' }}</td>
                                                 <td>{{ date('d M, Y, h:i:s a', strtotime($item->booking_time)) }}
 
                                                 <td>{{ $item->pickup_location }}</td>
@@ -87,7 +87,7 @@
 
                                                 <td>{{ $item->distance }} KM</td>
                                                 <td> {{ $item->hotel_name }} </td>
-                                                <td>
+                                                {{-- <td>
                                                     <div class="action-btn-info">
                                                         <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
                                                             aria-expanded="false">
@@ -98,7 +98,7 @@
                                                                     class="las la-eye"></i> View</a>
                                                         </div>
                                                     </div>
-                                                </td>
+                                                </td> --}}
                                             </tr>
                                         @empty
                                             <tr>
@@ -114,21 +114,21 @@
                             <div class="kik-table-pagination">
                                 <ul class="kik-pagination">
                                     {{-- Previous Page Link --}}
-                                    @if ($taxi_booking_requests->onFirstPage())
+                                    @if ($bookings->onFirstPage())
                                         <li class="disabled">
                                             <span>Previous</span>
                                         </li>
                                     @else
                                         <li>
-                                            <a href="{{ $taxi_booking_requests->previousPageUrl() }}"
-                                                aria-controls="example" tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() - 2 }}">Previous</a>
+                                            <a href="{{ $bookings->previousPageUrl() }}" aria-controls="example"
+                                                tabindex="0" class="page-link"
+                                                data-dt-idx="{{ $bookings->currentPage() - 2 }}">Previous</a>
                                         </li>
                                     @endif
 
                                     {{-- Pagination Elements --}}
-                                    @foreach ($taxi_booking_requests->getUrlRange(1, $taxi_booking_requests->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $taxi_booking_requests->currentPage() ? 'active' : '' }}">
+                                    @foreach ($bookings->getUrlRange(1, $bookings->lastPage()) as $page => $url)
+                                        <li class="{{ $page == $bookings->currentPage() ? 'active' : '' }}">
                                             <a href="{{ $url }}" aria-controls="example" tabindex="0"
                                                 class="page-link"
                                                 data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
@@ -136,11 +136,10 @@
                                     @endforeach
 
                                     {{-- Next Page Link --}}
-                                    @if ($taxi_booking_requests->hasMorePages())
+                                    @if ($bookings->hasMorePages())
                                         <li>
-                                            <a href="{{ $taxi_booking_requests->nextPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() }}">Next</a>
+                                            <a href="{{ $bookings->nextPageUrl() }}" aria-controls="example" tabindex="0"
+                                                class="page-link" data-dt-idx="{{ $bookings->currentPage() }}">Next</a>
                                         </li>
                                     @else
                                         <li class="disabled">

@@ -63,3 +63,5 @@ Route::post('/update-profile', [App\Http\Controllers\HomeController::class,'Upda
 Route::get('/tour-detail/{id}', [App\Http\Controllers\HomeController::class,'TourDetails'])->name('TourDetails');
 Route::get('/delete-booth-video-image/{id}', [App\Http\Controllers\HomeController::class,'DeletePhotoBoothImage'])->name('DeletePhotoBoothImage');
 Route::get('/delete-tour-image/{id}', [App\Http\Controllers\HomeController::class,'DeleteTourImage'])->name('DeleteTourImage');
+Route::get('/live_tours', [App\Http\Controllers\HomeController::class, 'live_tours'])->name('live_tours');
+Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_users'])->name('live_users');
