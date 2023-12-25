@@ -82,9 +82,9 @@
                                 <div class="overview-content-text">
                                     <p>Total Tour booked</p>
                                     @php
-                                        $users_count = \App\Models\User::where('type', 2)->count();
+                                        $tour_booking_count = \App\Models\TourBooking::where('tour_type', 1)->count();
                                     @endphp
-                                    <h2>0</h2>
+                                    <h2>{{ $tour_booking_count }}</h2>
                                 </div>
                                 <div class="overview-content-icon">
                                     <img src="{{ assets('assets/admin-images/Total-Tour-booked.svg') }}">
@@ -101,7 +101,10 @@
                             <div class="overview-content">
                                 <div class="overview-content-text">
                                     <p>Total Virtual Tour Purchased</p>
-                                    <h2>0</h2>
+                                    @php
+                                        $virtualTour_booking_count = \App\Models\TourBooking::where('tour_type', 2)->count();
+                                    @endphp
+                                    <h2>{{ $virtualTour_booking_count }}</h2>
                                 </div>
                                 <div class="overview-content-icon">
                                     <img src="{{ assets('assets/admin-images/Virtual-tour.svg') }}">
@@ -117,7 +120,10 @@
                             <div class="overview-content">
                                 <div class="overview-content-text">
                                     <p>Total Photo Booth Purchases</p>
-                                    <h2>0</h2>
+                                    @php
+                                        $virtualTour_booking_count = \App\Models\TourBooking::where('tour_type', 2)->count();
+                                    @endphp
+                                    <h2>{{ $virtualTour_booking_count }}</h2>
                                 </div>
                                 <div class="overview-content-icon">
                                     <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">
@@ -133,7 +139,10 @@
                             <div class="overview-content">
                                 <div class="overview-content-text">
                                     <p>Total Taxi Booking Request</p>
-                                    <h2>0</h2>
+                                    @php
+                                        $TaxiBooking = \App\Models\TaxiBooking::where('status', 0)->count();
+                                    @endphp
+                                    <h2>{{ $TaxiBooking }}</h2>
                                 </div>
                                 <div class="overview-content-icon">
                                     <img src="{{ assets('assets/admin-images/TaxiBooking.svg') }}">

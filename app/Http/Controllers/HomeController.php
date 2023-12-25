@@ -950,17 +950,26 @@ class HomeController extends Controller
     public function live_callbacks(Request $request)
     {
         $query = $request['query'];
+        $tour_id = $request['tour_id'];
 
-        $datas = CallbackRequest::where('name','like','%' .$query. '%')
+        if(isset($query)){
+            $datas = CallbackRequest::where('name','like','%' .$query. '%')
                     ->orderBy('id','DESC')
                     ->limit(20)
                     ->get();
+        }elseif ($tour_id) {
+            $datas = CallbackRequest::where('tour_id',$tour_id)
+                    ->orderBy('id','DESC')
+                    ->limit(20)
+                    ->get();
+        }
+        
         $i=1;
         $table_data = '';
         if($datas->count() > 0)
         {
-            foreach ($datas as $val) 
-            {                
+            foreach ($datas as $val)
+            {
                 $table_data .= '
                 <tr>
                     <td>

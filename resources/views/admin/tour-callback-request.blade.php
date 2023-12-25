@@ -38,19 +38,20 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <select class="form-control">
+                                                    <select class="form-control"id="select-id">
                                                         <option>Select Tour</option>
-                                                        <option>West Oahu</option>
-                                                        <option>Sunrise Hike</option>
-                                                        <option>Foodie & Farm Tour</option>
-                                                        <option>7 Am Hike</option>
+                                                        <option value="1">West Oahu</option>
+                                                        <option value="4">Sunrise Hike</option>
+                                                        <option value="3">Foodie & Farm Tour</option>
+                                                        <option value="6">7 Am Hike</option>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <input type="date" name="" class="form-control">
+                                                    <input type="date" name="date" id="date"
+                                                        class="form-control">
                                                 </div>
                                             </div>
 
@@ -117,16 +118,15 @@
     {{-- Live Search of callback request --}}
     <script>
         $(document).ready(function() {
-
-            //fetch_customer_data();
-            function fetch_customer_data(query = '') {
+            //fetch_callback__request_data;
+            function fetch_customer_data(query = '', tour_id = '') {
                 let _token = $("input[name='_token']").val();
-
                 $.ajax({
                     url: '{{ url('live_callbacks') }}',
                     method: 'GET',
                     data: {
                         query: query,
+                        tour_id: tour_id,
                         _token: _token,
                     },
                     dataType: 'json',
@@ -142,9 +142,19 @@
             }
 
             $(document).on('keyup', '#search', function() {
-
                 var query = $(this).val();
                 fetch_customer_data(query);
+            });
+
+            $('#select-id').change(function() {
+                var tour_id = this.value;
+                var query = '';
+                fetch_customer_data(query, tour_id);
+            });
+
+            $("#date").on("change", function() {
+                var myDate = new Date($(this).val());
+                alert(myDate);
             });
         });
     </script>
