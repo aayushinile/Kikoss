@@ -94,7 +94,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are you sure? want to delete</h3>
+                            <h3>Are You sure you want to delete?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeleteTour') }}" method="POST">

@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managebooking.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -11,13 +12,14 @@
         <div class="page-breadcrumb-action wd5">
             <div class="row g-2">
                 <div class="col-md-4">
-                    <a href="{{ url('tour-inquiry-request') }}" class="wh-btn">Tour Inquiry Requests</a>
+                    {{-- <a href="{{ url('tour-inquiry-request') }}" class="wh-btn">Tour Inquiry Requests</a> --}}
+                </div>
+
+                <div class="col-md-4">
+                    {{-- <a href="{{ url('add-tour') }}" class="wh-btn">Add New Tour</a> --}}
                 </div>
                 <div class="col-md-4">
                     <a href="{{ url('view-transaction-history') }}" class="wh-btn">View Transaction History</a>
-                </div>
-                <div class="col-md-4">
-                    <a href="{{ url('add-tour') }}" class="wh-btn">Add New Tour</a>
                 </div>
             </div>
         </div>
@@ -46,7 +48,7 @@
                 </div>
             </div>
 
-            <div class="booking-tour-section">
+            {{-- <div class="booking-tour-section">
                 <div class="row">
                     @if ($tours->isEmpty())
                         <tr>
@@ -63,7 +65,8 @@
                                     </div>
                                     <div class="booking-tour-card-content">
                                         <div class="manage-tour-card-text">
-                                            <h3>{{ $val->title ?? '' }} <span> Total {{ $val->total_people ?? '' }}</span>
+                                            <h3>{{ $val->title ?? '' }} <span> Total
+                                                    Seat {{ $val->total_people ?? '' }}</span>
                                             </h3>
                                             <p>23 People Occupancy Left</p>
                                         </div>
@@ -80,7 +83,7 @@
                         @endforeach
                     @endif
                 </div>
-            </div>
+            </div> --}}
 
             <div class="booking-availability-section">
                 <div class="row">
@@ -94,12 +97,18 @@
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">
                                             <div class="row g-1">
-
-                                                <div class="col-md-6">
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <a href="{{ url('manage-booking') }}" class="btn-gr"><i
+                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
                                                     <div class="form-group">
                                                         <div class="search-form-group">
-                                                            <input type="text" name="" class="form-control"
-                                                                placeholder="Search User name, Amount & Status">
+                                                            <input type="text" name="search"
+                                                                class="form-control"id="search"
+                                                                placeholder="Search User Name">
                                                             <span class="search-icon"><img
                                                                     src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                         </div>
@@ -107,19 +116,22 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <select class="form-control">
+                                                        <select class="form-control"id="select-id">
                                                             <option>Select Tour</option>
-                                                            <option>West Oahu</option>
-                                                            <option>Sunrise Hike</option>
-                                                            <option>Foodie & Farm Tour</option>
-                                                            <option>7 Am Hike</option>
+                                                            @if (!$tours->isEmpty())
+                                                                @foreach ($tours as $tour)
+                                                                    <option value="{{ $tour->id }}">
+                                                                        {{ $tour->name }}</option>
+                                                                @endforeach
+                                                            @endif
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <input type="date" name="" class="form-control">
+                                                        <input type="date" name="date" id="date"
+                                                            class="form-control">
                                                     </div>
                                                 </div>
                                             </div>
@@ -157,7 +169,8 @@
                                                         <td>{{ $val->Users->fullname ?? '' }}</td>
                                                         <td>{{ $val->Tour->title ?? '' }}</td>
                                                         <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                        <td>{{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}</td>
+                                                        <td>{{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}
+                                                        </td>
                                                         <td>
                                                             <div class="status-text Pending-status"><i
                                                                     class="las la-hourglass-start"></i> Pending for
@@ -165,16 +178,11 @@
                                                         </td>
                                                         <td>
                                                             <div class="action-btn-info">
-                                                                <a class="action-btn dropdown-toggle"
-                                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    <i class="las la-ellipsis-v"></i>
-                                                                </a>
-                                                                <div class="dropdown-menu">
-                                                                    <a class="dropdown-item view-btn" data-bs-toggle="modal"
-                                                                        href="#BookingRequest"
-                                                                        onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
-                                                                        role="button"><i class="las la-eye"></i> View</a>
-                                                                </div>
+                                                                <a class="dropdown-item view-btn" data-bs-toggle="modal"
+                                                                    href="#BookingRequest"
+                                                                    onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
+                                                                    role="button"><i class="las la-eye"></i> View</a>
+
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -331,7 +339,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are you sure? want to delete</h3>
+                            <h3>Are you sure you want to delete?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeleteTour') }}" method="POST">
@@ -395,6 +403,51 @@
             // });
             // $('.mix-2').append(imageElement);
         }
+    </script>
+    {{-- Live Search of users --}}
+    <script>
+        $(document).ready(function() {
+            //fetch_user_data();
+            function fetch_customer_data(query = '', tour_id = '', Date = '') {
+                let _token = $("input[name='_token']").val();
+                $.ajax({
+                    url: '{{ route('search_name') }}',
+                    method: 'GET',
+                    data: {
+                        query: query,
+                        tour_id: tour_id,
+                        Date: Date,
+                        _token: _token,
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        $('tbody').html(
+                            data);
+                    }
+                });
+            }
+
+            $(document).on('keyup', '#search', function() {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+
+            $('#select-id').change(function() {
+                var tour_id = this.value;
+                var query = '';
+                fetch_customer_data(query, tour_id);
+            });
+
+            $("#date").on("change", function() {
+                var Date = $(this).val();
+                var query = '';
+                var tour_id = '';
+                fetch_customer_data(query, tour_id, Date);
+            });
+        });
     </script>
 
 @endsection

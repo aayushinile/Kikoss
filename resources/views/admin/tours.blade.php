@@ -8,8 +8,24 @@
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>Manage Tour</h4>
-        <div class="page-breadcrumb-action">
-            <a href="{{ url('add-tour') }}" class="wh-btn">Add New Tour</a>
+        <div class="search-filter wd6">
+            <div class="row g-1">
+                <div class="col-md-3">
+                    <div class="page-breadcrumb-action">
+                        <a href="{{ url('add-tour') }}" class="wh-btn">Add New Tour</a>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <div class="search-form-group">
+                            <input type="text" name="search" id="search" class="form-control"
+                                placeholder="Search by Name">
+                            <span class="search-icon"><img src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="body-main-content">
@@ -54,6 +70,39 @@
                 </div>
             </div>
         </div>
-
     </div>
+    {{-- Live Search of tours --}}
+    <script>
+        $(document).ready(function() {
+
+            //fetch_customer_data();
+            function fetch_customer_data(query = '') {
+
+                let _token = $("input[name='_token']").val();
+
+                $.ajax({
+                    url: '{{ url('live_tours') }}',
+                    method: 'GET',
+                    data: {
+                        query: query,
+                        _token: _token,
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        $('.body-main-content .manage-tour-section .manage-tour-content .row').html(
+                            data);
+                    }
+                });
+            }
+
+            $(document).on('keyup', '#search', function() {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+    </script>
 @endsection

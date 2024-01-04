@@ -25,4 +25,8 @@ class TaxiBooking extends Model
         'updated_at',
     ];
     protected $table = 'book_taxis';
+    function Username()
+    {
+        return $this->hasOne('App\Models\User','id','user_id');
+    }
 }

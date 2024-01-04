@@ -25,6 +25,7 @@ Route::get('virtual-tour-listing', [UserController::class, 'VirtualTourListing']
 Route::post('virtual-tour-detail', [UserController::class, 'VirtualTourDetail']);
 Route::post('callback-request', [UserController::class, 'callback_request']);
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [UserController::class, 'logout']); //Auth User Logout
     Route::get('profile', [UserController::class, 'userDetails']);
     Route::get('profiles', [UserController::class, 'userDetailss']);
     Route::post('update-profile', [UserController::class, 'updateProfile']);

@@ -23,6 +23,7 @@ Route::get('/', function () {
 Auth::routes();
 // Ajax route to toggle user status
 Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 'toggleUserStatus'])->name('toggleUserStatus');
+Route::post("/toggleRequestStatus", [App\Http\Controllers\AjaxController::class, 'toggleRequestStatus'])->name('toggleRequestStatus');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
@@ -33,7 +34,7 @@ Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'Update
 Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::get('/manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
-Route::get('/tour-inquiry-request', [App\Http\Controllers\HomeController::class, 'InquiryRequest'])->name('InquiryRequest');
+Route::get('/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
@@ -64,6 +65,8 @@ Route::post('/update-profile', [App\Http\Controllers\HomeController::class, 'Upd
 Route::get('/tour-detail/{id}', [App\Http\Controllers\HomeController::class, 'TourDetails'])->name('TourDetails');
 Route::get('/delete-booth-video-image/{id}', [App\Http\Controllers\HomeController::class, 'DeletePhotoBoothImage'])->name('DeletePhotoBoothImage');
 Route::get('/delete-tour-image/{id}', [App\Http\Controllers\HomeController::class, 'DeleteTourImage'])->name('DeleteTourImage');
-
-
+Route::get('/live_tours', [App\Http\Controllers\HomeController::class, 'live_tours'])->name('live_tours');
+Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_users'])->name('live_users');
+Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
+Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');
 Route::post("set-date", [AjaxController::class, 'setDate'])->name('set-date');

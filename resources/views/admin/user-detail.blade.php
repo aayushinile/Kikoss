@@ -14,12 +14,12 @@
         <h4>User Management</h4>
         <div class="search-filter">
             <div class="row g-2">
-                <div class="col-md-12">
+                {{-- <div class="col-md-12">
                     <div class="search-form-group">
                         <input type="text" name="" class="form-control" placeholder="Search">
                         <span class="search-icon"><img src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
                                             <div class="">
                                                 <label class="toggle" for="myToggle">
                                                     <input class="toggle__input"
-                                                        @if ($data->status == 'Active') checked @endif name=""
+                                                        @if ($data->status == 1) checked @endif name=""
                                                         type="checkbox" id="myToggle">
                                                     <div class="toggle__fill"></div>
                                                 </label>
@@ -142,12 +142,12 @@
                             <div class="overview-card-body">
                                 <div class="overview-content">
                                     <div class="overview-content-text">
-                                        <p>Total purchased</p>
+                                        <p>Total Purchased</p>
                                         <h2>{{ $normal_tours->total() + $virtual_tours->total() + $PhotoBooths->total() }}
                                         </h2>
                                     </div>
                                     <div class="overview-content-icon">
-                                        <img src="{{ assets('assets/admin-images/PhotoBooths.svg') }}">
+                                        <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">
                                     </div>
                                 </div>
                             </div>
@@ -601,10 +601,11 @@
         $(document).ready(function() {
             $('#myToggle').on('change', function() {
 
-                var newStatus = this.checked ? 'Active' : 'Inactive';
+                var newStatus = this.checked ? '1' : '0';
 
                 $.ajax({
-                    url: '/toggleUserStatus',
+                    url: '{{ url('toggleUserStatus') }}',
+
                     type: 'POST',
                     data: {
                         user_id: {{ $data->id }},

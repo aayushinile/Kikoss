@@ -15,8 +15,10 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->string('minute')->nullable();
+            $table->string('duration')->nullable();
             $table->text('audio_file');
             $table->text('thumbnail_file');
+            $table->text('short_description');
             $table->text('description');
             $table->float('price')->nullable();
             $table->string('cencellation_policy',500)->nullable();

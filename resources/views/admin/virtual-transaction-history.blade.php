@@ -7,7 +7,7 @@
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
-        <h4>Manage Virtual Tour</h4>
+        <h4>Virtual Tour Transaction History</h4>
     </div>
     <div class="body-main-content">
         <div class="booking-availability-section">
@@ -26,7 +26,7 @@
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <div class="TotalRequestoverview">Total Request Received:
-                                                        <span>5689</span>
+                                                        <span>$5689</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -35,7 +35,7 @@
                                                 <div class="form-group">
                                                     <div class="search-form-group">
                                                         <input type="text" name="" class="form-control"
-                                                            placeholder="Search User name, Amount & Status">
+                                                            placeholder="Search User name, Amount">
                                                         <span class="search-icon"><img
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                     </div>
@@ -44,7 +44,7 @@
                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <select class="form-control">
-                                                        <option>Select Tour</option>
+                                                        <option>Select Virtual Tour</option>
                                                         <option>West Oahu</option>
                                                         <option>Sunrise Hike</option>
                                                         <option>Foodie & Farm Tour</option>
@@ -78,7 +78,7 @@
                                             <th>Name</th>
                                             <th>Virtual Tour Name</th>
                                             <th>Amount Paid</th>
-                                            <th>Amount Recieved On</th>
+                                            <th>Amount Received On</th>
                                             <th>Payment Made Via</th>
                                             <th>Transaction ID</th>
                                         </tr>
