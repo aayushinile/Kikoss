@@ -141,10 +141,12 @@
                                                     <div class="form-group">
                                                         <select class="form-control">
                                                             <option>Select Tour</option>
-                                                            <option>West Oahu</option>
-                                                            <option>Sunrise Hike</option>
-                                                            <option>Foodie & Farm Tour</option>
-                                                            <option>7 Am Hike</option>
+                                                            @if (!$tours->isEmpty())
+                                                                @foreach ($tours as $tour)
+                                                                    <option value="{{ $tour->id }}">
+                                                                        {{ $tour->name }}</option>
+                                                                @endforeach
+                                                            @endif
                                                         </select>
                                                     </div>
                                                 </div>
@@ -265,7 +267,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are you sure? want to delete</h3>
+                            <h3>Are you sure you want to delete?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeletePhotoBooth') }}" method="POST">

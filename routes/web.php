@@ -22,6 +22,7 @@ Route::get('/', function () {
 Auth::routes();
 // Ajax route to toggle user status
 Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 'toggleUserStatus'])->name('toggleUserStatus');
+Route::post("/toggleRequestStatus", [App\Http\Controllers\AjaxController::class, 'toggleRequestStatus'])->name('toggleRequestStatus');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
@@ -66,3 +67,4 @@ Route::get('/delete-tour-image/{id}', [App\Http\Controllers\HomeController::clas
 Route::get('/live_tours', [App\Http\Controllers\HomeController::class, 'live_tours'])->name('live_tours');
 Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_users'])->name('live_users');
 Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
+Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');

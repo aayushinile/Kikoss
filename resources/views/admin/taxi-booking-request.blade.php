@@ -28,14 +28,14 @@
                                                 <div class="col-md-3">
                                                     <div class="search-form-group">
                                                         <div class="TotalRequestoverview">Total Request Received:
-                                                            <span>5689</span>
+                                                            <span>$5689</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-5">
                                                     <div class="search-form-group">
                                                         <input type="text" name="" class="form-control"
-                                                            placeholder="Search User name, Amount & virtual tour name..">
+                                                            placeholder="Search User name, Booking ID">
                                                         <span class="search-icon"><img
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                     </div>

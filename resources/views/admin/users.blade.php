@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <div class="search-form-group">
                             <input type="text" name="Search" id="search" class="form-control"
-                                placeholder="Search by Name">
+                                placeholder="Search by Name, Email, Contact Number">
                             <span class="search-icon"><img src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                         </div>
                     </div>
@@ -62,24 +62,16 @@
                                                         {{ $val->email ?? '' }}
                                                     </td>
                                                     <td>
-                                                        {{ $val->mobile ?? '' }}
+                                                        +1 {{ $val->mobile ?? '' }}
                                                     </td>
                                                     <td>
                                                         {{ date('d M, Y, h:i:s a', strtotime($val->created_at)) }}
                                                     </td>
                                                     <td>
                                                         <div class="action-btn-info">
-                                                            <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                                aria-expanded="false">
-                                                                <i class="las la-ellipsis-v"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu">
-                                                                {{-- <a class="dropdown-item view-btn" href="#"><i
-                                                                        class="las la-eye"></i> Restrict</a> --}}
-                                                                <a class="dropdown-item view-btn"
-                                                                    href="{{ url('user-details/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
-                                                                        class="las la-eye"></i> View</a>
-                                                            </div>
+                                                            <a class="dropdown-item view-btn"
+                                                                href="{{ url('user-details/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                    class="las la-eye"></i> View</a>
                                                         </div>
                                                     </td>
                                                 </tr>

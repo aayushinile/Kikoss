@@ -362,7 +362,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are You sure you want to logout?</h3>
+                            <h3>Are you sure you want to logout?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeleteVirtualTour') }}" method="POST">
@@ -379,6 +379,12 @@
             </div>
         </div>
     </div>
+    <style>
+        .error {
+            color: red;
+            font-size: 0.8rem;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
         integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
@@ -398,10 +404,7 @@
         $(document).ready(function() {
             $("#preloader").hide();
         });
-    </script>
-
-
-    @stack('js')
+    </script>@stack('js')
 </body>
 
 </html>

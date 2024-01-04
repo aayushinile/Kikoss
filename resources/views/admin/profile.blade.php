@@ -64,7 +64,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <h4>Name</h4>
+                                            <h4>Full Name</h4>
                                             <input type="text" class="form-control" name="fullname"
                                                 value="{{ $data->fullname ?? '' }}" placeholder="Enter Name">
                                         </div>
@@ -104,7 +104,8 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <button class="cancelbtn"onClick="window.location.reload();">cancel</button>
+                                            <button class="cancelbtn" type="button"
+                                                onclick="window.location.reload();">cancel</button>
                                             <button class="Savebtn"type="submit">Update</button>
                                         </div>
                                     </div>
@@ -153,7 +154,8 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <button class="cancelbtn"onClick="window.location.reload();">cancel</button>
+                                            <button class="cancelbtn"type="button"
+                                                onclick="window.location.reload();">cancel</button>
                                             <button class="Savebtn"type="submit">Update</button>
                                         </div>
                                     </div>

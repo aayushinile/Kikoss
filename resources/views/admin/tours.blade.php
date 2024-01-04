@@ -81,7 +81,7 @@
                 let _token = $("input[name='_token']").val();
 
                 $.ajax({
-                    url: '{{ url('live_users') }}',
+                    url: '{{ url('live_tours') }}',
                     method: 'GET',
                     data: {
                         query: query,
@@ -92,7 +92,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     success: function(data) {
-                        //console.log(data);
+                        console.log(data);
                         $('.body-main-content .manage-tour-section .manage-tour-content .row').html(
                             data);
                     }

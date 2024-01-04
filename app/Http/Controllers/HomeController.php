@@ -162,39 +162,63 @@ class HomeController extends Controller
 
     public function tours()
     {
-        $datas = Tour::where('status', 1)->orderBy('id', 'DESC')->paginate(10);
+        $datas = Tour::where('status', 1)->orderBy('id', 'DESC')->paginate(9);
         return view('admin.tours', compact('datas'));
     }
 
     public function SaveTour(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255|min:1',
-                'name' => 'required|string|max:255|min:1',
-                'total_people' => 'required',
-                'duration' => 'required',
-                'what_to_bring' => 'required',
-                'age_11_price' => 'required',
-                'age_60_price' => 'required',
-                'under_10_age_price' => 'required',
-                'short_description' => 'required|string|min:3|max:1000',
-                'description' => 'required|string|min:3|max:1000',
-                'cancellation_policy' => 'required|min:3|max:1000',
-            ]);
+            if($request->for_all_price){
+                $validator = Validator::make($request->all(), [
+                    'title' => 'required|string|max:255|min:1',
+                    'name' => 'required|string|max:255|min:1',
+                    'total_people' => 'required',
+                    'duration' => 'required|min:0',
+                    'what_to_bring' => 'required',
+                    'for_all_price' => 'required|min:0',
+                    'short_description' => 'required|string|min:3|max:1000',
+                    'description' => 'required|string|min:3|max:1000',
+                    'cancellation_policy' => 'required|min:3|max:1000',
+                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                ]);
+                $price = $request->for_all_price;
+                $age_11_price = $price;
+                $age_60_price = $price;
+                $under_10_age_price = $price; 
+            }else{
+                $validator = Validator::make($request->all(), [
+                    'title' => 'required|string|max:255|min:1',
+                    'name' => 'required|string|max:255|min:1',
+                    'total_people' => 'required',
+                    'duration' => 'required|min:0',
+                    'what_to_bring' => 'required',
+                    'age_11_price' => 'required|min:0',
+                    'age_60_price' => 'required|min:0',
+                    'under_10_age_price' => 'required|min:0',
+                    'short_description' => 'required|string|min:3|max:1000',
+                    'description' => 'required|string|min:3|max:1000',
+                    'cancellation_policy' => 'required|min:3|max:1000',
+                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                ]);
+                $age_11_price = $request->age_11_price;
+                $age_60_price = $request->age_60_price;
+                $under_10_age_price = $request->under_10_age_price;  
+            }
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+            
             $TourID = Tour::insertGetId([
                 'title' => $request->title,
                 'name' => $request->name,
                 'total_people' => $request->total_people,
                 'duration' => $request->duration,
                 'what_to_bring' => $request->what_to_bring,
-                'age_11_price' => $request->age_11_price,
-                'age_60_price' => $request->age_60_price,
-                'under_10_age_price' => $request->under_10_age_price,
+                'age_11_price' => $age_11_price,
+                'age_60_price' => $age_60_price,
+                'under_10_age_price' => $under_10_age_price,
                 'description' => $request->description,
                 'short_description' => $request->short_description,
                 'cancellation_policy' => $request->cancellation_policy,
@@ -212,7 +236,7 @@ class HomeController extends Controller
                     ]);
                 }
             }
-            return redirect('manage-booking')->with('success', 'Tour Created successfully');
+            return redirect('tours')->with('success', 'Tour Created successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
@@ -221,20 +245,40 @@ class HomeController extends Controller
     public function UpdateTour(Request $request)
     {
         try {
-
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255|min:1',
-                'name' => 'required|string|max:255|min:1',
-                'total_people' => 'required',
-                'duration' => 'required',
-                'what_to_bring' => 'required',
-                'age_11_price' => 'required',
-                'age_60_price' => 'required',
-                'under_10_age_price' => 'required',
-                'description' => 'required|string|min:3|max:1000',
-                'short_description' => 'required|string|min:3|max:1000',
-                'cancellation_policy' => 'required|min:3|max:1000',
-            ]);
+            if($request->for_all_price){
+                $validator = Validator::make($request->all(), [
+                    'title' => 'required|string|max:255|min:1',
+                    'name' => 'required|string|max:255|min:1',
+                    'total_people' => 'required',
+                    'duration' => 'required|min:0',
+                    'what_to_bring' => 'required',
+                    'for_all_price' => 'required|min:0',
+                    'short_description' => 'required|string|min:3|max:1000',
+                    'description' => 'required|string|min:3|max:1000',
+                    'cancellation_policy' => 'required|min:3|max:1000',
+                ]);
+                $price = $request->for_all_price;
+                $age_11_price = $price;
+                $age_60_price = $price;
+                $under_10_age_price = $price; 
+            }else{
+                $validator = Validator::make($request->all(), [
+                    'title' => 'required|string|max:255|min:1',
+                    'name' => 'required|string|max:255|min:1',
+                    'total_people' => 'required',
+                    'duration' => 'required|min:0',
+                    'what_to_bring' => 'required',
+                    'age_11_price' => 'required|min:0',
+                    'age_60_price' => 'required|min:0',
+                    'under_10_age_price' => 'required|min:0',
+                    'short_description' => 'required|string|min:3|max:1000',
+                    'description' => 'required|string|min:3|max:1000',
+                    'cancellation_policy' => 'required|min:3|max:1000',
+                ]);
+                $age_11_price = $request->age_11_price;
+                $age_60_price = $request->age_60_price;
+                $under_10_age_price = $request->under_10_age_price;  
+            }
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -247,9 +291,16 @@ class HomeController extends Controller
             $tour->total_people = $request->total_people;
             $tour->duration = $request->duration;
             $tour->what_to_bring = $request->what_to_bring;
-            $tour->age_11_price = $request->age_11_price;
-            $tour->age_60_price = $request->age_60_price;
-            $tour->under_10_age_price = $request->under_10_age_price;
+            if($request->for_all_price){
+                $price = $request->for_all_price;
+                $tour->age_11_price = $price;
+                $tour->age_60_price = $price;
+                $tour->under_10_age_price = $price;
+            }else{
+                $tour->age_11_price = $request->age_11_price;
+                $tour->age_60_price = $request->age_60_price;
+                $tour->under_10_age_price = $request->under_10_age_price;  
+            }
             $tour->short_description = $request->short_description;
             $tour->description = $request->description;
             $tour->cancellation_policy = $request->cancellation_policy;
@@ -266,7 +317,7 @@ class HomeController extends Controller
                 }
             }
             $tour->save();
-            return redirect('manage-booking')->with('success', 'Tour Updated successfully');
+            return redirect('tour')->with('success', 'Tour Updated successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
@@ -303,12 +354,12 @@ class HomeController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
-                'price' => 'required',
-                'minute' => 'required',
-                'duration' => 'required',
+                'price' => 'required|min:0',
+                'minute' => 'required|min:0',
+                'duration' => 'required|min:0',
                 'description' => 'required',
                 'short_description' => 'required',
-                'cencellation_policy' => 'required',
+                'cancellation_policy' => 'required',
                 'audio' => 'required|max:5120',
                 'thumbnail' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
             ]);
@@ -336,7 +387,7 @@ class HomeController extends Controller
             $Tour->duration = $request->duration;
             $Tour->description = $request->description;
             $Tour->short_description = $request->short_description;
-            $Tour->cencellation_policy = $request->cencellation_policy;
+            $Tour->cencellation_policy = $request->cancellation_policy;
             $Tour->status = 1;
             $Tour->save();
 
@@ -358,7 +409,7 @@ class HomeController extends Controller
                 'duration' => 'required',
                 'description' => 'required',
                 'short_description' => 'required',
-                'cencellation_policy' => 'required',
+                'cancellation_policy' => 'required',
                 'audio' => 'max:5120',
                 'thumbnail' => 'image|mimes:jpeg,png,jpg,svg|max:2048',
             ]);
@@ -393,7 +444,7 @@ class HomeController extends Controller
             $Tour->duration = $request->duration;
             $Tour->description = $request->description;
             $Tour->short_description = $request->short_description;
-            $Tour->cencellation_policy = $request->cencellation_policy;
+            $Tour->cencellation_policy = $request->cancellation_policy;
             $Tour->save();
             return redirect('manage-virtual-tour')->with('success', 'Virtual Tour Updated successfully');
         } catch (\Exception $e) {
@@ -404,7 +455,7 @@ class HomeController extends Controller
     public function ManageBooking()
     {
         try {
-            $Tourrequests = TourBooking::where('status', 0)->orderBy('id', 'DESC')->paginate(10);
+            $Tourrequests = TourBooking::where('status', 0)->orderBy('id', 'DESC')->paginate(15);
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             return view('admin.manage-booking', compact('Tourrequests', 'tours'));
         } catch (\Exception $e) {
@@ -412,6 +463,7 @@ class HomeController extends Controller
         }
     }
 
+    /*Get all data of Virtual-tour */
     public function ManageVirtualTour()
     {
         try {
@@ -437,8 +489,9 @@ class HomeController extends Controller
     public function CallbackRequest()
     {
         try {
-            $datas = CallbackRequest::where('status', 1)->orderBy('id', 'DESC')->paginate(10);
-            return view('admin.tour-callback-request', compact('datas'));
+            $datas = CallbackRequest::orderBy('id', 'DESC')->paginate(10);
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            return view('admin.tour-callback-request', compact('datas','tours'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -481,8 +534,9 @@ class HomeController extends Controller
     {
         try {
             $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings'));
+            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings','tours'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -564,7 +618,7 @@ class HomeController extends Controller
             $validator = Validator::make($request->all(), [
                 'tour_id' => 'required',
                 'title' => 'required|string|max:255|min:1',
-                'price' => 'required',
+                'price' => 'required|min:0',
                 'description' => 'required',
                 'cancellation_policy' => 'required',
                 //'image[]' => 'required',
@@ -864,9 +918,9 @@ class HomeController extends Controller
                             </div>
                             <div class="manage-tour-card-content">
                                 <div class="manage-tour-card-text">
-                                    <h3>'.$val->title ?? ''.'}</h3>
-                                    <p>'.$val->name ?? '' .' • '. $val->duration .' Hours</p>
-                                    <div class="price-text">US${{ $val->under_10_age_price }} –
+                                    <h3>'.$val->title.'</h3>
+                                    <p>'.$val->name  .' • '. $val->duration .' Hours</p>
+                                    <div class="price-text">US$'.$val->under_10_age_price .' –
                                         US$'. $val->age_11_price .'</div>
                                     </div>
                                     <div class="manage-tour-card-action">
@@ -892,6 +946,8 @@ class HomeController extends Controller
         $query = $request['query'];
 
         $datas = User::where('fullname','like','%' .$query. '%')
+                    ->Orwhere('email','like','%' .$query. '%')
+                    ->Orwhere('mobile','like','%' .$query. '%')
                     ->where('type','!=',1)
                     ->orderBy('id','DESC')
                     ->limit(50)
@@ -915,26 +971,86 @@ class HomeController extends Controller
                         '. $val->email  .'
                     </td>
                     <td>
-                        '. $val->mobile  .'
+                        '. '+1 ' .$val->mobile  .'
                     </td>
                     <td>
                         '. date('d M, Y, h:i:s a', strtotime($val->created_at)) .'
                     </td>
                 <td>
                     <div class="action-btn-info">
-                        <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="las la-ellipsis-v"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                           
-                            <a class="dropdown-item view-btn"
-                                href="'. url('user-details/' . encrypt_decrypt('encrypt', $val->id)) .'"><i
-                                    class="las la-eye"></i> View</a>
-                        </div>
+                    <a class="dropdown-item view-btn"
+                    href="'. url('user-details/' . encrypt_decrypt('encrypt', $val->id)) .'"><i
+                        class="las la-eye"></i> View</a>
                     </div>
                 </td>
             </tr>';
+           }
+        }else{
+            $table_data = '<tr>
+                <td colspan="10">
+                    <h5 style="text-align: center">No Record Found</h5>
+                </td>
+            </tr>';
+        }
+        echo json_encode($table_data);
+    }
+    
+    //Live Search of users
+    public function search_name(Request $request)
+    {
+        //Search by user name, Tour name, Date
+        $query = $request['query'];
+        $tour_id = $request['tour_id'];
+        $Date = $request['Date'];
+        
+        if(isset($query)){
+            $datas = TourBooking::where('user_name','like','%' .$query. '%')
+                    ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
+                    ->orderBy('id','DESC')
+                    ->limit(50)
+                    ->get();
+        }elseif ($tour_id) {
+            $datas = TourBooking::where('tour_id','like','%' .$tour_id. '%')
+            ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
+            ->orderBy('id','DESC')
+            ->limit(50)
+            ->get();
+        }elseif($Date){
+            $datas = TourBooking::where('booking_date','like','%' .$Date. '%')
+            ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
+            ->orderBy('id','DESC')
+            ->limit(50)
+            ->get();
+        }
+                    
+        $i=1;
+        $table_data = '';
+        if($datas->count() > 0)
+        {
+            foreach ($datas as $val) 
+            {                
+                $table_data .= '
+                <tr>
+                    <td>
+                        <div class="sno">'. $i++ .'</div>
+                    </td>
+                    <td>'. $val->Users->fullname .'</td>
+                    <td>'. $val->Tour->title .'</td>
+                    <td>'. $val->Tour->duration .' Hours</td>
+                    <td>'. date('Y-m-d', strtotime($val->booking_date)) .'</td>
+                    <td>
+                        <div class="status-text Pending-status"><i class="las la-hourglass-start"></i> Pending for Approval</div>
+                    </td>
+                    <td>
+                        <div class="action-btn-info">
+                            <a class="dropdown-item view-btn" data-bs-toggle="modal"
+                                href="#BookingRequest"
+                                onclick="accept_tour('. $val->id .','. $val->Tour->title .','. $val->booking_date .','. $val->Tour->duration .','. $val->total_amount .')"
+                                role="button"><i class="las la-eye"></i> View</a>
+                            
+                        </div>
+                    </td>
+                </tr>';
            }
         }else{
             $table_data = '<tr>
@@ -951,14 +1067,21 @@ class HomeController extends Controller
     {
         $query = $request['query'];
         $tour_id = $request['tour_id'];
+        $Date = $request['Date'];
 
         if(isset($query)){
             $datas = CallbackRequest::where('name','like','%' .$query. '%')
+                    ->Orwhere('mobile','like','%' .$query. '%')
                     ->orderBy('id','DESC')
                     ->limit(20)
                     ->get();
         }elseif ($tour_id) {
             $datas = CallbackRequest::where('tour_id',$tour_id)
+                    ->orderBy('id','DESC')
+                    ->limit(20)
+                    ->get();
+        }elseif($Date){
+            $datas = CallbackRequest::whereDate('preferred_time','=','2024-01-04')
                     ->orderBy('id','DESC')
                     ->limit(20)
                     ->get();
@@ -977,10 +1100,26 @@ class HomeController extends Controller
                     </td>
                     <td>'. $val->name .'</td>
                     <td>'. $val->TourName->name .'</td>
+                    <td>'. '+1 ' .$val->mobile .'</td>
                     <td>'. $val->TourName->duration .' Hours</td>
                     <td>'.date('d M, Y, h:i:s a', strtotime($val->preferred_time)) .'
                     </td>
-                    <td>'. $val->note .'</td>
+                    <td>
+                        <div class="switch-toggle">
+                            <div class="">
+                                <label class="toggle" for="myToggleClass_'. $i++ .'">
+                                <input class="toggle__input myToggleClass_"
+                                    "@if ('.$val->status.' = 1) checked @endif"
+                                        name="status" data-id="'. $val->id .'" type="checkbox" id="myToggleClass_'. $i++ .'">
+                                <div class="toggle__fill"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                    <td>'. substr($val->note, 0, 30) .'<a class="infoRequestMessage" data-bs-toggle="modal"
+                            href="#infoRequestMessage" onclick="GetData('. $val->note .')"
+                                role="button"><i class="las la-info-circle"></i></a>
+                    </td>
                 </tr>';
            }
         }else{

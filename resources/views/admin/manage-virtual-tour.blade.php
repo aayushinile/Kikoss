@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Kikos - Managege Virtual-tour')
+@section('title', 'Kikos - Manage Virtual-tour')
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/OwlCarousel/assets/owl.carousel.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managevertualtour.css') }}">
@@ -90,7 +90,7 @@
                                     <div class="managevertualtour-card-content">
                                         <div class="managevertualtour-card-text">
                                             <h3>{{ $val->name ?? '' }}</h3>
-                                            <p>{{ $val->description ?? '' }}</p>
+                                            <p>{{ substr($val->description, 0, 130) ?? '' }}...</p>
                                             <div class="price-text">Price: ${{ $val->price ?? '' }}</div>
                                         </div>
                                         <div class="managevertualtour-card-action">
@@ -126,7 +126,7 @@
                                                     <div class="form-group">
                                                         <div class="search-form-group">
                                                             <input type="text" name="" class="form-control"
-                                                                placeholder="Search User name, Amount & virtual tour name..">
+                                                                placeholder="Search User Name, Amount ">
                                                             <span class="search-icon"><img
                                                                     src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                         </div>
@@ -135,18 +135,20 @@
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <select class="form-control">
-                                                            <option>Select Tour</option>
-                                                            <option>West Oahu</option>
-                                                            <option>Sunrise Hike</option>
-                                                            <option>Foodie & Farm Tour</option>
-                                                            <option>7 Am Hike</option>
+                                                            <option>Select Virtual Tour</option>
+                                                            @if (!$tours->isEmpty())
+                                                                @foreach ($tours as $tour)
+                                                                    <option value="{{ $tour->id }}">
+                                                                        {{ $tour->name }}</option>
+                                                                @endforeach
+                                                            @endif
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <input type="date" name="" class="form-control">
+                                                        <input type="date" name="date" class="form-control">
                                                     </div>
                                                 </div>
                                             </div>
@@ -239,7 +241,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are you sure? want to delete</h3>
+                            <h3>Are you sure you want to delete?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeleteVirtualTour') }}" method="POST">

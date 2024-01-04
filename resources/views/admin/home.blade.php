@@ -80,7 +80,7 @@
                         <div class="overview-card-body">
                             <div class="overview-content">
                                 <div class="overview-content-text">
-                                    <p>Total Tour booked</p>
+                                    <p>Total Tour Booked</p>
                                     @php
                                         $tour_booking_count = \App\Models\TourBooking::where('tour_type', 1)->count();
                                     @endphp
@@ -227,7 +227,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="kik-table-pagination">
+                            {{-- <div class="kik-table-pagination">
                                 <ul class="kik-pagination">
                                     <li class="disabled" id="example_previous">
                                         <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
@@ -249,7 +249,7 @@
                                             class="page-link">Next</a>
                                     </li>
                                 </ul>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>

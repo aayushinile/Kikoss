@@ -53,9 +53,9 @@
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <h4>Set Price</h4>
+                                <h4>Set Price($)</h4>
                                 <div class="People-form-group">
-                                    <input type="number" class="form-control" name="price"
+                                    <input type="number" class="form-control" name="price" min="0"
                                         value="{{ $data ? $data->price : old('price') }}" placeholder="$0">
                                     <span>Per purchase</span>
                                 </div>
@@ -183,7 +183,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <button class="cancelbtn">cancel</button>
+                                <button class="cancelbtn"type="button" onclick="window.location.reload();">cancel</button>
                                 <button class="Savebtn"
                                     type="submit">{{ $data ? 'Update' : 'Save & Create Photo Booth' }}</button>
                             </div>

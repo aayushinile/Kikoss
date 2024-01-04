@@ -35,44 +35,47 @@
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <h4>Set Price</h4>
+                                <h4>Set Price($)</h4>
                                 <div class="People-form-group">
-                                    <input type="number" class="form-control" name="price"
-                                        value="{{ $data ? $data->price : old('price') }}"placeholder="0">
+                                    <input type="number" min="0" class="form-control" name="price"
+                                        value="{{ $data ? $data->price : old('price') }}"placeholder="$0">
                                     <span>Per purchase</span>
                                 </div>
-                                @error('price')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+
                             </div>
+                            @error('price')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <h4>Set Trial Audio Mins</h4>
                                 <div class="People-form-group">
-                                    <input type="number" class="form-control" name="minute"
+                                    <input type="number" min="0" class="form-control" name="minute"
                                         value="{{ $data ? $data->minute : old('minute') }}"placeholder="0">
                                     <span>Mins only!!</span>
                                 </div>
-                                @error('minute')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+
                             </div>
+                            @error('minute')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
-                                <h4>Time Duration</h4>
+                                <h4>Tour Duration</h4>
                                 <div class="People-form-group">
-                                    <input type="number" class="form-control" name="duration"
+                                    <input type="number" min="0"class="form-control" name="duration"
                                         value="{{ $data ? $data->duration : old('duration') }}"placeholder="0">
 
                                 </div>
-                                @error('duration')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+
                             </div>
+                            @error('duration')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
 
@@ -102,10 +105,10 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <h4>Cancellation Policy</h4>
-                                <textarea type="text" class="form-control" rows="7" cols="80" name="cencellation_policy"
+                                <textarea type="text" class="form-control" rows="7" cols="80" name="cancellation_policy"
                                     placeholder="Enter Cancellation Policy…">{{ $data ? $data->cencellation_policy : old('cencellation_policy') }}</textarea>
                             </div>
-                            @error('cencellation_policy')
+                            @error('cancellation_policy')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -159,7 +162,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <button class="cancelbtn"onClick="window.location.reload();">cancel</button>
+                                <button class="cancelbtn"type="button" onclick="window.location.reload();">cancel</button>
                                 <button
                                     class="Savebtn"type="submit">{{ $data ? 'Update' : 'Save & Create Virtual Tour' }}</button>
                             </div>

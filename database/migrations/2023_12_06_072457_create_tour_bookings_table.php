@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('tour_id')->nullable();
             $table->string('tour_type',20)->nullable();
             $table->bigInteger('user_id')->nullable();
+            $table->bigInteger('user_name')->nullable();
             $table->dateTime('booking_date')->nullable();
             $table->integer('no_adults')->nullable();
             $table->integer('no_senior_citizen')->nullable();

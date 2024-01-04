@@ -51,9 +51,9 @@ class UserController extends Controller
                 $success['email'] = $user->email;
                 $success['mobile'] = ($user->mobile) ?? '';
                 $success['status'] = $user->status;
-                // if ($user->status == 0) { /*Checking User is active or in-active 0:unapproved 1:Approved bu admin */
-                //     return response()->json(["status" => false, "message" => "You are not approved by admin."]);
-                // }
+                if ($user->status == 0) { /*Checking User is active or in-active 0:unapproved 1:Approved bu admin */
+                    return response()->json(["status" => false, "message" => "your account is deactivated by administrator!"]);
+                }
                 return response()->json(["status" => true, "message" => "Logged in successfully.", "data" => $success]);
             } else {
                 return response()->json(["status" => true, "message" => "Unauthorised.", "data" => ''] ,401);
@@ -61,6 +61,13 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
+    }
+    
+    // function for logout
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+        return response()->json(["status" => true, "message" => "User successfully logout."]);
     }
     
     /** 
@@ -86,7 +93,7 @@ class UserController extends Controller
             $input = $request->all();
             
             $input['password'] = Hash::make($input['password']);
-            
+            //When Create a new user then user status is by default active
             $user = User::create($input);
             $token = $user->createToken('kikos')->plainTextToken;
             $success['token'] = $token;
@@ -350,7 +357,7 @@ class UserController extends Controller
                 }
             }else{
                 $data['status'] = false;
-                $data['message'] = 'User does not exits';
+                $data['message'] = 'Otp does not exits';
                 return response()->json($data);
             }
         } catch (\Exception $e) {
@@ -471,11 +478,12 @@ class UserController extends Controller
             {
                 return errorMsg($validator->errors()->first());
             }
-            $user_id = Auth::user()->id;
+            $user = Auth::user();
             $booking = new TourBooking;
             $booking->tour_id = $request->tour_id;
             $booking->tour_type = $request->tour_type;/*1-Normal Tour, 2:Virtual tour */
-            $booking->user_id = $user_id;
+            $booking->user_id = $user->id;
+            $booking->user_name = $user->fullname;
             $booking->booking_date = $request->booking_date;
             $booking->no_adults = $request->no_adults;/*Number of adults*/
             $booking->no_senior_citizen = $request->no_senior_citizen;/*Number of senior citizen*/
