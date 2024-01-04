@@ -212,27 +212,28 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a onclick="getCheck(this)" data-type="normal_tours"
-                                                            class="btn-bl">Tour
+                                                            data-id="normal_tours" class="btn-bl">Tour
                                                             Booking</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a class="btn-bla" onclick="getCheck(this)"
-                                                            data-type="virtual_tours">Virtual
+                                                            data-type="virtual_tours" data-id="virtual_tours">Virtual
                                                             Tour</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group" onclick="getCheck(this)"
-                                                        data-type="photo_booth">
+                                                        data-type="photo_booth" data-id="photo_booth">
                                                         <a class="btn-br">Photo Booth</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a class="btn-gra" onclick="getCheck(this)"
-                                                            data-type="taxi_bookings">Taxi Booking</a>
+                                                            data-type="taxi_bookings" data-id="taxi_bookings">Taxi
+                                                            Booking</a>
                                                     </div>
                                                 </div>
                                             </div>

@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/taxi-booking-requests.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -32,7 +33,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-5">
+                                                <div class="col-md-4">
                                                     <div class="search-form-group">
                                                         <input type="text" name="" class="form-control"
                                                             placeholder="Search User name, Booking ID">
@@ -40,14 +41,24 @@
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <input type="date" name="" class="form-control">
+                                                <div class="col-md-3 d-flex">
+                                                    <div class="mt-2">
+                                                        <a href="{{ route('TaxiBookingRequest') }}"><i class="fa fa-undo"
+                                                                aria-hidden="true"></i></a>
+                                                        &nbsp;
                                                     </div>
+                                                    <div class="form-group">
+                                                        <input type="date" name="date"
+                                                            value="{{ request()->has('date') ? request('date') : '' }}"
+                                                            onchange="location.replace('{{ route('TaxiBookingRequest') }}?date='+this.value)"
+                                                            class="form-control">
+                                                    </div>
+
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gr">Download Data</a>
+                                                        <a href="#" class="btn-gr" onclick="exportToCSV(this)"
+                                                            data-id="taxi_booking_requests">Download Data</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -58,7 +69,7 @@
                         </div>
                         <div class="card-body">
                             <div class="kik-table">
-                                <table class="table xp-table  " id="customer-table">
+                                <table class="table xp-table  " id="taxi_booking_requests">
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
@@ -155,4 +166,47 @@
         </div>
 
     </div>
+    <script>
+        function exportToCSV(ele) {
+            // Get table data
+            var table = document.getElementById(ele.getAttribute("data-id"));
+            var rows = table.querySelectorAll('tbody tr');
+
+            // Create CSV content
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += headersToCSV(table);
+            csvContent += rowsToCSV(rows);
+
+            // Create and trigger a download link
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", ele.getAttribute("data-id") + '.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function headersToCSV(table) {
+            var headers = [];
+            var headerCols = table.querySelectorAll('thead th');
+            for (var i = 0; i < headerCols.length; i++) {
+                headers.push(headerCols[i].innerText);
+            }
+            return headers.join(',') + '\n';
+        }
+
+        function rowsToCSV(rows) {
+            var csv = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = [];
+                var cols = rows[i].querySelectorAll('td');
+                for (var j = 0; j < cols.length; j++) {
+                    row.push(cols[j].innerText);
+                }
+                csv.push(row.join(','));
+            }
+            return csv.join('\n');
+        }
+    </script>
 @endsection

@@ -40,8 +40,9 @@ class HomeController extends Controller
     public function index()
     {
         // Showing All datas of app like tourbooking
-        $Tourrequests = TourBooking::where('status', 0)->orderBy('id', 'DESC')->paginate(10);
-        return view('admin.home', compact('Tourrequests'));
+        $Tourrequests = TourBooking::with("Tour")->where('status', 1)->orderBy('id', 'DESC')->paginate(10);
+        $booked_dates = TourBooking::where('status', 1)->groupBy('booking_date')->pluck('booking_date');
+        return view('admin.home', compact('Tourrequests', 'booked_dates'));
     }
 
     public function users()
@@ -124,13 +125,13 @@ class HomeController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             // VIEW PAGE OF EDIT TOUR WITH NULL DATA(ACCODING TO TOUR ID)
             $data = Tour::where('id', $id)->first();
-            $images = TourAttribute::where('tour_id', $id)->get();/*Get all Images od Photo Booth*/ 
-            return view('admin.add-edit-tour', compact('data','images'));
+            $images = TourAttribute::where('tour_id', $id)->get();/*Get all Images od Photo Booth*/
+            return view('admin.add-edit-tour', compact('data', 'images'));
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     // View page of virtual tour
     public function EditVirtualTour($id)
     {
@@ -330,17 +331,16 @@ class HomeController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $tour = TourAttribute::where('id', $id)->first();/*Get first data of media  tour*/
             $image_count = TourAttribute::where('tour_id', $tour->tour_id)->count();
-            if($image_count >1)
-            {
-                if (file_exists(public_path('upload/tour-thumbnail/'.$tour->attribute_name))) {
-                    unlink(public_path('upload/tour-thumbnail/'.$tour->attribute_name));/*Delete Photo booth image from file*/
+            if ($image_count > 1) {
+                if (file_exists(public_path('upload/tour-thumbnail/' . $tour->attribute_name))) {
+                    unlink(public_path('upload/tour-thumbnail/' . $tour->attribute_name));/*Delete Photo booth image from file*/
                 }
                 $data = TourAttribute::where('id', $id)->delete();/*Delete Photo booth images or videos*/
-                $message = 'Tour image deleted successfully';//sesions mesages
-                $type = 'success';//sesions type
-            }else{
-                $message = 'Unable to delete last image';//sesions mesages
-                $type = 'error';//sesions type
+                $message = 'Tour image deleted successfully'; //sesions mesages
+                $type = 'success'; //sesions type
+            } else {
+                $message = 'Unable to delete last image'; //sesions mesages
+                $type = 'error'; //sesions type
             }
             return redirect()->back()->with($type, $message);
         } catch (\Exception $e) {
@@ -550,7 +550,7 @@ class HomeController extends Controller
             $data = null;/*Empty booth data to handle add page*/
             $images = [];/*Empty Images to handle add page*/
             $videos = [];/*Empty Videos to handle add page*/
-            return view('admin.add-edit-photo-booth', compact('tours', 'data','images','videos'));
+            return view('admin.add-edit-photo-booth', compact('tours', 'data', 'images', 'videos'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -732,18 +732,18 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /*Edit Photo Booth*/
     public function EditPhotoBooth($id)
     {
         $id = encrypt_decrypt('decrypt', $id);
         $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
         $data = PhotoBooth::where('id', $id)->first();
-        $images = PhotoBoothMedia::where('media_type','Image')->where('booth_id', $id)->get();/*Get all Images od Photo Booth*/ 
-        $videos = PhotoBoothMedia::where('media_type','Video')->where('booth_id', $id)->get();/*Get all videoes od Photo Booth*/ 
-        return view('admin.add-edit-photo-booth', compact('data', 'tours','images','videos'));
+        $images = PhotoBoothMedia::where('media_type', 'Image')->where('booth_id', $id)->get();/*Get all Images od Photo Booth*/
+        $videos = PhotoBoothMedia::where('media_type', 'Video')->where('booth_id', $id)->get();/*Get all videoes od Photo Booth*/
+        return view('admin.add-edit-photo-booth', compact('data', 'tours', 'images', 'videos'));
     }
-    
+
     /*Delete Photo Booth*/
     public function DeletePhotoBooth(Request $request)
     {
@@ -754,7 +754,7 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /*Delete image/video of Photo Booth*/
     public function DeletePhotoBoothImage($id)
     {
@@ -762,34 +762,31 @@ class HomeController extends Controller
             // Decrypt the Photo Booth ID using the encrypt_decrypt function
             $id = encrypt_decrypt('decrypt', $id);
             $media = PhotoBoothMedia::where('id', $id)->first();/*Get first data of media  Photo booth*/
-            if($media->media_type == 'Image')
-            {
-                $image_count = PhotoBoothMedia::where('media_type','Image')->where('booth_id', $media->booth_id)->count();
-                if($image_count >1)
-                {
-                    if (file_exists(public_path('upload/photo-booth/'.$media->media))) {
-                        unlink(public_path('upload/photo-booth/'.$media->media));/*Delete Photo booth image from file*/
+            if ($media->media_type == 'Image') {
+                $image_count = PhotoBoothMedia::where('media_type', 'Image')->where('booth_id', $media->booth_id)->count();
+                if ($image_count > 1) {
+                    if (file_exists(public_path('upload/photo-booth/' . $media->media))) {
+                        unlink(public_path('upload/photo-booth/' . $media->media));/*Delete Photo booth image from file*/
                     }
                     $data = PhotoBoothMedia::where('id', $id)->delete();/*Delete Photo booth images or videos*/
-                    $message = 'Photo booth image deleted successfully';//sesions mesages
-                    $type = 'success';//sesions type
-                }else{
-                    $message = 'Unable to delete last image';//sesions mesages
-                    $type = 'error';//sesions type
+                    $message = 'Photo booth image deleted successfully'; //sesions mesages
+                    $type = 'success'; //sesions type
+                } else {
+                    $message = 'Unable to delete last image'; //sesions mesages
+                    $type = 'error'; //sesions type
                 }
-            }else{
-                $video_count = PhotoBoothMedia::where('media_type','Video')->where('booth_id', $media->booth_id)->count();
-                if($video_count >1)
-                {
-                    if (file_exists(public_path('upload/video-booth/'.$media->media))) {
-                        unlink(public_path('upload/video-booth/'.$media->media));/*Delete Photo booth image from file*/
+            } else {
+                $video_count = PhotoBoothMedia::where('media_type', 'Video')->where('booth_id', $media->booth_id)->count();
+                if ($video_count > 1) {
+                    if (file_exists(public_path('upload/video-booth/' . $media->media))) {
+                        unlink(public_path('upload/video-booth/' . $media->media));/*Delete Photo booth image from file*/
                     }
-                    $message = 'Photo booth video deleted successfully';//sesions mesages
-                    $type = 'success';//sesions type 
+                    $message = 'Photo booth video deleted successfully'; //sesions mesages
+                    $type = 'success'; //sesions type 
                     $data = PhotoBoothMedia::where('id', $id)->delete();/*Delete Photo booth images or videos*/
-                }else{
-                    $message = 'Unable to delete last video';//sesions mesages
-                    $type = 'error';//sesions type
+                } else {
+                    $message = 'Unable to delete last video'; //sesions mesages
+                    $type = 'error'; //sesions type
                 }
             }
             return redirect()->back()->with($type, $message);
@@ -797,23 +794,23 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /* Profile Admin*/
     public function profile()
     {
         try {
             $data = Auth::user();
-            return view('admin.profile',compact('data'));
+            return view('admin.profile', compact('data'));
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-    
+
     /* Function for change password with login or without login*/
-    public function UpdatePassword(Request $request) 
+    public function UpdatePassword(Request $request)
     {
         try {
-            $data=array();
+            $data = array();
             $new_password = $request->new_password;
             $old_password = $request->old_password;
             $validator = Validator::make($request->all(), [
@@ -825,30 +822,28 @@ class HomeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $user = Auth::user();
-            if(!empty($old_password))
-            {
+            if (!empty($old_password)) {
                 /*Checking old password is same or not */
                 if ((Hash::check($request->old_password, $user->password)) == false) {
                     return redirect()->back()->with('error', 'Check your old password.');
                 }
             }
-            $id = User::where('id',$user->id)->update(['password'=>Hash::make($new_password)]);
-            
-            if(!empty($id))
-            {
+            $id = User::where('id', $user->id)->update(['password' => Hash::make($new_password)]);
+
+            if (!empty($id)) {
                 return redirect()->back()->with('success', 'Password change successfully');
-            }else{
+            } else {
                 return redirect()->back()->with('error', 'Something went wrong!');
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-    
+
     /* Function for change password with login or without login*/
-    public function UpdateProfile(Request $request) 
+    public function UpdateProfile(Request $request)
     {
         try {
             $user = Auth::user();
@@ -861,12 +856,12 @@ class HomeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-                
-            $users = User::where('id',$user->id)->first();
+
+            $users = User::where('id', $user->id)->first();
             $users->email = $request->email;
             $users->fullname = $request->fullname;
             $users->mobile = $request->mobile;
-            if ($file=$request->file('user_profile')){
+            if ($file = $request->file('user_profile')) {
                 /*Upload Admin profile*/
                 $destination = public_path('upload/profile');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
@@ -875,7 +870,6 @@ class HomeController extends Controller
             }
             $users->save();
             return redirect()->back()->with('success', 'Profile uploaded successfully');
-            
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

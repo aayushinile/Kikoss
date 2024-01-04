@@ -9,7 +9,11 @@
     </style>
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.js'></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+
     <script>
         // document.addEventListener('DOMContentLoaded', function() {
         //     var calendarEl = document.getElementById('calendar_id');
@@ -22,29 +26,45 @@
         //     });
         // });
         document.addEventListener('DOMContentLoaded', function() {
+
+            var bookings = @json($Tourrequests);
+            var events = [];
+
+            bookings.data.forEach(element => {
+                events.push({
+                    title: "Booked",
+                    start: element.booking_date,
+                    color: "blue"
+                });
+            });
             var calendarEl = document.getElementById('calendar_id');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                dayRender: function(info) {
-                    var specialDates = ['2023-12-25', '2023-12-31']; // Add your special dates here
+                events: events,
 
-                    var dateString = moment(info.date).format('YYYY-MM-DD');
-
-                    if (specialDates.includes(dateString)) {
-                        info.dayEl.classList.add('special-date');
-                    }
-                },
                 dateClick: function(info) {
+
+                    var booked = @json($booked_dates);
+                    booked.forEach(element => {
+                        if (element.split(" ")[0] == info.dateStr) {
+                            return false;
+                        }
+                    });
                     console.log('clicked on ' + info.dateStr);
+                    $('#my-modal').modal({
+                        show: 'true'
+                    });
                 }
             });
 
             calendar.render();
+
+
         });
     </script>
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
-    <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
+
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/apexcharts/apexcharts.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-js/dashboard-function.js') }}" type="text/javascript"></script>
@@ -337,6 +357,15 @@
         </div>
     </div>
 
+
+    <script>
+        $('#exampleModal').on('show.bs.modal', event => {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+            // Use above variables to manipulate the DOM
+
+        });
+    </script>
 
 
 @endsection
