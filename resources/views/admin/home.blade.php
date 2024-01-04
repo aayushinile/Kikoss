@@ -43,17 +43,41 @@
                 events: events,
 
                 dateClick: function(info) {
+                    var open = true;
+                    var date = "{{ date('y-m-d') }}";
+                    var status = "Available";
 
                     var booked = @json($booked_dates);
+
                     booked.forEach(element => {
+
                         if (element.split(" ")[0] == info.dateStr) {
-                            return false;
+                            open = false;
+                            date = info.dateStr;
                         }
                     });
                     console.log('clicked on ' + info.dateStr);
-                    $('#my-modal').modal({
-                        show: 'true'
-                    });
+                    if (open) {
+                        var button = document.getElementById("manage_dates_btn");
+                        button.click();
+
+                        // Parse the date string and create a Date object
+                        var popup_date = document.getElementById("popup_date");
+                        console.log(date);
+                        // Set the value of the date input
+                        popup_date.value = date;
+
+                        var radioButtons = document.querySelectorAll('.availabilityRadioButton');
+
+                        // Loop through the radio buttons
+                        radioButtons.forEach(function(radioButton) {
+                            // Check the radio button with the value "Available"
+                            if (radioButton.value === status) {
+                                radioButton.checked = true;
+                            }
+                        });
+                    }
+
                 }
             });
 
@@ -342,6 +366,60 @@
                                 <div id="chartBar"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a data-bs-toggle="modal" data-bs-target="#ManageDates" class="btn-gr" style="opacity: 0.1"
+        id="manage_dates_btn">Manage Dates</a>
+
+    <!-- Manage Dates popup -->
+    <div class="modal kik-modal fade" id="ManageDates" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-form">
+                        <h3>Manage Dates</h3>
+                        <form action="{{ route('set-date') }}" method="post">
+                            <div class="form-group">
+                                <h4>Selected Date</h4>
+                                <input type="date" id="popup_date" class="form-control">
+                            </div>
+
+                            @csrf
+                            <div class="form-group">
+                                <ul class="kik-datesstatus-list">
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype" value="Not Available"
+                                                class="availabilityRadioButton" id="Not Available">
+                                            <label for="Not Available">Not Available</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype" value="Available"
+                                                class="availabilityRadioButton" id="Available">
+                                            <label for="Available">Available</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype" value="Tour Bookings"
+                                                class="availabilityRadioButton" id="Tour Bookings">
+                                            <label for="Tour Bookings">Tour Bookings</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="kik-modal-action">
+                                <button class="yesbtn">Confirm & Save</button>
+                                <button class="Cancelbtn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
