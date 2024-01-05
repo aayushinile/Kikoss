@@ -285,7 +285,7 @@
 
                     age_under_10: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
                     under_10_age_price: {
                         //required: true,
@@ -298,7 +298,7 @@
                     },
                     age_11: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
 
                     age_60_price: {
@@ -307,12 +307,12 @@
                     },
                     age_60: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
 
                     for_all: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
                     for_all_price: {
                         //required: true,

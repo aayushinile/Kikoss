@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('availabity', function (Blueprint $table) {
+        Schema::create('available_dates', function (Blueprint $table) {
             $table->id();
-            $table->date("available_date")->nullable();
+            $table->date("date")->nullable();
+            $table->string("type")->nullable();
             $table->timestamps();
         });
     }

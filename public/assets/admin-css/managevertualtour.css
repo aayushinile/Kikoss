@@ -56,10 +56,11 @@ a.action-btn:hover{color: #fff}
 .action-btn-info a.edit-btn {color: #FFCF55; } 
 .action-btn-info a.delete-btn {color: #FB5353; }
 
-.managevertualtour-card-audio {
-    margin-top: 10px;
-    text-align: center;
-}
+
+
+
+
+
 
 .overview-card {position: relative; }
  .overview-card-body {border-radius: 0.4rem; border: none; background-color: var(--white); box-shadow: 0 0.15rem 0.1rem rgba(0, 0, 0, 0.04); position: relative; margin-block-end: 1.5rem; width: 100%; padding: 1rem; }
@@ -156,3 +157,15 @@ a.delete-btn{background: var(--red);border: 1px solid var(--red);padding: 5px 10
 
 .cancelbtn {background: var(--blue); border: 1px solid var(--blue); padding: 5px 20px; display: inline-block; font-size: 12px; color: var(--white); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 .Savebtn{background: var(--green);border: 1px solid var(--green);padding: 5px 20px;display: inline-block;font-size: 12px; color:var(--white);border-radius: 5px;text-transform: uppercase;font-weight: bold; text-align: center;}
+
+
+a.addmorefile {vertical-align: baseline; }
+
+.upload-file label {border:2px dashed #3da1e3;box-shadow: 0px 8px 13px 0px rgba(0, 0, 0, 0.05); border-radius: 5px; background: #fff; padding: 2rem 1rem; width: 100%; }
+.uploadDoc {width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1; }
+.addDoc+label {color: #455A64; text-align: center; }
+.addDoc:focus+label,
+.addDoc.has-focus+label,
+.addDoc+label:hover {color: #92b116; }
+.addDoc+label figure {width: 100px; height: 100px; border-radius: 50%; background-color: #d3394c; display: block; padding: 20px; margin: 0 auto 10px; }
+.upload-text {font-size: 12px; color: #455A64; font-weight: bold; }
