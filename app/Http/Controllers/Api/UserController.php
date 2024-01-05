@@ -306,6 +306,57 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+    
+    /*Check Email auth  (Otp send via email)*/
+    public function send_otp(Request $request) 
+    {
+        try {
+            $data=array();
+            $validator = Validator::make($request->all() , [
+                'email' => 'required|email',
+            ]);
+            if ($validator->fails())
+            {
+                return errorMsg($validator->errors()->first());
+            }
+            $email = $request->email;
+            $user = User::where('email',$email)->orderBy('id','DESC')->first();
+            
+            if(empty($user))
+            {
+                
+                $exist = Otp::where('email',$email)->orderBy('id','DESC')->first();
+                if(!empty($exist))
+                {
+                    $code = rand(1000,9999);/*Four digit otp code*/
+                    $users = Otp::where('email',$email)->update(['otp'=>$code]);
+                    $data['status'] = true;
+                    $data['message'] = 'Verification code has been sent';
+                    $data['code'] = $code;
+                    $data['email'] = $email;
+                    return response()->json($data);
+                }else{
+                    
+                    $OTP = new Otp;
+                    $code = rand(1000,9999);
+                    $OTP->email = $email;
+                    $OTP->otp = $code;
+                    $OTP->save();
+                    $data['status'] = true;
+                    $data['message'] = 'Verification code has been sent';
+                    $data['code'] = $code;
+                    $data['email'] = $email;
+                    return response()->json($data);
+                }
+            }else{
+                $data['status'] = false;
+                $data['message'] = 'Email is allready register.';
+                return response()->json($data);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 
     /*User verified otp(Email via) */
     public function verifyotp(Request $request) 
@@ -559,6 +610,13 @@ class UserController extends Controller
                 $temp['purchase_user_count'] = 2.1.'M';
                 $temp['purchase_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
                 $temp['audio'] = asset('public/upload/virtual-audio/'.$tour->audio_file);/*Audio file of virtual tour*/
+                if(isset($tour->trial_audio_file))
+                {
+                    $temp['trail_audio'] =  asset('public/upload/virtual-audio/'.$tour->trial_audio_file);/*Audio file of virtual tour*/
+                }else{
+                    $temp['trail_audio'] = '';/*Audio file of virtual tour*/
+                }
+                
                 $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/'.$tour->thumbnail_file);/*Thumbnail file of virtual tour*/
             }else{
                 $temp = '';

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('minute')->nullable();
             $table->string('duration')->nullable();
             $table->text('audio_file');
+            $table->text('trial_audio_file');
             $table->text('thumbnail_file');
             $table->text('short_description');
             $table->text('description');

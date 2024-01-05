@@ -22,6 +22,7 @@ return new class extends Migration
             $table->float('age_11_price')->nullable();
             $table->float('age_60_price')->nullable();
             $table->float('under_10_age_price')->nullable();
+            $table->float('same_for_all')->nullable();
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->text('cancellation_policy')->nullable();

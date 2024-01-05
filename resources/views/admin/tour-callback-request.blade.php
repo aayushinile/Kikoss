@@ -8,7 +8,7 @@
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
-        <h4>Tour Callback Request</h4>
+        <h4>Tour Free Callback Request</h4>
     </div>
     <div class="body-main-content">
 

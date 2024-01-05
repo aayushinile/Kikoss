@@ -242,17 +242,13 @@
                                             stroke-linejoin="round" />
                                     </svg>
                                 </span>
-                                <span class="menu-title">Tour Callback Requests</span>
+                                <span class="menu-title">Tour Free Callback Requests</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                    class="d-none">
-                                    @csrf
-                                </form>
+                            <a class="nav-link" data-bs-toggle="modal" class="dropdown-item logout"
+                                data-bs-target="#deletepopupHeader">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -329,7 +325,8 @@
                                         </form>
                                         <i class="las la-sign-out-alt"></i> Logout
                                     </a> --}}
-                                    <a href=""data-bs-toggle="modal" data-bs-target="#deletepopup">
+                                    <a data-bs-toggle="modal" class="dropdown-item logout"
+                                        data-bs-target="#deletepopupHeader">
                                         <i class="las
                                         la-sign-out-alt"></i>
                                         Logout
@@ -352,7 +349,7 @@
         </div>
     </div>
     <!-- Logout popup -->
-    <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <div class="modal kik-modal fade" id="deletepopupHeader" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -365,13 +362,16 @@
                             <h3>Are you sure you want to logout?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
-                                <form action="{{ route('DeleteVirtualTour') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" value="" name="id" id="photo_booth_id">
-                                    <button class="yesbtn"type="submit">Yes</button>
-                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
-                                        aria-label="Close"onClick="window.location.reload();">No</button>
-                                </form>
+                                <button class="yesbtn"type="submit"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    class="dropdown-item">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
+                                        @csrf
+                                    </form>Yes
+                                </button>
+                                <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                    aria-label="Close"onClick="window.location.reload();">No</button>
                             </div>
                         </div>
                     </div>

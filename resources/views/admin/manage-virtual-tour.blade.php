@@ -116,7 +116,7 @@
                             <div class="card-header">
                                 <div class="d-flex align-items-center">
                                     <div class="mr-auto">
-                                        <h4 class="heading-title">Manage Virtual Tour</h4>
+                                        <h4 class="heading-title">Virtual Tour Booking</h4>
                                     </div>
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">
@@ -148,7 +148,8 @@
 
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <input type="date" name="date" class="form-control">
+                                                        <input type="date" name="date" data-date-format="YYYY-MM-DD"
+                                                            class="form-control">
                                                     </div>
                                                 </div>
                                             </div>

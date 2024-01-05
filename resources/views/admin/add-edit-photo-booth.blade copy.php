@@ -2,9 +2,6 @@
 @section('title', 'Kikos - Manage Photo-Booth')
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managephoto.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managevertualtour.css') }}">
-
-
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
@@ -126,14 +123,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <h4>Browse & Upload Photos</h4>
-                                <input type="file" class="file-form-control" id="imageInput" name="image[]"
-                                    accept=".png, .jpg, .jpeg" multiple @if (empty($data)) required @endif>
+                                <input type="file" class="file-form-control" name="image[]" accept=".png, .jpg, .jpeg"
+                                    multiple @if (empty($data)) required @endif>
                             </div>
                             @error('image')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                             <div class="uploaded-section">
-                                <div class="row" id="photo_container">
+                                <div class="row">
                                     @foreach ($images as $val)
                                         <div class="col-md-4">
                                             <div class="uploaded-media-card">
@@ -156,13 +153,13 @@
                             <div class="form-group">
                                 <h4>Browse & Upload Videos</h4>
                                 <input type="file" class="file-form-control" name="video[]" accept=".mp4"
-                                    id="videoInput" @if (empty($data)) required @endif multiple>
+                                    @if (empty($data)) required @endif multiple>
                             </div>
                             @error('video')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                             <div class="uploaded-section">
-                                <div class="row" id="video_container">
+                                <div class="row">
                                     @foreach ($videos as $value)
                                         <div class="col-md-4">
                                             <div class="uploaded-media-card">
@@ -180,97 +177,6 @@
                                             </div>
                                         </div>
                                     @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="create-review-form-group form-group">
-                                <h4>Upload Virtual Audio/video <a class="addmorefile" href=""><img
-                                            src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
-                                </h4>
-                                <div class="create-review-form-input">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
-                                                        id="addfile1" class="uploadDoc addDoc">
-                                                    <label for="addfile1">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img id="image_addfile1"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
-                                                        id="addfile2" class="uploadDoc addDoc">
-                                                    <label for="addfile2">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="col-md-3">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
-                                                        id="addfile3" class="uploadDoc addDoc">
-                                                    <label for="addfile3">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
-                                                        id="addfile4" class="uploadDoc addDoc">
-                                                    <label for="addfile4">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -312,99 +218,6 @@
                 },
                 cache: true
             }
-        });
-
-        document.getElementById('imageInput').addEventListener('change', function(event) {
-            const fileInput = event.target;
-
-            if (fileInput.files.length > 0) {
-
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-
-                        var data = `<div class="col-md-4">
-                                            <div class="uploaded-media-card">
-                                                <div class="uploaded-media">
-                                                    <img src="${e.target.result}">
-                                                </div>
-                                                <div class="uploaded-action">
-                                                    <a
-                                                    onclick="$(this).closest('.col-md-4').hide()"><i
-                                                            class="las la-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>`;
-                        $("#photo_container").html($("#photo_container").html() + data);
-                    };
-
-                    // Read the file as a data URL
-                    reader.readAsDataURL(file);
-                }
-
-            }
-            // renderImages()
-        });
-        document.getElementById('videoInput').addEventListener('change', function(event) {
-            const fileInput = event.target;
-
-
-            if (fileInput.files.length > 0) {
-
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-
-                        var data = ` <div class="col-md-4 ">
-                                            <div class="uploaded-media-card">
-                                                <div class="uploaded-media">
-                                                    <video controls width="100%" height="110px">
-                                                        <source src="${e.target.result}"
-                                                            type="video/mp4" />
-                                                    </video>
-                                                </div>
-                                                <div class="uploaded-action">
-                                                    <a
-                                                        onclick="$(this).closest('.col-md-4').hide()"><i
-                                                            class="las la-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>`;
-                        $("#video_container").html($("#video_container").html() + data);
-                    };
-
-                    // Read the file as a data URL
-                    reader.readAsDataURL(file);
-                }
-
-            }
-            // renderImages()
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            // Select all elements with the class "add"
-            let elementsWithClass = document.querySelectorAll('.uploadDoc');
-
-            // Add an event listener to each element
-            elementsWithClass.forEach(function(element) {
-                element.addEventListener('change', function(event) {
-                    // Your event handling code goes here
-                    const file = event.target.files[0];
-
-                    const imgURL = URL.createObjectURL(file);
-
-                    let label = document.querySelector(`[for="${element.getAttribute("id")}"]`);
-                    label.style.backgroundImage = `url("${imgURL}")`;
-                    label.style.backgroundPosition = 'center';
-                    label.style.backgroundSize = 'cover';
-
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.opacity = 0;
-                });
-            });
         });
     </script>
 @endsection

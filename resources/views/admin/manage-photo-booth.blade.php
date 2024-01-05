@@ -121,7 +121,7 @@
                             <div class="card-header">
                                 <div class="d-flex align-items-center">
                                     <div class="mr-auto">
-                                        <h4 class="heading-title">Manage Virtual Tour</h4>
+                                        <h4 class="heading-title">Photo Booth Booking</h4>
                                     </div>
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">

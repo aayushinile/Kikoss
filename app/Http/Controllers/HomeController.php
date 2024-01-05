@@ -170,23 +170,26 @@ class HomeController extends Controller
     public function SaveTour(Request $request)
     {
         try {
-            if($request->for_all_price){
+            if($request->same_for_all){
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
                     'total_people' => 'required',
                     'duration' => 'required|min:0',
                     'what_to_bring' => 'required',
-                    'for_all_price' => 'required|min:0',
+                    'same_for_all' => 'required',
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
-                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                    //'thumbnail' => 'required','mimes:jpeg,png,jpg,svg','max:5120',
                 ]);
-                $price = $request->for_all_price;
+                
+                $price = $request->same_for_all;
                 $age_11_price = $price;
                 $age_60_price = $price;
                 $under_10_age_price = $price; 
+                $same_for_all = $price; 
+                
             }else{
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
@@ -200,14 +203,16 @@ class HomeController extends Controller
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
-                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                    //'thumbnail[]' => 'required','thumbnail','mimes:jpeg,png,jpg,svg','max:5120',
                 ]);
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
-                $under_10_age_price = $request->under_10_age_price;  
+                $under_10_age_price = $request->under_10_age_price; 
+                $same_for_all = 0; 
             }
+            
 
-            if ($validator->fails()) {
+            if ($validator->fails()) {   
                 return redirect()->back()->withErrors($validator)->withInput();
             }
             
@@ -220,6 +225,7 @@ class HomeController extends Controller
                 'age_11_price' => $age_11_price,
                 'age_60_price' => $age_60_price,
                 'under_10_age_price' => $under_10_age_price,
+                'same_for_all' => $same_for_all,
                 'description' => $request->description,
                 'short_description' => $request->short_description,
                 'cancellation_policy' => $request->cancellation_policy,
@@ -352,6 +358,7 @@ class HomeController extends Controller
     public function SaveVirtualTour(Request $request)
     {
         try {
+           
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required|min:0',
@@ -360,11 +367,13 @@ class HomeController extends Controller
                 'description' => 'required',
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
-                'audio' => 'required|max:5120',
-                'thumbnail' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
+                //'audio' => 'required|max:5120',
+                //'trial_audio_file' => 'required|max:5120',
+                //'thumbnail' => 'required|mimes:jpeg,png,jpg,svg|max:2048',
             ]);
 
             if ($validator->fails()) {
+               
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -374,6 +383,12 @@ class HomeController extends Controller
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
                 $Tour->audio_file = $name;
+            }
+            if ($file = $request->file('trial_audio_file')) {
+                $destination = public_path('upload/virtual-audio');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $Tour->trial_audio_file = $name;
             }
             if ($files = $request->file('thumbnail')) {
                 $destination_file = public_path('upload/virtual-thumbnail');
@@ -401,6 +416,7 @@ class HomeController extends Controller
     public function UpdateVirtualTour(Request $request)
     {
         try {
+           
             //Validation of virtual tour
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
@@ -411,9 +427,10 @@ class HomeController extends Controller
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
                 'audio' => 'max:5120',
-                'thumbnail' => 'image|mimes:jpeg,png,jpg,svg|max:2048',
+                'trial_audio_file' => 'max:5120',
+                //'thumbnail' => 'mimes:jpeg,png,jpg,svg|max:2048',
             ]);
-
+            
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
@@ -427,6 +444,15 @@ class HomeController extends Controller
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
                 $Tour->audio_file = $name;
+            }
+            if ($file = $request->file('trial_audio_file')) {
+                if (file_exists(public_path('upload/virtual-audio/'.$Tour->trial_audio_file))) {
+                    unlink(public_path('upload/virtual-audio/'.$Tour->trial_audio_file));/*Delete audio file of virtual tour */
+                }
+                $destination = public_path('upload/virtual-audio');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $Tour->trial_audio_file = $name;
             }
             if ($files = $request->file('thumbnail')) {
                 if (file_exists(public_path('upload/virtual-thumbnail/'.$Tour->thumbnail_file))) {
