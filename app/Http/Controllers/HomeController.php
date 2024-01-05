@@ -102,8 +102,8 @@ class HomeController extends Controller
         $total_amount = DB::table("payment_details")->whereIn("user_payment_method_id", $user_payment_methods)->where("status", 1)->sum("amount");
 
         // Pass data to the 'admin.user-detail' view
-        $taxi_booking_requests = TaxiBooking::orderBy('id', 'DESC')->paginate(10);//Get all request taxi booking
-        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount','taxi_booking_requests'));
+        $taxi_booking_requests = TaxiBooking::orderBy('id', 'DESC')->paginate(10); //Get all request taxi booking
+        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount', 'taxi_booking_requests'));
     }
 
     public function AddTour()
@@ -170,24 +170,26 @@ class HomeController extends Controller
     public function SaveTour(Request $request)
     {
         try {
-            if($request->for_all_price){
+            if ($request->same_for_all) {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
                     'total_people' => 'required',
                     'duration' => 'required|min:0',
                     'what_to_bring' => 'required',
-                    'for_all_price' => 'required|min:0',
+                    'same_for_all' => 'required',
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
-                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                    //'thumbnail' => 'required','mimes:jpeg,png,jpg,svg','max:5120',
                 ]);
-                $price = $request->for_all_price;
+
+                $price = $request->same_for_all;
                 $age_11_price = $price;
                 $age_60_price = $price;
-                $under_10_age_price = $price; 
-            }else{
+                $under_10_age_price = $price;
+                $same_for_all = $price;
+            } else {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
@@ -200,17 +202,19 @@ class HomeController extends Controller
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
-                    'thumbnail[]' => ['required','image','mimes:jpeg,png,jpg,svg','max:5120'],
+                    //'thumbnail[]' => 'required','thumbnail','mimes:jpeg,png,jpg,svg','max:5120',
                 ]);
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
-                $under_10_age_price = $request->under_10_age_price;  
+                $under_10_age_price = $request->under_10_age_price;
+                $same_for_all = 0;
             }
+
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $TourID = Tour::insertGetId([
                 'title' => $request->title,
                 'name' => $request->name,
@@ -220,6 +224,7 @@ class HomeController extends Controller
                 'age_11_price' => $age_11_price,
                 'age_60_price' => $age_60_price,
                 'under_10_age_price' => $under_10_age_price,
+                'same_for_all' => $same_for_all,
                 'description' => $request->description,
                 'short_description' => $request->short_description,
                 'cancellation_policy' => $request->cancellation_policy,
@@ -246,7 +251,7 @@ class HomeController extends Controller
     public function UpdateTour(Request $request)
     {
         try {
-            if($request->for_all_price){
+            if ($request->for_all_price) {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
@@ -261,8 +266,8 @@ class HomeController extends Controller
                 $price = $request->for_all_price;
                 $age_11_price = $price;
                 $age_60_price = $price;
-                $under_10_age_price = $price; 
-            }else{
+                $under_10_age_price = $price;
+            } else {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
@@ -278,7 +283,7 @@ class HomeController extends Controller
                 ]);
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
-                $under_10_age_price = $request->under_10_age_price;  
+                $under_10_age_price = $request->under_10_age_price;
             }
 
             if ($validator->fails()) {
@@ -292,15 +297,15 @@ class HomeController extends Controller
             $tour->total_people = $request->total_people;
             $tour->duration = $request->duration;
             $tour->what_to_bring = $request->what_to_bring;
-            if($request->for_all_price){
+            if ($request->for_all_price) {
                 $price = $request->for_all_price;
                 $tour->age_11_price = $price;
                 $tour->age_60_price = $price;
                 $tour->under_10_age_price = $price;
-            }else{
+            } else {
                 $tour->age_11_price = $request->age_11_price;
                 $tour->age_60_price = $request->age_60_price;
-                $tour->under_10_age_price = $request->under_10_age_price;  
+                $tour->under_10_age_price = $request->under_10_age_price;
             }
             $tour->short_description = $request->short_description;
             $tour->description = $request->description;
@@ -318,7 +323,7 @@ class HomeController extends Controller
                 }
             }
             $tour->save();
-            return redirect('tour')->with('success', 'Tour Updated successfully');
+            return redirect('tours')->with('success', 'Tour Updated successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
@@ -352,6 +357,7 @@ class HomeController extends Controller
     public function SaveVirtualTour(Request $request)
     {
         try {
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required|min:0',
@@ -360,11 +366,13 @@ class HomeController extends Controller
                 'description' => 'required',
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
-                'audio' => 'required|max:5120',
-                'thumbnail' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
+                //'audio' => 'required|max:5120',
+                //'trial_audio_file' => 'required|max:5120',
+                //'thumbnail' => 'required|mimes:jpeg,png,jpg,svg|max:2048',
             ]);
 
             if ($validator->fails()) {
+
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -374,6 +382,12 @@ class HomeController extends Controller
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
                 $Tour->audio_file = $name;
+            }
+            if ($file = $request->file('trial_audio_file')) {
+                $destination = public_path('upload/virtual-audio');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $Tour->trial_audio_file = $name;
             }
             if ($files = $request->file('thumbnail')) {
                 $destination_file = public_path('upload/virtual-thumbnail');
@@ -401,6 +415,7 @@ class HomeController extends Controller
     public function UpdateVirtualTour(Request $request)
     {
         try {
+
             //Validation of virtual tour
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
@@ -411,7 +426,8 @@ class HomeController extends Controller
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
                 'audio' => 'max:5120',
-                'thumbnail' => 'image|mimes:jpeg,png,jpg,svg|max:2048',
+                'trial_audio_file' => 'max:5120',
+                //'thumbnail' => 'mimes:jpeg,png,jpg,svg|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -420,17 +436,26 @@ class HomeController extends Controller
 
             $Tour = VirtualTour::find($request->pid);
             if ($file = $request->file('audio')) {
-                if (file_exists(public_path('upload/virtual-audio/'.$Tour->audio_file))) {
-                    unlink(public_path('upload/virtual-audio/'.$Tour->audio_file));/*Delete audio file of virtual tour */
+                if (file_exists(public_path('upload/virtual-audio/' . $Tour->audio_file))) {
+                    unlink(public_path('upload/virtual-audio/' . $Tour->audio_file));/*Delete audio file of virtual tour */
                 }
                 $destination = public_path('upload/virtual-audio');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
                 $Tour->audio_file = $name;
             }
+            if ($file = $request->file('trial_audio_file')) {
+                if (file_exists(public_path('upload/virtual-audio/' . $Tour->trial_audio_file))) {
+                    unlink(public_path('upload/virtual-audio/' . $Tour->trial_audio_file));/*Delete audio file of virtual tour */
+                }
+                $destination = public_path('upload/virtual-audio');
+                $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                $file->move($destination, $name);
+                $Tour->trial_audio_file = $name;
+            }
             if ($files = $request->file('thumbnail')) {
-                if (file_exists(public_path('upload/virtual-thumbnail/'.$Tour->thumbnail_file))) {
-                    unlink(public_path('upload/virtual-thumbnail/'.$Tour->thumbnail_file));/*Delete thumbnail file of virtual tour */
+                if (file_exists(public_path('upload/virtual-thumbnail/' . $Tour->thumbnail_file))) {
+                    unlink(public_path('upload/virtual-thumbnail/' . $Tour->thumbnail_file));/*Delete thumbnail file of virtual tour */
                 }
                 $destination_file = public_path('upload/virtual-thumbnail');
                 $name_file = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $files->extension();
@@ -491,7 +516,7 @@ class HomeController extends Controller
         try {
             $datas = CallbackRequest::orderBy('id', 'DESC')->paginate(10);
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            return view('admin.tour-callback-request', compact('datas','tours'));
+            return view('admin.tour-callback-request', compact('datas', 'tours'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -536,7 +561,7 @@ class HomeController extends Controller
             $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings','tours'));
+            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -560,7 +585,7 @@ class HomeController extends Controller
     public function TaxiBookingRequest()
     {
         try {
-            $bookings = TaxiBooking::orderBy('id', 'DESC')->paginate(10);//Get all request taxi booking
+            $bookings = TaxiBooking::orderBy('id', 'DESC')->paginate(10); //Get all request taxi booking
             return view('admin.taxi-booking-request', compact('bookings'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -894,37 +919,35 @@ class HomeController extends Controller
     {
         $query = $request['query'];
 
-        $datas = Tour::where('title','like','%' .$query. '%')
-                    ->orderBy('id','DESC')
-                    ->limit(50)
-                    ->get();
-        $i=1;
+        $datas = Tour::where('title', 'like', '%' . $query . '%')
+            ->orderBy('id', 'DESC')
+            ->limit(50)
+            ->get();
+        $i = 1;
         $table_data = '';
-        if($datas->count() > 0)
-        {
-            foreach ($datas as $val) 
-            {                
+        if ($datas->count() > 0) {
+            foreach ($datas as $val) {
                 $table_data .= '
                     <div class="col-md-4">
                         <div class="manage-tour-card">
                             <div class="manage-tour-card-media">
-                                <img src="'. assets('assets/admin-images/IMG_9838.jpg') .'">
+                                <img src="' . assets('assets/admin-images/IMG_9838.jpg') . '">
                             </div>
                             <div class="manage-tour-card-content">
                                 <div class="manage-tour-card-text">
-                                    <h3>'.$val->title.'</h3>
-                                    <p>'.$val->name  .' • '. $val->duration .' Hours</p>
-                                    <div class="price-text">US$'.$val->under_10_age_price .' –
-                                        US$'. $val->age_11_price .'</div>
+                                    <h3>' . $val->title . '</h3>
+                                    <p>' . $val->name  . ' • ' . $val->duration . ' Hours</p>
+                                    <div class="price-text">US$' . $val->under_10_age_price . ' –
+                                        US$' . $val->age_11_price . '</div>
                                     </div>
                                     <div class="manage-tour-card-action">
-                                        <a href="' .url('tour-detail/' . encrypt_decrypt('encrypt', $val->id)) . '">View</a>
+                                        <a href="' . url('tour-detail/' . encrypt_decrypt('encrypt', $val->id)) . '">View</a>
                                     </div>
                                 </div>
                             </div>
                         </div>';
-           }
-        }else{
+            }
+        } else {
             $table_data = '<tr>
                 <td colspan="10">
                     <h5 style="text-align: center">No Record Found</h5>
@@ -933,53 +956,51 @@ class HomeController extends Controller
         }
         echo json_encode($table_data);
     }
-    
+
     //Live Search of users
     public function live_users(Request $request)
     {
         $query = $request['query'];
 
-        $datas = User::where('fullname','like','%' .$query. '%')
-                    ->Orwhere('email','like','%' .$query. '%')
-                    ->Orwhere('mobile','like','%' .$query. '%')
-                    ->where('type','!=',1)
-                    ->orderBy('id','DESC')
-                    ->limit(50)
-                    ->get();
-        $i=1;
+        $datas = User::where('fullname', 'like', '%' . $query . '%')
+            ->Orwhere('email', 'like', '%' . $query . '%')
+            ->Orwhere('mobile', 'like', '%' . $query . '%')
+            ->where('type', '!=', 1)
+            ->orderBy('id', 'DESC')
+            ->limit(50)
+            ->get();
+        $i = 1;
         $table_data = '';
-        if($datas->count() > 0)
-        {
-            foreach ($datas as $val) 
-            {                
+        if ($datas->count() > 0) {
+            foreach ($datas as $val) {
                 $table_data .= '
                 <tr>
                     <td>
-                       '. $i++ .'
+                       ' . $i++ . '
                     </td>
                     <td>
-                        '. $val->fullname  .'
+                        ' . $val->fullname  . '
                     </td>
 
                     <td>
-                        '. $val->email  .'
+                        ' . $val->email  . '
                     </td>
                     <td>
-                        '. '+1 ' .$val->mobile  .'
+                        ' . '+1 ' . $val->mobile  . '
                     </td>
                     <td>
-                        '. date('d M, Y, h:i:s a', strtotime($val->created_at)) .'
+                        ' . date('d M, Y, h:i:s a', strtotime($val->created_at)) . '
                     </td>
                 <td>
                     <div class="action-btn-info">
                     <a class="dropdown-item view-btn"
-                    href="'. url('user-details/' . encrypt_decrypt('encrypt', $val->id)) .'"><i
+                    href="' . url('user-details/' . encrypt_decrypt('encrypt', $val->id)) . '"><i
                         class="las la-eye"></i> View</a>
                     </div>
                 </td>
             </tr>';
-           }
-        }else{
+            }
+        } else {
             $table_data = '<tr>
                 <td colspan="10">
                     <h5 style="text-align: center">No Record Found</h5>
@@ -988,7 +1009,7 @@ class HomeController extends Controller
         }
         echo json_encode($table_data);
     }
-    
+
     //Live Search of users
     public function search_name(Request $request)
     {
@@ -996,42 +1017,40 @@ class HomeController extends Controller
         $query = $request['query'];
         $tour_id = $request['tour_id'];
         $Date = $request['Date'];
-        
-        if(isset($query)){
-            $datas = TourBooking::where('user_name','like','%' .$query. '%')
-                    ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
-                    ->orderBy('id','DESC')
-                    ->limit(50)
-                    ->get();
-        }elseif ($tour_id) {
-            $datas = TourBooking::where('tour_id','like','%' .$tour_id. '%')
-            ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
-            ->orderBy('id','DESC')
-            ->limit(50)
-            ->get();
-        }elseif($Date){
-            $datas = TourBooking::where('booking_date','like','%' .$Date. '%')
-            ->where('tour_type', 1)//1:Normal tour, 2:Virtual Tour
-            ->orderBy('id','DESC')
-            ->limit(50)
-            ->get();
+
+        if (isset($query)) {
+            $datas = TourBooking::where('user_name', 'like', '%' . $query . '%')
+                ->where('tour_type', 1) //1:Normal tour, 2:Virtual Tour
+                ->orderBy('id', 'DESC')
+                ->limit(50)
+                ->get();
+        } elseif ($tour_id) {
+            $datas = TourBooking::where('tour_id', 'like', '%' . $tour_id . '%')
+                ->where('tour_type', 1) //1:Normal tour, 2:Virtual Tour
+                ->orderBy('id', 'DESC')
+                ->limit(50)
+                ->get();
+        } elseif ($Date) {
+            $datas = TourBooking::where('booking_date', 'like', '%' . $Date . '%')
+                ->where('tour_type', 1) //1:Normal tour, 2:Virtual Tour
+                ->orderBy('id', 'DESC')
+                ->limit(50)
+                ->get();
         }
-                    
-        $i=1;
+
+        $i = 1;
         $table_data = '';
-        if($datas->count() > 0)
-        {
-            foreach ($datas as $val) 
-            {                
+        if ($datas->count() > 0) {
+            foreach ($datas as $val) {
                 $table_data .= '
                 <tr>
                     <td>
-                        <div class="sno">'. $i++ .'</div>
+                        <div class="sno">' . $i++ . '</div>
                     </td>
-                    <td>'. $val->Users->fullname .'</td>
-                    <td>'. $val->Tour->title .'</td>
-                    <td>'. $val->Tour->duration .' Hours</td>
-                    <td>'. date('Y-m-d', strtotime($val->booking_date)) .'</td>
+                    <td>' . $val->Users->fullname . '</td>
+                    <td>' . $val->Tour->title . '</td>
+                    <td>' . $val->Tour->duration . ' Hours</td>
+                    <td>' . date('Y-m-d', strtotime($val->booking_date)) . '</td>
                     <td>
                         <div class="status-text Pending-status"><i class="las la-hourglass-start"></i> Pending for Approval</div>
                     </td>
@@ -1039,14 +1058,14 @@ class HomeController extends Controller
                         <div class="action-btn-info">
                             <a class="dropdown-item view-btn" data-bs-toggle="modal"
                                 href="#BookingRequest"
-                                onclick="accept_tour('. $val->id .','. $val->Tour->title .','. $val->booking_date .','. $val->Tour->duration .','. $val->total_amount .')"
+                                onclick="accept_tour(' . $val->id . ',' . $val->Tour->title . ',' . $val->booking_date . ',' . $val->Tour->duration . ',' . $val->total_amount . ')"
                                 role="button"><i class="las la-eye"></i> View</a>
                             
                         </div>
                     </td>
                 </tr>';
-           }
-        }else{
+            }
+        } else {
             $table_data = '<tr>
                 <td colspan="10">
                     <h5 style="text-align: center">No Record Found</h5>
@@ -1055,7 +1074,7 @@ class HomeController extends Controller
         }
         echo json_encode($table_data);
     }
-    
+
     //Live Search of Callback listing
     public function live_callbacks(Request $request)
     {
@@ -1063,60 +1082,58 @@ class HomeController extends Controller
         $tour_id = $request['tour_id'];
         $Date = $request['Date'];
 
-        if(isset($query)){
-            $datas = CallbackRequest::where('name','like','%' .$query. '%')
-                    ->Orwhere('mobile','like','%' .$query. '%')
-                    ->orderBy('id','DESC')
-                    ->limit(20)
-                    ->get();
-        }elseif ($tour_id) {
-            $datas = CallbackRequest::where('tour_id',$tour_id)
-                    ->orderBy('id','DESC')
-                    ->limit(20)
-                    ->get();
-        }elseif($Date){
-            $datas = CallbackRequest::whereDate('preferred_time','=','2024-01-04')
-                    ->orderBy('id','DESC')
-                    ->limit(20)
-                    ->get();
+        if (isset($query)) {
+            $datas = CallbackRequest::where('name', 'like', '%' . $query . '%')
+                ->Orwhere('mobile', 'like', '%' . $query . '%')
+                ->orderBy('id', 'DESC')
+                ->limit(20)
+                ->get();
+        } elseif ($tour_id) {
+            $datas = CallbackRequest::where('tour_id', $tour_id)
+                ->orderBy('id', 'DESC')
+                ->limit(20)
+                ->get();
+        } elseif ($Date) {
+            $datas = CallbackRequest::whereDate('preferred_time', '=', '2024-01-04')
+                ->orderBy('id', 'DESC')
+                ->limit(20)
+                ->get();
         }
-        
-        $i=1;
+
+        $i = 1;
         $table_data = '';
-        if($datas->count() > 0)
-        {
-            foreach ($datas as $val)
-            {
+        if ($datas->count() > 0) {
+            foreach ($datas as $val) {
                 $table_data .= '
                 <tr>
                     <td>
-                        <div class="sno">'. $i++ .'</div>
+                        <div class="sno">' . $i++ . '</div>
                     </td>
-                    <td>'. $val->name .'</td>
-                    <td>'. $val->TourName->name .'</td>
-                    <td>'. '+1 ' .$val->mobile .'</td>
-                    <td>'. $val->TourName->duration .' Hours</td>
-                    <td>'.date('d M, Y, h:i:s a', strtotime($val->preferred_time)) .'
+                    <td>' . $val->name . '</td>
+                    <td>' . $val->TourName->name . '</td>
+                    <td>' . '+1 ' . $val->mobile . '</td>
+                    <td>' . $val->TourName->duration . ' Hours</td>
+                    <td>' . date('d M, Y, h:i:s a', strtotime($val->preferred_time)) . '
                     </td>
                     <td>
                         <div class="switch-toggle">
                             <div class="">
-                                <label class="toggle" for="myToggleClass_'. $i++ .'">
+                                <label class="toggle" for="myToggleClass_' . $i++ . '">
                                 <input class="toggle__input myToggleClass_"
-                                    "@if ('.$val->status.' = 1) checked @endif"
-                                        name="status" data-id="'. $val->id .'" type="checkbox" id="myToggleClass_'. $i++ .'">
+                                    "@if (' . $val->status . ' = 1) checked @endif"
+                                        name="status" data-id="' . $val->id . '" type="checkbox" id="myToggleClass_' . $i++ . '">
                                 <div class="toggle__fill"></div>
                                 </label>
                             </div>
                         </div>
                     </td>
-                    <td>'. substr($val->note, 0, 30) .'<a class="infoRequestMessage" data-bs-toggle="modal"
-                            href="#infoRequestMessage" onclick="GetData('. $val->note .')"
+                    <td>' . substr($val->note, 0, 30) . '<a class="infoRequestMessage" data-bs-toggle="modal"
+                            href="#infoRequestMessage" onclick="GetData(' . $val->note . ')"
                                 role="button"><i class="las la-info-circle"></i></a>
                     </td>
                 </tr>';
-           }
-        }else{
+            }
+        } else {
             $table_data = '<tr>
                 <td colspan="10">
                     <h5 style="text-align: center">No Record Found</h5>
@@ -1125,5 +1142,4 @@ class HomeController extends Controller
         }
         echo json_encode($table_data);
     }
-
 }

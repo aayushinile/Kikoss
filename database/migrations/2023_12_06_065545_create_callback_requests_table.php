@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('timezone',100)->nullable();
             $table->dateTime('preferred_time')->nullable();
             $table->text('note');
-            $table->string('status',10)->nullable();
+            $table->string('status',10)->default(2)->comment('0:Unread,2:Read');;
             $table->timestamps();
         });
     }
