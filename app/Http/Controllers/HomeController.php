@@ -436,8 +436,12 @@ class HomeController extends Controller
 
             $Tour = VirtualTour::find($request->pid);
             if ($file = $request->file('audio')) {
-                if (file_exists(public_path('upload/virtual-audio/' . $Tour->audio_file))) {
-                    unlink(public_path('upload/virtual-audio/' . $Tour->audio_file));/*Delete audio file of virtual tour */
+                try {
+                    if (file_exists(public_path('upload/virtual-audio/' . $Tour->audio_file))) {
+                        unlink(public_path('upload/virtual-audio/' . $Tour->audio_file));/*Delete audio file of virtual tour */
+                    }
+                } catch (\Throwable $th) {
+                    //throw $th;
                 }
                 $destination = public_path('upload/virtual-audio');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
@@ -445,9 +449,14 @@ class HomeController extends Controller
                 $Tour->audio_file = $name;
             }
             if ($file = $request->file('trial_audio_file')) {
-                if (file_exists(public_path('upload/virtual-audio/' . $Tour->trial_audio_file))) {
-                    unlink(public_path('upload/virtual-audio/' . $Tour->trial_audio_file));/*Delete audio file of virtual tour */
+                try {
+                    if (file_exists(public_path('upload/virtual-audio/' . $Tour->trial_audio_file))) {
+                        unlink(public_path('upload/virtual-audio/' . $Tour->trial_audio_file));/*Delete audio file of virtual tour */
+                    }
+                } catch (\Throwable $th) {
+                    //throw $th;
                 }
+
                 $destination = public_path('upload/virtual-audio');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);

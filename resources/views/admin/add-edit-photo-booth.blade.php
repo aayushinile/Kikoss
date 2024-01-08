@@ -123,11 +123,11 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6 ">
                             <div class="form-group">
                                 <h4>Browse & Upload Photos</h4>
                                 <input type="file" class="file-form-control" id="imageInput" name="image[]"
-                                    accept=".png, .jpg, .jpeg" multiple @if (empty($data)) required @endif>
+                                    accept=".png, .jpg, .jpeg" multiple>
                             </div>
                             @error('image')
                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -156,7 +156,7 @@
                             <div class="form-group">
                                 <h4>Browse & Upload Videos</h4>
                                 <input type="file" class="file-form-control" name="video[]" accept=".mp4"
-                                    id="videoInput" @if (empty($data)) required @endif multiple>
+                                    id="videoInput" multiple>
                             </div>
                             @error('video')
                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -182,7 +182,7 @@
                                     @endforeach
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-md-12">
                             <div class="create-review-form-group form-group">
                                 <h4>Browse & Upload photos <a class="addmorefile" onclick="addImageBox()"><img
@@ -190,26 +190,29 @@
                                 </h4>
                                 <div class="create-review-form-input">
                                     <div class="row" id="images_container">
-                                        <div class="col-md-3 p-2">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
-                                                        id="addfile1" class="uploadDoc addDoc">
-                                                    <label for="addfile1">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img id="image_addfile1"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                        @foreach ($images as $val)
+                                            <div class="col-md-3 p-2">
+                                                <div class="upload-form-group">
+                                                    <div class="upload-file">
+                                                        <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
+                                                            id="addfile1" class="uploadDoc addDoc">
+                                                        <label for="addfile1">
+                                                            <div class="uploaded-media-card">
+                                                                <div class="uploaded-media">
+                                                                    <img
+                                                                        src="{{ assets('upload/photo-booth/' . $val->media) }}">
+                                                                </div>
+                                                                <div class="uploaded-action">
+                                                                    <a
+                                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                            class="las la-trash"></i></a>
+                                                                </div>
                                                             </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -222,27 +225,34 @@
                                 </h4>
                                 <div class="create-review-form-input">
                                     <div class="row" id="videos_container">
-                                        <div class="col-md-3 p-2">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="video[]" accept=".mp4,.clv,.wav"
-                                                        id="addvideo1" class="uploadDoc video  addDoc">
-                                                    <label for="addvideo1">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img id="video_addvideo1"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
+                                        @foreach ($videos as $val)
+                                            <div class="col-md-3 p-2">
+                                                <div class="upload-form-group">
+                                                    <div class="upload-file">
+                                                        <input type="file" name="video[]" accept=".mp4,.clv,.wav"
+                                                            id="addvideo1" class="uploadDoc video  addDoc">
+                                                        <label for="addvideo1">
 
-                                                    </label>
+                                                            <div class="uploaded-media-card">
+                                                                <div class="uploaded-media">
+                                                                    <video controls width="100%" height="110px">
+                                                                        <source
+                                                                            src="{{ asset("upload/video-booth/$val->media") }}"
+                                                                            type="video/mp4" />
+                                                                    </video>
+                                                                </div>
+                                                                <div class="uploaded-action">
+                                                                    <a
+                                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                            class="las la-trash"></i></a>
+                                                                </div>
+                                                            </div>
+
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                        @endforeach
 
                                     </div>
                                 </div>
@@ -287,92 +297,24 @@
             }
         });
 
-        document.getElementById('imageInput').addEventListener('change', function(event) {
-            const fileInput = event.target;
+        // \.,MNBCXZ
+        // document.addEventListener('DOMContentLoaded', function() {
+        // Select all elements with the class "add"
+        let elementsWithClass = document.querySelectorAll('.uploadDoc');
 
-            if (fileInput.files.length > 0) {
+        // Add an event listener to each element
+        elementsWithClass.forEach(function(element) {
+            element.addEventListener('change', function(event) {
+                // Your event handling code goes here
+                console.log(event);
+                const file = event.target.files[0];
 
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const reader = new FileReader();
+                const imgURL = URL.createObjectURL(file);
 
-                    reader.onload = function(e) {
-
-                        var data = `<div class="col-md-4">
-                                            <div class="uploaded-media-card">
-                                                <div class="uploaded-media">
-                                                    <img src="${e.target.result}">
-                                                </div>
-                                                <div class="uploaded-action">
-                                                    <a
-                                                    onclick="$(this).closest('.col-md-4').hide()"><i
-                                                            class="las la-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>`;
-                        $("#photo_container").html($("#photo_container").html() + data);
-                    };
-
-                    // Read the file as a data URL
-                    reader.readAsDataURL(file);
-                }
-
-            }
-            // renderImages()
-        });
-        document.getElementById('videoInput').addEventListener('change', function(event) {
-            const fileInput = event.target;
-
-
-            if (fileInput.files.length > 0) {
-
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-
-                        var data = ` <div class="col-md-4 ">
-                                            <div class="uploaded-media-card">
-                                                <div class="uploaded-media">
-                                                    <video controls width="100%" height="110px">
-                                                        <source src="${e.target.result}"
-                                                            type="video/mp4" />
-                                                    </video>
-                                                </div>
-                                                <div class="uploaded-action">
-                                                    <a
-                                                        onclick="$(this).closest('.col-md-4').hide()"><i
-                                                            class="las la-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>`;
-                        $("#video_container").html($("#video_container").html() + data);
-                    };
-
-                    // Read the file as a data URL
-                    reader.readAsDataURL(file);
-                }
-
-            }
-            // renderImages()
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            // Select all elements with the class "add"
-            let elementsWithClass = document.querySelectorAll('.uploadDoc');
-
-            // Add an event listener to each element
-            elementsWithClass.forEach(function(element) {
-                element.addEventListener('change', function(event) {
-                    // Your event handling code goes here
-                    const file = event.target.files[0];
-
-                    const imgURL = URL.createObjectURL(file);
-
-                    let label = document.querySelector(`[for="${element.getAttribute("id")}"]`);
-
-                    if (element.classList.contains("video")) {
-                        label.innerHTML = `<div class="uploaded-media-card">
+                let label = document.querySelector(`[for="${element.getAttribute("id")}"]`);
+                console.log(label);
+                if (element.classList.contains("video")) {
+                    label.innerHTML = `<div class="uploaded-media-card">
                                                             <div class="uploaded-media">
                                                                 <video controls width="100%" height="110px">
                                                                     <source
@@ -385,23 +327,23 @@
                                                             </div>
                                                         </div>`;
 
-                        var op = label.querySelector(".upload-file-item");
-                        op.style.display = "none";
-                    } else {
-                        label.style.backgroundImage = `url("${imgURL}")`;
-                        label.style.backgroundPosition = 'center';
-                        label.style.backgroundSize = 'cover';
+                    var op = label.querySelector(".upload-file-item");
+                    op.style.display = "none";
+                } else {
+                    label.style.backgroundImage = `url("${imgURL}")`;
+                    label.style.backgroundPosition = 'center';
+                    label.style.backgroundSize = 'cover';
 
-                        var op = label.querySelector(".upload-file-item");
-                        op.style.opacity = 0;
-                    }
+                    var op = label.querySelector(".upload-file-item");
+                    op.style.opacity = 0;
+                }
 
-                });
             });
-
-
-
         });
+
+
+
+        // });
 
 
         var imgCount = 1;
