@@ -34,12 +34,12 @@ Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'Update
 Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::match(['get', 'post'],'manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
-Route::get('/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
+Route::match(['get', 'post'],'/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
 Route::post('/delete-tour', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
-Route::get('/manage-virtual-tour', [App\Http\Controllers\HomeController::class, 'ManageVirtualTour'])->name('ManageVirtualTour');
+Route::match(['get', 'post'],'/manage-virtual-tour', [App\Http\Controllers\HomeController::class, 'ManageVirtualTour'])->name('ManageVirtualTour');
 Route::get('/add-edit-virtual-tour', [App\Http\Controllers\HomeController::class, 'AddVirtualTour'])->name('AddVirtualTour');
 Route::post('/submit-virtual-tour', [App\Http\Controllers\HomeController::class, 'SaveVirtualTour'])->name('SaveVirtualTour');
 Route::post('/update-virtual-tour', [App\Http\Controllers\HomeController::class, 'UpdateVirtualTour'])->name('UpdateVirtualTour');
@@ -55,7 +55,7 @@ Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 
 
 
 
-Route::get('taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
+Route::match(['get', 'post'],'taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
 Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
 Route::get('/load-sectors', [App\Http\Controllers\HomeController::class, 'loadSectors'])->name('load-sectors');

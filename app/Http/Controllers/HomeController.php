@@ -336,6 +336,7 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
+    
     /*Delete image/video of Photo Booth*/
     public function DeleteTourImage($id)
     {
@@ -360,7 +361,6 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
-
 
     public function SaveVirtualTour(Request $request)
     {
@@ -493,22 +493,55 @@ class HomeController extends Controller
             return errorMsg('Exception => ' . $e->getMessage());
         }
     }
+    
+    /*Get all data of Virtual-tour */
+    public function ManageVirtualTour(Request $request)
+    {
+        try {
+            $requests = TourBooking::query();
+            $requests->where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('tour_id')){
+                $requests->where('tour_id', $request->tour_id);
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('booking_date', '=', $request->date);
+            }
+            
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
+            
+            $tours = VirtualTour::whereIn('status', [0,1])->orderBy('id', 'DESC')->paginate(10);/*1:Active and Inactive Listing*/
+            $virtual_tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->paginate(10);/*1:Active Virtual tour Listing*/
+            
+            return view('admin.manage-virtual-tour', compact('tours', 'bookings','virtual_tours','search','tour_id','date'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 
     public function ManageBooking(Request $request)
     {
         try {
             $requests = TourBooking::query();
-            //where('tour_type', 1)->where('status', 0)
-            //orderBy('id', 'DESC');
             $search = $request->search ? $request->search : '';
             $tour_id = $request->tour_id ? $request->tour_id : '';
             $date = $request->date ? $request->date : '';
             
-            if ($request->search) {
+            if($request->filled('search')){
                 $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
             }
 
-            if ($request->tour_id) {
+            if($request->filled('tour_id')){
                 $requests->where('tour_id', $request->tour_id);
             }
 
@@ -527,17 +560,7 @@ class HomeController extends Controller
         }
     }
 
-    /*Get all data of Virtual-tour */
-    public function ManageVirtualTour()
-    {
-        try {
-            $tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.manage-virtual-tour', compact('tours', 'bookings'));
-        } catch (\Exception $e) {
-            return errorMsg("Exception -> " . $e->getMessage());
-        }
-    }
+    
 
     public function AddVirtualTour()
     {
@@ -550,12 +573,33 @@ class HomeController extends Controller
     }
 
     /*Callback request listing */
-    public function CallbackRequest()
+    public function CallbackRequest(Request $request)
     {
         try {
-            $datas = CallbackRequest::orderBy('id', 'DESC')->paginate(10);
+            
+            $requests = CallbackRequest::query();
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('mobile', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('tour_id')){
+                $requests->where('tour_id', $request->tour_id);
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('preferred_time', '=', $request->date);
+            }
+            $requests->where('status', 0);
+            $requests->orderBy('id', 'DESC');
+            $datas = $requests->paginate(10);
+            
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            return view('admin.tour-callback-request', compact('datas', 'tours'));
+            return view('admin.tour-callback-request', compact('datas', 'tours','search','tour_id','date'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -597,6 +641,29 @@ class HomeController extends Controller
     public function ManagePhotoBooth()
     {
         try {
+            // $requests = TourBooking::query();
+            // $requests->where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            // $search = $request->search ? $request->search : '';
+            // $tour_id = $request->tour_id ? $request->tour_id : '';
+            // $date = $request->date ? $request->date : '';
+            
+            // if($request->filled('search')){
+            //     $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+            //     $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+            // }
+
+            // if($request->filled('tour_id')){
+            //     $requests->where('tour_id', $request->tour_id);
+            // }
+
+            // if($request->filled('date')){
+            //     $requests->whereDate('booking_date', '=', $request->date);
+            // }
+            
+            // $requests->orderBy('id', 'DESC');
+            // $bookings = $requests->paginate(10);
+            
+            
             $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
@@ -621,11 +688,27 @@ class HomeController extends Controller
     }
 
     /*Add a details of Photo/Video tour*/
-    public function TaxiBookingRequest()
+    public function TaxiBookingRequest(Request $request)
     {
         try {
-            $bookings = TaxiBooking::orderBy('id', 'DESC')->paginate(10); //Get all request taxi booking
-            return view('admin.taxi-booking-request', compact('bookings'));
+            $requests = TaxiBooking::query();
+            $search = $request->search ? $request->search : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('booking_date', '=', $request->date);
+            }
+            //$requests->where('status', 0);
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
+            $amount = TaxiBooking::sum('amount');
+            
+            return view('admin.taxi-booking-request', compact('bookings','search','date','amount'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

@@ -6,6 +6,7 @@
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/OwlCarousel/owl.carousel.min.js') }}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript">
         $(document).ready(function() {
             $('#managevertualtour').owlCarousel({
@@ -120,39 +121,57 @@
                                     </div>
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">
-                                            <div class="row g-1">
+                                            <form action="{{ route('ManageVirtualTour') }}" method="POST">
+                                                @csrf
+                                                <div class="row g-1">
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <a href="{{ url('manage-virtual-tour') }}" class="btn-gr"><i
+                                                                    class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="search-form-group">
+                                                                <input type="text" name="search"
+                                                                    value="{{ $search ? $search : '' }}"
+                                                                    class="form-control"
+                                                                    placeholder="Search User Name, Amount ">
+                                                                <span class="search-icon"><img
+                                                                        src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <select class="form-control"name="tour_id">
+                                                                <option value="">Select Virtual Tour</option>
+                                                                @if (!$virtual_tours->isEmpty())
+                                                                    @foreach ($virtual_tours as $tour)
+                                                                        <option
+                                                                            value="{{ $tour->id }}"@if ($tour->id == $tour_id) selected='selected' @else @endif>
+                                                                            {{ $tour->name }}</option>
+                                                                    @endforeach
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="search-form-group">
-                                                            <input type="text" name="" class="form-control"
-                                                                placeholder="Search User Name, Amount ">
-                                                            <span class="search-icon"><img
-                                                                    src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <input type="date" name="date"
+                                                                value="{{ $date ? $date : '' }}"
+                                                                data-date-format="YYYY-MM-DD" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                    aria-hidden="true"></i></button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <select class="form-control">
-                                                            <option>Select Virtual Tour</option>
-                                                            @if (!$tours->isEmpty())
-                                                                @foreach ($tours as $tour)
-                                                                    <option value="{{ $tour->id }}">
-                                                                        {{ $tour->name }}</option>
-                                                                @endforeach
-                                                            @endif
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <input type="date" name="date" data-date-format="YYYY-MM-DD"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -186,10 +205,11 @@
                                                             <div class="sno">{{ $s_no }}</div>
                                                         </td>
                                                         <td>{{ $val->Users->fullname ?? '' }}</td>
-                                                        <td>{{ $val->Tour->title ?? '' }}</td>
+                                                        <td>{{ $val->VirtualTour->name ?? '' }}</td>
                                                         <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
-                                                                data-bs-toggle="modal" href="#infoprice" role="button"><i
-                                                                    class="las la-info-circle"></i></a></td>
+                                                                data-bs-toggle="modal" href="#infoprice"
+                                                                role="button"><i class="las la-info-circle"></i></a>
+                                                        </td>
                                                         <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
                                                         </td>
                                                         <td>PayPal</td>
@@ -231,6 +251,46 @@
             </div>
         </div>
     </div>
+    <!-- price Info -->
+    <div class="modal kik-modal fade" id="infoprice" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-form">
+                        <h3>Amount Info </h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="kik-request-item-card">
+                            <div class="kik-request-item-card-head">
+                                <div class="request-id-text">Transaction ID:<span>76375873874</span></div>
+                            </div>
+                            <div class="kik-request-item-card-body">
+                                <div class="request-point-section">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="request-point-item">
+                                                <h3>Purchase at</h3>
+                                                <h4 id="total_amount">$23.00</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="request-point-item">
+                                                <h3>Tax <span>2%</span></h3>
+                                                <h4>$43</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kik-request-item-card-foot">
+                                <div class="request-price-text">Total Cost<span id="total_amount"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -262,6 +322,12 @@
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
+            document.getElementById("Name").innerText =
+                Name;
+            document.getElementById("photo_booth_id").value = IDS;
+        }
+
+        function GetDataPrice(price) {
             document.getElementById("Name").innerText =
                 Name;
             document.getElementById("photo_booth_id").value = IDS;

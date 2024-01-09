@@ -17,6 +17,12 @@ class TourBooking extends Model
     {
         return $this->hasOne('App\Models\Tour', 'id', 'tour_id');
     }
+    
+    function VirtualTour()
+    {
+        return $this->hasOne('App\Models\VirtualTour', 'id', 'tour_id');
+    }
+    
     function booth()
     {
         return $this->hasOne(PhotoBooth::class, 'id', 'tour_id');

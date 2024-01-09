@@ -653,6 +653,7 @@ class UserController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()],404);
             }
             $user_id = Auth::user()->id;
+            $user = Auth::user();
             /*Create taxi booking with booking id*/
             $booking_id = rand(10000000,99999999);/*Generate random booking  ID*/
             
@@ -663,10 +664,14 @@ class UserController extends Controller
             $Distance = number_format((float)$distance, 2, '.', '') . " Km"; 
             $distance_int = round((int)$distance);
             
+            $amount = $distance_int * 10;
+            
             
             $bookingID = TaxiBooking::insertGetId([
                 'booking_time' => $request->booking_date_time,/*Date and Time */
+                'booking_date' => date('y-m-d', strtotime($request->booking_date_time)),/*Filter date and save */
                 'user_id' => $user_id,
+                'user_name' => $user->fullname,
                 'booking_id' => $booking_id,
                 'fullname' => $request->fullname,
                 'pickup_location' => $request->pickup_location,
@@ -676,6 +681,7 @@ class UserController extends Controller
                 'mobile' => $request->mobile,
                 'hotel_name' => $request->hotel_name,
                 'distance' => $distance_int,
+                'amount' => $amount,
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
             ]);

@@ -51,6 +51,7 @@ a.action-btn:hover{color: #fff}
 .action-btn-info a.view-btn {color: var(--green);} 
 .action-btn-info a.edit-btn {color: #FFCF55; } 
 .action-btn-info a.delete-btn {color: #FB5353; }
+button.btn-gr{background: var(--green);border: 1px solid var(--green);padding: 5px 10px;display: inline-block;font-size: 12px; width:100%;color:var(--white);border-radius: 5px;text-transform: uppercase;font-weight: bold; text-align: center;}
 
 
 

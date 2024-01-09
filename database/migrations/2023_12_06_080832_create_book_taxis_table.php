@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('book_taxis', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('booking_time')->nullable();
+            $table->date('booking_date')->nullable();
             $table->string('fullname')->nullable();
             $table->string('booking_id')->nullable();
             $table->bigInteger('user_id')->nullable();
+            $table->string('user_id')->nullable();
             $table->string('pickup_location',500)->nullable();
             $table->string('pickup_lat_long',200)->nullable();
             $table->string('drop_location',500)->nullable();
@@ -25,6 +27,7 @@ return new class extends Migration
             $table->string('hotel_name',100)->nullable();
             $table->string('book_taxicol',45)->nullable();
             $table->float('distance')->nullable();
+            $table->float('amount')->nullable();
             $table->string('status',45)->nullable();
             $table->timestamps();
         });

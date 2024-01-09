@@ -24,44 +24,52 @@
                                 <div class="btn-option-info wd7">
                                     <div class="search-filter">
                                         <div class="search-filter">
-                                            <div class="row g-1">
+                                            <form action="{{ route('TaxiBookingRequest') }}" method="POST">
+                                                @csrf
+                                                <div class="row g-1">
 
-                                                <div class="col-md-3">
-                                                    <div class="search-form-group">
-                                                        <div class="TotalRequestoverview">Total Request Received:
-                                                            <span>$5689</span>
+                                                    <div class="col-md-3">
+                                                        <div class="search-form-group">
+                                                            <div class="TotalRequestoverview">Total Request Received:
+                                                                <span>${{ $amount }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <a href="{{ url('taxi-booking-request') }}" class="btn-gr"><i
+                                                                    class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="search-form-group">
+                                                            <input type="text" name="search" class="form-control"
+                                                                value="{{ $search ? $search : '' }}"
+                                                                placeholder=" Search User name,Booking ID">
+                                                            <span class="search-icon"><img
+                                                                    src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <input type="date" name="date"
+                                                                value="{{ $date ? $date : '' }}" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                    aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <a href="#" class="btn-gr" onclick="exportToCSV(this)"
+                                                                data-id="taxi_booking_requests">Download Data</a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="search-form-group">
-                                                        <input type="text" name="" class="form-control"
-                                                            placeholder="Search User name, Booking ID">
-                                                        <span class="search-icon"><img
-                                                                src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3 d-flex">
-                                                    <div class="mt-2">
-                                                        <a href="{{ route('TaxiBookingRequest') }}"><i class="fa fa-undo"
-                                                                aria-hidden="true"></i></a>
-                                                        &nbsp;
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input type="date" name="date"
-                                                            value="{{ request()->has('date') ? request('date') : '' }}"
-                                                            onchange="location.replace('{{ route('TaxiBookingRequest') }}?date='+this.value)"
-                                                            class="form-control">
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <a href="#" class="btn-gr" onclick="exportToCSV(this)"
-                                                            data-id="taxi_booking_requests">Download Data</a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

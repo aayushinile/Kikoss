@@ -20,57 +20,69 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <div class="mr-auto">
-                                    <h4 class="heading-title">Tour Callback Requests</h4>
+                                    <h4 class="heading-title">Tour Free Callback Requests</h4>
                                 </div>
                                 <div class="btn-option-info wd8">
                                     <div class="search-filter">
-                                        <div class="row g-1">
-                                            <div class="col-md-1">
-                                                <div class="form-group">
-                                                    <a href="{{ url('tour-callback-request') }}" class="btn-gr"><i
-                                                            class="fa fa-refresh" aria-hidden="true"></i></a>
+                                        <form action="{{ route('CallbackRequest') }}" method="POST">
+                                            @csrf
+                                            <div class="row g-1">
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <a href="{{ url('tour-callback-request') }}" class="btn-gr"><i
+                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <div class="search-form-group">
-                                                        <input type="text" name="Search" id="search"
-                                                            class="form-control"
-                                                            placeholder="Search User name, Contact number">
-                                                        <span class="search-icon"><img
-                                                                src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <div class="search-form-group">
+                                                            <input type="text" name="search"
+                                                                value="{{ $search ? $search : '' }}" class="form-control"
+                                                                placeholder="Search User name, Contact number">
+                                                            <span class="search-icon"><img
+                                                                    src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <select class="form-control"name="tour_id">
+                                                            <option value="">Select Tour</option>
+                                                            @if (!$tours->isEmpty())
+                                                                @foreach ($tours as $tour)
+                                                                    <option
+                                                                        value="{{ $tour->id }}"value="{{ $tour->id }}"
+                                                                        @if ($tour->id == $tour_id) selected='selected' @else @endif>
+                                                                        {{ $tour->name }}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <input type="date" name="date"
+                                                            value="{{ $date ? $date : '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <a id="xport" onclick="exportToCSV(this)"
+                                                            data-id="callback-request-table" class="btn-gr">Download
+                                                            report</a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <select class="form-control"id="select-id">
-                                                        <option>Select Tour</option>
-                                                        @if (!$tours->isEmpty())
-                                                            @foreach ($tours as $tour)
-                                                                <option value="{{ $tour->id }}">
-                                                                    {{ $tour->name }}</option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <input type="date" name="date" id="date"
-                                                        class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <a id="xport" onclick="exportToCSV(this)"
-                                                        data-id="callback-request-table" class="btn-gr">Download
-                                                        report</a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
