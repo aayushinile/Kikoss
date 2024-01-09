@@ -96,45 +96,55 @@
                                     </div>
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">
-                                            <div class="row g-1">
-                                                <div class="col-md-1">
-                                                    <div class="form-group">
-                                                        <a href="{{ url('manage-booking') }}" class="btn-gr"><i
-                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                            <form action="{{ route('ManageBooking') }}" method="POST">
+                                                @csrf
+                                                <div class="row g-1">
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <a href="{{ url('manage-booking') }}" class="btn-gr"><i
+                                                                    class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <div class="form-group">
-                                                        <div class="search-form-group">
-                                                            <input type="text" name="search"
-                                                                class="form-control"id="search"
-                                                                placeholder="Search User Name">
-                                                            <span class="search-icon"><img
-                                                                    src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="search-form-group">
+                                                                <input type="text" name="search"
+                                                                    value="{{ $search ? $search : '' }}"class="form-control"
+                                                                    placeholder="Search User Name">
+                                                                <span class="search-icon"><img
+                                                                        src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <select class="form-control"name="tour_id">
+                                                                <option value="">Select Tour</option>
+                                                                @if (!$tours->isEmpty())
+                                                                    @foreach ($tours as $tour)
+                                                                        <option
+                                                                            value="{{ $tour->id }}"@if ($tour->id == $tour_id) selected='selected' @else @endif>
+                                                                            {{ $tour->name }}</option>
+                                                                    @endforeach
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <input type="date" name="date"
+                                                                value="{{ $date ? $date : '' }}"class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                    aria-hidden="true"></i></button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <select class="form-control"id="select-id">
-                                                            <option>Select Tour</option>
-                                                            @if (!$tours->isEmpty())
-                                                                @foreach ($tours as $tour)
-                                                                    <option value="{{ $tour->id }}">
-                                                                        {{ $tour->name }}</option>
-                                                                @endforeach
-                                                            @endif
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <input type="date" name="date" id="date"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -169,7 +179,7 @@
                                                         <td>{{ $val->Users->fullname ?? '' }}</td>
                                                         <td>{{ $val->Tour->title ?? '' }}</td>
                                                         <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                        <td>{{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}
+                                                        <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
                                                         </td>
                                                         <td>
                                                             <div class="status-text Pending-status"><i
@@ -313,13 +323,9 @@
                             <div class="kik-request-item-card-foot">
                                 <div class="request-price-text">Amount Paid:<span id="total_amount"></span></div>
                                 <div class="request-cancellation-btn">
-                                    {{-- <form action="" method="POST">
-                                        @csrf --}}
                                     <input type="hidden" value="" name="tour_id" id="tour_id">
                                     <a class="rejectbtn" id="rejectbtn">Reject</a>
-                                    {{-- <a href="{{ url('accept-tour-booking/'.$) }}" class="acceptbtn">Accept</a> --}}
                                     <a class="acceptbtn"id="acceptbtn">Accept</a>
-                                    {{-- </form> --}}
                                 </div>
                             </div>
                         </div>
@@ -374,7 +380,10 @@
             // }
 
             var total_amount = '$' + total_amount;
-            base_url = window.location.origin;
+            currentURL = window.location.href;
+            // Remove the "manage-booking" part
+            var base_url = currentURL.replace('/manage-booking', '');
+
             var reject_url = base_url + '/reject-tour-booking/' + tour_id;
             /*URL for reject booking , append on reject button*/
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;

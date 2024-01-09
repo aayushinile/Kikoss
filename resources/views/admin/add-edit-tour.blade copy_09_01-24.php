@@ -52,9 +52,8 @@
                                         <div class="form-group-input">
                                             <input type="text" min="0" class="form-control" name="age_11_price"
                                                 placeholder="Enter Price/Person(in $)"
-                                                value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
+                                                value="{{ $data ? $data->age_11_price == '' : old('age_11_price') }}">
                                         </div>
-
                                     </div>
                                     @error('age_11_price')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -102,17 +101,17 @@
                                     <div class="form-group">
                                         <div class="kikcheckbox1">
                                             <input type="checkbox" name="for_all"
-                                                id="Same for all"@if (!empty($data)) checked @endif>
+                                                id="Same for all"@if (!empty($data->same_for_all)) checked @endif>
                                             <label for="Same for all">Same for all</label>
                                         </div>
                                         <div class="form-group-input">
-                                            <input type="text" min="0" class="form-control" name="for_all_price"
+                                            <input type="text" min="0" class="form-control" name="same_for_all"
                                                 placeholder="Enter Price/Person(in $)"
-                                                value="{{ $data ? $data->for_all_price : old('for_all_price') }}">
+                                                value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
                                         </div>
 
                                     </div>
-                                    @error('for_all_price')
+                                    @error('same_for_all')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -216,21 +215,22 @@
                         </div>
                         <div class="col-md-12">
                             <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload Tour Photos <a class="addmorefile" href=""><img
-                                            src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
+                                <h4>Browse & Upload Tour Photos <a class="addmorefile" href="">
+                                        {{-- <img src="{{ asset('assets/admin-images/add-file.svg') }}"> --}}
+                                    </a>
                                 </h4>
                                 <div class="create-review-form-input">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
+                                                    <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
                                                         id="addfile1" class="uploadDoc addDoc">
                                                     <label for="addfile1">
                                                         <div class="upload-file-item">
                                                             <div class="upload-media">
                                                                 <img id="image_addfile1"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                    src="{{ asset('public/assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
                                                                 <span>Browse & Upload File</span>
@@ -244,13 +244,13 @@
                                         <div class="col-md-3">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
+                                                    <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
                                                         id="addfile2" class="uploadDoc addDoc">
                                                     <label for="addfile2">
                                                         <div class="upload-file-item">
                                                             <div class="upload-media">
                                                                 <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                    src="{{ asset('public/assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
                                                                 <span>Browse & Upload File</span>
@@ -265,13 +265,13 @@
                                         <div class="col-md-3">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
+                                                    <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
                                                         id="addfile3" class="uploadDoc addDoc">
                                                     <label for="addfile3">
                                                         <div class="upload-file-item">
                                                             <div class="upload-media">
                                                                 <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                    src="{{ asset('public/assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
                                                                 <span>Browse & Upload File</span>
@@ -285,13 +285,13 @@
                                         <div class="col-md-3">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="images[]" accept=".jpg,.jpeg,.png"
+                                                    <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
                                                         id="addfile4" class="uploadDoc addDoc">
                                                     <label for="addfile4">
                                                         <div class="upload-file-item">
                                                             <div class="upload-media">
                                                                 <img
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                    src="{{ asset('public/assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
                                                                 <span>Browse & Upload File</span>
@@ -304,85 +304,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            {{-- <div class="form-group">
-                                <h4>Browse & Upload Tour Photos</h4>
-                                <input type="file" class="file-form-control" name="thumbnail[]"
-                                    accept=".png, .jpg, .jpeg" id="thumbnail" multiple>
-                            </div> --}}
-                            {{-- <div class="col-md-4">
-                                <div class="create-review-form-group form-group">
-                                    <h4>Browse & Upload Tour Photos<a class="addmorefile" href="">
-                                            <img src="{{ assets('assets/admin-images/add-file.svg') }}"></a></h4>
-                                    <div class="create-review-form-input">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="upload-form-group">
-                                                    <div class="upload-file">
-                                                        <input type="file" name="trial_audio_file"
-                                                            accept=".png, .jpg, .jpeg" id="addfile2"
-                                                            class="uploadDoc addDoc">
-                                                        <label for="addfile2">
-                                                            <div class="upload-file-item">
-                                                                <div class="upload-media">
-                                                                    <img
-                                                                        src="{{ assets('assets/admin-images/upload-icon.svg') }}">
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <div class="mt-1 text-center">
-                                                                        <div class="preview-image-before-upload"> </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="upload-text">
-                                                                    <span>Browse & Upload File</span>
-                                                                </div>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
-
-                            {{-- <div class="col-md-12
-                                    mb-2">
-                                <img id="preview-image-before-upload"
-                                    src="https://www.riobeauty.co.uk/images/product_image_not_found.gif"
-                                    alt="preview image" style="max-height: 250px;">
-                            </div> --}}
-                            {{-- @error('thumbnail')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror --}}
-                            {{-- <div class="uploaded-section">
-                                <div class="row">
-                                    @if (isset($images))
-
-                                        @foreach ($images as $val)
-                                            <div class="col-md-4">
-                                                <div class="uploaded-media-card">
-                                                    <div class="uploaded-media">
-                                                        <img
-                                                            src="{{ assets('upload/tour-thumbnail/' . $val->attribute_name) }}">
-                                                    </div>
-                                                    <div class="uploaded-action">
-                                                        <a
-                                                            href="{{ url('delete-tour-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
-                                                                class="las la-trash"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div> --}}
-                            {{-- <div class="col-md-12">
-                                <div class="mt-1 text-center">
-                                    <div class="images-preview-div"> </div>
-                                </div>
-                            </div> --}}
                         </div>
 
                         <div class="col-md-12">
@@ -450,7 +371,7 @@
 
                     for_all: {
                         //required: true,
-                        digits: true,
+                        //digits: true,
                     },
                     for_all_price: {
                         //required: true,
@@ -503,33 +424,6 @@
             })
         });
     </script>
-    {{-- <script>
-        $(function() {
-            // Multiple images preview with JavaScript
-            var previewImages = function(input, imgPreviewPlaceholder) {
-
-                if (input.files) {
-                    var filesAmount = input.files.length;
-
-                    for (i = 0; i < filesAmount; i++) {
-                        var reader = new FileReader();
-
-                        reader.onload = function(event) {
-                            $($.parseHTML('<img>')).attr('src', event.target.result).appendTo(
-                                imgPreviewPlaceholder);
-                        }
-
-                        reader.readAsDataURL(input.files[i]);
-                    }
-                }
-
-            };
-
-            $('#thumbnail').on('change', function() {
-                previewImages(this, 'div.images-preview-div');
-            });
-        });
-    </script> --}}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Select all elements with the class "add"
@@ -552,19 +446,6 @@
                     op.style.opacity = 0;
                 });
             });
-        });
-        $(document).ready(function(e) {
-
-            // $('#addfile2').change(function() {
-            //     let reader = new FileReader();
-            //     reader.onload = (e) => {
-            //         $(".preview-image-before-upload").append(
-            //             "<img id='theImg' style='max-height:150px;max-width:170px' src='" + e.target
-            //             .result + "'/>");
-            //         // $('#preview-image-before-upload').attr('src', e.target.result);
-            //     }
-            //     reader.readAsDataURL(this.files[0]);
-            // });
         });
     </script>
 @endpush

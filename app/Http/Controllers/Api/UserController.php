@@ -240,6 +240,7 @@ class UserController extends Controller
                 $temp['cancellation_policy'] = $tour->cancellation_policy;
                 $temp['short_description'] = $tour->short_description;
                 $temp['what_to_bring'] = $tour->what_to_bring;
+                $temp['tour_date_time'] = '19 October, 2023 Monday';
                 $images = TourAttribute::where('tour_id',$tour->id)->get();
                 foreach ($images as $key => $val) {
                     $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
@@ -697,6 +698,7 @@ class UserController extends Controller
     {
         try {
             $user_id = Auth::user()->id;
+            $user = Auth::user();
             $bookings = TaxiBooking::where('user_id',$user_id)->orderBy('id','ASC')->get();
             if(count($bookings) > 0){
                 $response = array();
@@ -705,6 +707,8 @@ class UserController extends Controller
                     $temp['booking_id'] = $value->booking_id;
                     $temp['booking_time'] = date('d M, Y - g:i A', strtotime($value->booking_time));
                     $temp['user_id'] = $value->user_id;
+                    $temp['user_name'] = $user->fullname;
+                    $temp['user_profile'] = $user->profile ? asset('public/upload/photo-booth/'.$user->profile): '';
                     $temp['pickup_location'] = $value->pickup_location;
                     $temp['pickup_lat_long'] = $value->pickup_lat_long;
                     $temp['drop_location'] = $value->drop_location;
@@ -730,6 +734,7 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
     
     /*Showing all Photo booth listing */
     public function PhotoBoothListing() 

@@ -32,7 +32,7 @@ Route::post('/SaveTour', [App\Http\Controllers\HomeController::class, 'SaveTour'
 Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'UpdateTour'])->name('UpdateTour');
 Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
-Route::get('/manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
+Route::match(['get', 'post'],'manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
 Route::get('/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
@@ -68,3 +68,4 @@ Route::get('/live_tours', [App\Http\Controllers\HomeController::class, 'live_tou
 Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_users'])->name('live_users');
 Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
 Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');
+Route::get('/booked-dates',[App\Http\Controllers\HomeController::class, 'getBookedDates'])->name('booked-dates');

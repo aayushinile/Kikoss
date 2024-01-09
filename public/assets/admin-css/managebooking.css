@@ -75,6 +75,8 @@ a.btn-gr{background: var(--green);border: 1px solid var(--green);padding: 5px 10
 a.btn-gra {background: var(--gray); border: 1px solid var(--gray); padding: 5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--black); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 a.btn-br {background: var(--brown); border: 1px solid var(--brown); padding: 5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--white); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 
+button.btn-gr{background: var(--green);border: 1px solid var(--green);padding: 5px 10px;display: inline-block;font-size: 12px; width:100%;color:var(--white);border-radius: 5px;text-transform: uppercase;font-weight: bold; text-align: center;}
+
 
 .booking-tour-card {border-radius: 0.4rem; background-color: var(--white); box-shadow: 0 0.15rem 0.1rem rgba(0, 0, 0, 0.04); position: relative; margin-bottom: 10px; width: 100%; display: flex; align-items: center; gap: 20px; overflow: hidden; }
 .booking-tour-card:before{content: '';    z-index: 1; position: absolute; left: 0 ; right: 0; top: 0; bottom: 0;background: linear-gradient(90deg, #FFF 0%, rgb(255 255 255 / 98%) 24%, rgb(255 255 255 / 94%) 55.25%, rgba(255, 255, 255, 0.00) 100%);}

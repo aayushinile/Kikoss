@@ -3,7 +3,7 @@
 @push('css')
     <style>
         .special-date {
-            background-color: #ffcc00 !important;
+            background-color: #021906 !important;
             /* Set your desired background color */
         }
     </style>
@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
 
-    <script>
+    {{-- <script>
         // document.addEventListener('DOMContentLoaded', function() {
         //     var calendarEl = document.getElementById('calendar_id');
         //     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -61,7 +61,8 @@
 
 
         });
-    </script>
+    </script> --}}
+
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
 
@@ -356,7 +357,97 @@
             </div>
         </div>
     </div>
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    {{-- <script>
+        $(document).ready(function() {
+            $('#calendar_id').fullCalendar({
+                events: [{
+                        //title: 'Booked Event',
+                        start: '2024-01-03',
+                        // other event properties...
+                    },
+                    {
+                        //title: 'Booked Event',
+                        start: '2024-01-05',
+                        // other event properties...
+                    },
+                    {
+                        //title: 'Booked Event',
+                        start: '2024-02-05',
+                        // other event properties...
+                    },
+
+                    // Add more events as needed
+                ],
+                dayRender: function(date, cell) {
+                    var eventsForDay = $('#calendar_id').fullCalendar('clientEvents', function(event) {
+                        return moment(event.start).isSame(date, 'day');
+                    });
+
+                    if (eventsForDay.length > 0) {
+                        cell.css('background-color', 'green');
+                    }
+                },
+                // Other FullCalendar options...
+            });
+        });
+    </script> --}}
+    <script>
+        $(document).ready(function() {
+            $('#calendar_id').fullCalendar({
+                events: [{
+                        title: 'Booked Event',
+                        start: '2024-01-03',
+                        // other event properties...
+                    },
+                    {
+                        title: 'Booked Event',
+                        start: '2024-01-05',
+                        // other event properties...
+                    },
+                    {
+                        title: 'Booked Event',
+                        start: '2024-02-05',
+                        // other event properties...
+                    },
+                    {
+                        title: 'Another Event',
+                        start: '2024-01-10',
+                        // other event properties...
+                    },
+                    // Add more events as needed
+                ],
+                dayRender: function(date, cell) {
+                    var eventsForDay = $('#calendar_id').fullCalendar('clientEvents', function(event) {
+                        return moment(event.start).isSame(date, 'day');
+                    });
+
+                    if (eventsForDay.length > 0) {
+                        // Check the types of events and set background color accordingly
+                        if (eventsForDay.some(event => event.title === 'Booked Event')) {
+                            cell.css('background-color', 'green');
+                        }
+                        if (eventsForDay.some(event => event.title === 'Another Event')) {
+                            cell.css('background-color', 'gray');
+                        }
+                    }
+                },
+                eventRender: function(event, element) {
+                    // Remove event title
+                    element.find('.fc-title').remove();
+                },
+                // Other FullCalendar options...
+            });
+        });
+    </script>
 
     <script>
         $('#exampleModal').on('show.bs.modal', event => {

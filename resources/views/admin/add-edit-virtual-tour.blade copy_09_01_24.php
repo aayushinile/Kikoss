@@ -106,7 +106,7 @@
                             <div class="form-group">
                                 <h4>Cancellation Policy</h4>
                                 <textarea type="text" class="form-control" rows="7" cols="80" name="cancellation_policy"
-                                    placeholder="Enter Cancellation Policy…">{{ $data ? $data->cencellation_policy : old('cencellation_policy') }}</textarea>
+                                    placeholder="Enter Cancellation Policy…">{{ $data ? $data->cencellation_policy : old('cancellation_policy') }}</textarea>
                             </div>
                             @error('cancellation_policy')
                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -116,14 +116,13 @@
                         <div class="col-md-3">
                             <div class="create-review-form-group form-group">
                                 <h4>Upload Thumbnail Photos<a class="addmorefile" href="">
-                                        {{-- <img src="images/add-file.svg"> --}}
                                     </a></h4>
                                 <div class="create-review-form-input">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="thumbnail" accept=".png, .jpg, .jpeg, .svg"
+                                                    <input type="file" name="thumbnail" accept=".jpg,.jpeg,.png"
                                                         id="addfile1" class="uploadDoc addDoc">
                                                     <label for="addfile1">
                                                         <div class="upload-file-item">
@@ -133,9 +132,6 @@
                                                             </div>
                                                             <div class="upload-text">
                                                                 <span>Browse & Upload File</span>
-                                                            </div>
-                                                            <div class="col-md-12 mb-2 preview-image-before-upload">
-
                                                             </div>
                                                         </div>
                                                     </label>
@@ -158,6 +154,35 @@
                                                     <input type="file" name="trial_audio_file" accept=".mp3"
                                                         id="addfile2" class="uploadDoc addDoc">
                                                     <label for="addfile2">
+                                                        <div class="upload-file-item">
+                                                            <div class="upload-media">
+                                                                <img
+                                                                    src="{{ assets('assets/admin-images/upload-icon.svg') }}">
+                                                            </div>
+                                                            <div class="upload-text">
+                                                                <span>Browse & Upload File</span>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="create-review-form-group form-group">
+                                <h4>Browse & Upload Virtual Audio File<a class="addmorefile" href="">
+                                    </a></h4>
+                                <div class="create-review-form-input">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="upload-form-group">
+                                                <div class="upload-file">
+                                                    <input type="file" name="audio_file" accept=".mp3"id="addfile3"
+                                                        class="uploadDoc addDoc">
+                                                    <label for="addfile3">
                                                         <div class="upload-file-item">
                                                             <div class="upload-media">
                                                                 <img
@@ -285,20 +310,28 @@
                 </form>
             </div>
         </div>
-
     </div>
     <script type="text/javascript">
-        $(document).ready(function(e) {
-            $('#addfile1').change(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all elements with the class "add"
+            let elementsWithClass = document.querySelectorAll('.uploadDoc');
+            // Add an event listener to each element
+            elementsWithClass.forEach(function(element) {
+                element.addEventListener('change', function(event) {
+                    // Your event handling code goes here
+                    const file = event.target.files[0];
 
-                let reader = new FileReader();
-                reader.onload = (e) => {
-                    $(".preview-image-before-upload").append(
-                        "<img id='theImg' style='max-height:150px;max-width:170px' src='" +
-                        e.target.result + "'/>");
+                    const imgURL = URL.createObjectURL(file);
 
-                }
-                reader.readAsDataURL(this.files[0]);
+                    let label = document.querySelector(
+                        `[for="${element.getAttribute("id")}"]`);
+                    label.style.backgroundImage = `url("${imgURL}")`;
+                    label.style.backgroundPosition = 'center';
+                    label.style.backgroundSize = 'cover';
+
+                    var op = label.querySelector(".upload-file-item");
+                    op.style.opacity = 0;
+                });
             });
         });
     </script>
