@@ -124,8 +124,10 @@
                                                 <div class="upload-file">
                                                     <input type="file" name="thumbnail" accept=".jpg,.jpeg,.png"
                                                         id="addfile1" class="uploadDoc addDoc">
-                                                    <label for="addfile1">
-                                                        <div class="upload-file-item">
+                                                    <label for="addfile1"
+                                                        @if ($data) style="background-image: url('{{ assets('upload/virtual-thumbnail/' . $data->thumbnail_file) }}');background-position:center;background-size:cover" @endif>
+                                                        <div class="upload-file-item"
+                                                            @if ($data) style="opacity: 0" @endif>
                                                             <div class="upload-media">
                                                                 <img
                                                                     src="{{ assets('assets/admin-images/upload-icon.svg') }}">
@@ -152,17 +154,29 @@
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
                                                     <input type="file" name="trial_audio_file" accept=".mp3"
-                                                        id="addfile2" class="uploadDoc addDoc">
-                                                    <label for="addfile2">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img
-                                                                    src="{{ assets('assets/admin-images/upload-icon.svg') }}">
+                                                        id="addfile2" class="uploadDoc audio addDoc">
+                                                    <label for="addfile2" style="overflow: scroll">
+                                                        @if ($data && $data->trial_audio_file != '')
+                                                            <audio controls>
+                                                                <source
+                                                                    src="{{ assets('upload/virtual-audio/' . $data->trial_audio_file) }}"
+                                                                    type="audio/mpeg"> Your
+                                                                browser does
+                                                                not support the audio
+                                                                element.
+                                                            </audio>
+                                                        @else
+                                                            <div class="upload-file-item">
+                                                                <div class="upload-media">
+                                                                    <img
+                                                                        src="{{ assets('assets/admin-images/upload-icon.svg') }}">
+                                                                </div>
+                                                                <div class="upload-text">
+                                                                    <span>Browse & Upload File</span>
+                                                                </div>
                                                             </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
+                                                        @endif
+
                                                     </label>
                                                 </div>
                                             </div>
@@ -180,18 +194,30 @@
                                         <div class="col-md-12">
                                             <div class="upload-form-group">
                                                 <div class="upload-file">
-                                                    <input type="file" name="audio_file" accept=".mp3"id="addfile3"
-                                                        class="uploadDoc addDoc">
-                                                    <label for="addfile3">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img
-                                                                    src="{{ assets('assets/admin-images/upload-icon.svg') }}">
+                                                    <input type="file" name="audio" accept=".mp3"id="addfile3"
+                                                        class="uploadDoc audio addDoc">
+                                                    <label for="addfile3" style="overflow: scroll">
+                                                        @if ($data && $data->audio_file != '')
+                                                            <audio controls>
+                                                                <source
+                                                                    src="{{ assets('upload/virtual-audio/' . $data->audio_file) }}"
+                                                                    type="audio/mpeg"> Your
+                                                                browser does
+                                                                not support the audio
+                                                                element.
+                                                            </audio>
+                                                        @else
+                                                            <div class="upload-file-item">
+                                                                <div class="upload-media">
+                                                                    <img
+                                                                        src="{{ assets('assets/admin-images/upload-icon.svg') }}">
+                                                                </div>
+                                                                <div class="upload-text">
+                                                                    <span>Browse & Upload File</span>
+                                                                </div>
                                                             </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
+                                                        @endif
+
                                                     </label>
                                                 </div>
                                             </div>
@@ -300,6 +326,12 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                {{-- <a href="#" class="wh-btn"data-bs-toggle="modal" data-bs-target="#deletepopup"
+                                    onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>Delete</a> --}}
+                                <button class="cancelbtn" style="background-color: red" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#deletepopup"
+                                    onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
+                                    Delete</button>
                                 <button class="cancelbtn"type=" button" onclick="window.location.reload();">
                                     cancel</button>
                                 <button
@@ -311,6 +343,42 @@
             </div>
         </div>
     </div>
+    <!-- delete popup -->
+    <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
+                            </div>
+                            <h3>Are You sure you want to delete?</h3>
+                            <h4 id="Name"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('DeleteTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="tour_id">
+                                    <button class="yesbtn"type="submit">Yes Confirm Delete</button>
+                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------- Append delete Popup Jquery -------------------->
+    <script>
+        function GetData(IDS, Name) {
+            document.getElementById("Name").innerText =
+                Name;
+            document.getElementById("tour_id").value = IDS;
+        }
+    </script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Select all elements with the class "add"
@@ -325,12 +393,27 @@
 
                     let label = document.querySelector(
                         `[for="${element.getAttribute("id")}"]`);
-                    label.style.backgroundImage = `url("${imgURL}")`;
-                    label.style.backgroundPosition = 'center';
-                    label.style.backgroundSize = 'cover';
+                    if (element.classList.contains("audio")) {
+                        label.innerHTML = ` <audio controls>
+                                                                <source
+                                                                    src="${imgURL}"
+                                                                    type="audio/mpeg"> Your
+                                                                browser does
+                                                                not support the audio
+                                                                element.
+                                                            </audio>>`;
 
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.opacity = 0;
+                        // var op = label.querySelector(".upload-file-item");
+                        // op.style.display = "none";
+                    } else {
+                        label.style.backgroundImage = `url("${imgURL}")`;
+                        label.style.backgroundPosition = 'center';
+                        label.style.backgroundSize = 'cover';
+
+                        var op = label.querySelector(".upload-file-item");
+                        op.style.opacity = 0;
+                    }
+
                 });
             });
         });

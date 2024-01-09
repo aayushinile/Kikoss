@@ -23,7 +23,12 @@ class AjaxController extends Controller
             return response()->json(['success' => false, 'message' => 'something went wrong']);
         }
     }
-    
+
+    public function setDate(Request $request)
+    {
+    }
+
+
     public function toggleRequestStatus()
     {
         if (request()->has('request_id')) {

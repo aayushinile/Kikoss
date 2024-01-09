@@ -308,6 +308,10 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <button class="cancelbtn" style="background-color: red" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#deletepopup"
+                                    onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
+                                    Delete</button>
                                 <button class="cancelbtn" type="button"
                                     onclick="window.location.reload();">cancel</button>
                                 <button class="Savebtn" type="submit">{{ $data ? 'Update' : 'Save & Create Tour' }}
@@ -319,7 +323,42 @@
             </div>
         </div>
     </div>
-
+    <!-- delete popup -->
+    <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
+                            </div>
+                            <h3>Are You sure you want to delete?</h3>
+                            <h4 id="Name"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('DeleteTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="tour_id">
+                                    <button class="yesbtn"type="submit">Yes Confirm Delete</button>
+                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------- Append delete Popup Jquery -------------------->
+    <script>
+        function GetData(IDS, Name) {
+            document.getElementById("Name").innerText =
+                Name;
+            document.getElementById("tour_id").value = IDS;
+        }
+    </script>
 @endsection
 @push('js')
     {{-- form validation --}}
@@ -344,7 +383,7 @@
 
                     age_under_10: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
                     under_10_age_price: {
                         //required: true,
@@ -357,7 +396,7 @@
                     },
                     age_11: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
 
                     age_60_price: {
@@ -366,7 +405,7 @@
                     },
                     age_60: {
                         //required: true,
-                        digits: true,
+                        // digits: true,
                     },
 
                     for_all: {
