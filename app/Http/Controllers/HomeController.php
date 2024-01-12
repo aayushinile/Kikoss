@@ -40,17 +40,17 @@ class HomeController extends Controller
     public function index()
     {
         // Showing All datas of app like tourbooking
-        $Tourrequests = TourBooking::with("Tour")->where('status', 1)->orderBy('id', 'DESC')->paginate(10);
+        $Tourrequests = TourBooking::with("Tour")->where('status', 0)->orderBy('id', 'DESC')->paginate(10);
         $booked_dates = TourBooking::where('status', 1)->groupBy('booking_date')->pluck('booking_date');
         return view('admin.home', compact('Tourrequests', 'booked_dates'));
     }
     
-        public function getBookedDates()
-        {
-            $bookedDates = TourBooking::pluck('booking_date')->map(function ($date) {
-                return Carbon\Carbon::parse($date)->format('Y-m-d');
-            })->toArray();
-        }
+    public function getBookedDates()
+    {
+        $bookedDates = TourBooking::pluck('booking_date')->map(function ($date) {
+            return Carbon\Carbon::parse($date)->format('Y-m-d');
+        })->toArray();
+    }
     
 
     public function users()
@@ -111,7 +111,8 @@ class HomeController extends Controller
 
         // Pass data to the 'admin.user-detail' view
         $taxi_booking_requests = TaxiBooking::orderBy('id', 'DESC')->paginate(10); //Get all request taxi booking
-        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount', 'taxi_booking_requests'));
+        $taxi_booking_count = TaxiBooking::whereIn('status', [0,1])->count(); //Get all request taxi booking
+        return view('admin.user-detail', compact('data', 'normal_tours', 'virtual_tours', 'PhotoBooths', 'total_amount', 'taxi_booking_requests','taxi_booking_count'));
     }
 
     public function AddTour()
@@ -620,7 +621,7 @@ class HomeController extends Controller
     {
         try {
             $datas = TourBooking::where('id', $id)->update(['status' => 1]);/*0:pending,1:accept,2:reject */
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Tour Booking request accepted');
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -631,7 +632,7 @@ class HomeController extends Controller
     {
         try {
             $datas = TourBooking::where('id', $id)->update(['status' => 2]);/*0:pending,1:accept,2:reject */
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Tour Booking request rejected');;
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

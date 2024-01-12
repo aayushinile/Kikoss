@@ -19,6 +19,10 @@ Route::get('/', function () {
     // return view('welcome');
     return redirect('login');
 });
+Route::get('/calendar', [App\Http\Controllers\AjaxController::class, 'index']);
+Route::get('/get-events', [App\Http\Controllers\AjaxController::class, 'getEvents']);
+Route::post('/add-event', [App\Http\Controllers\AjaxController::class, 'addEvent']);
+Route::get('/get-events-set2', [App\Http\Controllers\AjaxController::class, 'getEventsSet2']);
 
 Auth::routes();
 // Ajax route to toggle user status

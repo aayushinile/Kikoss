@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Otp;
+use App\Models\Event;
 use App\Models\Tour;
 use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
@@ -140,6 +141,7 @@ class UserController extends Controller
                 'fullname' => 'required|string|max:255',
                 'email' =>   ['required','email',Rule::unique('users')->ignore($user->id)],
                 'mobile' => ['required',Rule::unique('users')->ignore($user->id)],
+                'mobile' => ['required'],
                 'image' => 'image|mimes:jpeg,png,jpg|max:2048',
             ]);
             if ($validator->fails())
@@ -148,9 +150,13 @@ class UserController extends Controller
             }
             
             if ($file = $request->file('image')) {
-                if (file_exists(public_path('upload/profile/'.$user->user_profile))) {
-                    unlink(public_path('upload/profile/'.$user->user_profile));/*Delete Photo booth image from file*/
+                if(!empty($user->user_profile))
+                {
+                    if (file_exists(public_path('upload/profile/'.$user->user_profile))) {
+                        unlink(public_path('upload/profile/'.$user->user_profile));/*Delete Photo booth image from file*/
+                    }
                 }
+                
                 $destination = public_path('upload/profile');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                 $file->move($destination, $name);
@@ -215,6 +221,57 @@ class UserController extends Controller
             $data['status'] = true;
             $data['message'] = 'Home data';
             $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Legal links of about us, Contact us */
+    public function legal_links() 
+    {
+        try {
+            $data['status'] = true;
+            $data['about_us'] = 'https://kikostoursoahu.com/';
+            $data['contact_us'] = 'https://kikostoursoahu.com/';
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    public function calendarEvents() 
+    {
+        try {
+            $booked_events = Event::where('title','Booked Event')->get();
+            if(count($booked_events) > 0){
+                $response = array();
+                foreach ($booked_events as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['title'] = $value->title;
+                    $temp['date'] = $value->start;
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            $not_available = Event::where('title','Not Available')->get();
+            if(count($not_available) > 0){
+                $response1 = array();
+                foreach ($not_available as $key => $value) {
+                    $temp1['id'] = $value->id;
+                    $temp1['title'] = $value->title;
+                    $temp1['date'] = $value->start;
+                    $response1[] = $temp1;
+                }
+            }else{
+                $response1 = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Event data';
+            $data['booked_events'] = $response;
+            $data['not_available'] = $response1;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

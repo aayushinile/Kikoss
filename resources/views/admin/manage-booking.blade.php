@@ -413,50 +413,5 @@
             // $('.mix-2').append(imageElement);
         }
     </script>
-    {{-- Live Search of users --}}
-    <script>
-        $(document).ready(function() {
-            //fetch_user_data();
-            function fetch_customer_data(query = '', tour_id = '', Date = '') {
-                let _token = $("input[name='_token']").val();
-                $.ajax({
-                    url: '{{ route('search_name') }}',
-                    method: 'GET',
-                    data: {
-                        query: query,
-                        tour_id: tour_id,
-                        Date: Date,
-                        _token: _token,
-                    },
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        $('tbody').html(
-                            data);
-                    }
-                });
-            }
-
-            $(document).on('keyup', '#search', function() {
-                var query = $(this).val();
-                fetch_customer_data(query);
-            });
-
-            $('#select-id').change(function() {
-                var tour_id = this.value;
-                var query = '';
-                fetch_customer_data(query, tour_id);
-            });
-
-            $("#date").on("change", function() {
-                var Date = $(this).val();
-                var query = '';
-                var tour_id = '';
-                fetch_customer_data(query, tour_id, Date);
-            });
-        });
-    </script>
 
 @endsection

@@ -160,7 +160,8 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Taxi Booking History</p>
-                                        <h2>0</h2>
+                                        <h2>{{ $taxi_booking_count }}
+                                        </h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/TaxiBooking.svg') }}">
@@ -267,7 +268,7 @@
                                                 </td>
                                                 <td>{{ $item->Tour->name }}</td>
                                                 <td>{{ $item->Tour->duration }} Hours</td>
-                                                <td>{{ date('d/m/y', strtotime($item->booking_date)) }}</td>
+                                                <td>{{ date('d M, Y', strtotime($item->booking_date)) }}</td>
                                                 <td>${{ $item->total_amount }}.00</td>
                                                 <td> {{ $item->no_adults + $item->senior_citizen + $item->no_childerns }}
                                                     People </td>
@@ -275,8 +276,16 @@
                                                 </td>
                                                 <td> {{ $item->payment_provider }} </td>
                                                 <td>
-                                                    <div class="status-text confirmed-status"><i
-                                                            class="las la-check-circle"></i> {{ $item->status }}</div>
+                                                    @if ($item->status == 1)
+                                                        <div class="status-text confirmed-status"><i
+                                                                class="las la-check-circle"></i>Confirmed
+                                                        </div>
+                                                    @else
+                                                        <div class="status-text rejected-status"><i
+                                                                class="las la-times-circle"></i>Rejected (Refund
+                                                            Initiated)
+                                                        </div>
+                                                    @endif
                                                 </td>
                                                 <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
                                                 </td>
@@ -337,7 +346,8 @@
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
-                                            <th>Tour Name & Duration</th>
+                                            <th>Tour Name</th>
+                                            <th>Duration</th>
 
                                             <th>Amount Paid</th>
 
@@ -354,6 +364,7 @@
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
                                                 <td>{{ $item->Tour->name }}</td>
+                                                <td>{{ $item->Tour->duration }} Hours</td>
 
                                                 <td>${{ $item->total_amount }}.00</td>
 
@@ -521,7 +532,7 @@
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
-                                                <td>{{ $item->user ? $item->user->fullname : 'N/A' }}</td>
+                                                <td>{{ $item->Username ? $item->Username->fullname : 'N/A' }}</td>
                                                 <td>TR0619879238351</td>
                                                 <td>{{ date('d M, Y, h:i:s a', strtotime($item->booking_time)) }}
 
