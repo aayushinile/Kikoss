@@ -99,3 +99,16 @@ if (!function_exists('getDistanceFromLatLonInKm')) {
         return $d;
     }
 }
+
+if (!function_exists('random_alphanumeric')) {
+    function random_alphanumeric() {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ12345689';
+        $my_string = '';
+        $length = 10;
+        for ($i = 0; $i < $length; $i++) {
+        $pos = random_int(0, strlen($chars) -1);
+        $my_string .= substr($chars, $pos, 1);
+        }
+        return $my_string;
+    }
+}

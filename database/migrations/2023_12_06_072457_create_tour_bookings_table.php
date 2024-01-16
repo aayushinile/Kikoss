@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('tour_id')->nullable();
             $table->string('tour_type',20)->nullable();
+            $table->string('booking_id')->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->bigInteger('user_name')->nullable();
             $table->dateTime('booking_date')->nullable();

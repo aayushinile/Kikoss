@@ -20,6 +20,7 @@ Route::post('forget-password', [UserController::class, 'forgetpassword']);
 Route::post('verify-otp', [UserController::class, 'verifyotp']);
 Route::post('change-password', [UserController::class, 'change_password']);
 Route::get('home', [UserController::class, 'home']);
+Route::get('book-tour', [UserController::class, 'book_tour']);
 Route::post('tour-detail', [UserController::class, 'tour_detail']);
 Route::get('virtual-tour-listing', [UserController::class, 'VirtualTourListing']);
 Route::post('virtual-tour-detail', [UserController::class, 'VirtualTourDetail']);
@@ -38,4 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('photo-booth-listing', [UserController::class, 'PhotoBoothListing']);
     Route::post('photo-booth-details', [UserController::class, 'PhotoBoothDetails']);
     Route::post('purchased-photo-booth-listing', [UserController::class, 'PurchasedPhotoBoothListing']);
+    Route::post('confirmed-tour', [UserController::class, 'confirmed_tour']);
+    Route::post('free-callback-request', [UserController::class, 'FreeCallbackRequest']);
 });

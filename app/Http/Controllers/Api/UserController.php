@@ -261,7 +261,7 @@ class UserController extends Controller
                 foreach ($not_available as $key => $value) {
                     $temp1['id'] = $value->id;
                     $temp1['title'] = $value->title;
-                    $temp1['date'] = $value->start;
+                    $temp1['date'] = date('Y-m-d', strtotime($value->start));
                     $response1[] = $temp1;
                 }
             }else{
@@ -587,8 +587,10 @@ class UserController extends Controller
             {
                 return errorMsg($validator->errors()->first());
             }
+            $booking_id = random_alphanumeric();
             $user = Auth::user();
             $booking = new TourBooking;
+            $booking->booking_id = $booking_id;
             $booking->tour_id = $request->tour_id;
             $booking->tour_type = $request->tour_type;/*1-Normal Tour, 2:Virtual tour */
             $booking->user_id = $user->id;
@@ -797,7 +799,6 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-
     
     /*Showing all Photo booth listing */
     public function PhotoBoothListing() 
@@ -829,6 +830,144 @@ class UserController extends Controller
             
             $data['status'] = true;
             $data['message'] = 'Photo booth listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing all tour listing, count of bookrd tour */
+    public function book_tour() 
+    {
+        try {
+            
+            $tours = Tour::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
+            if(count($tours) > 0){
+                $response = array();/*Store data an array */
+                foreach ($tours as $key => $tour) {
+                    $temp['id'] = $tour->id;
+                    $temp['title'] = $tour->title;
+                    $temp['name'] = $tour->name;
+                    $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
+                    $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
+                    $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
+                    $temp['duration'] = $tour->duration;/* Tour Time */
+                    $images = TourAttribute::where('tour_id',$tour->id)->first();
+                    $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            if(Auth::user()){
+                $user = Auth::user();
+                $bookings = TourBooking::where('tour_type',1)->whereIn('status',[1,2])->where('user_id',$user->id)->count();//Get count of Normal tour accoding to user id
+                $CallbackRequest = CallbackRequest::where('tour_type',1)->where('user_id',$user->id)->count();//Get all datas of Normal tour
+            }else{
+                $bookings = 0;
+                $CallbackRequest = 0;
+            }
+            
+            $tours = Tour::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
+            
+            $data['status'] = true;
+            $data['message'] = 'Book tour listing';
+            $data['data'] = $response;
+            $data['confirmed_tour'] = $bookings;
+            $data['free_callback_request'] = $CallbackRequest;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing all tour listing, count of booked tour */
+    public function confirmed_tour(Request $request) 
+    {
+        try {
+            $user = Auth::user();
+            if($request->status == 1)
+            {
+                /*Accepted */
+                $all_bookings = TourBooking::where('status',1)->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }elseif($request->status == 2){
+                /*Rejected */
+                $all_bookings = TourBooking::where('status',2)->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }else{
+                /*All */
+                $all_bookings = TourBooking::whereIn('status',[1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }
+            
+            
+            if(count($all_bookings) > 0){
+                $response = array();/*Store data an array */
+                foreach ($all_bookings as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['status_id'] = $value->status;
+                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : ""));
+                    $temp['boooking_id'] = $value->booking_id;
+                    $tour = Tour::where('id',$value->tour_id)->first();
+                    $temp['tour_title'] = $tour->title;
+                    $temp['cancellation_policy'] = $tour->cancellation_policy;
+                    $temp['selectd_date'] = $tour->boking_date;
+                    $temp['duration'] = $tour->duration;/* Tour Time */
+                    $temp['no_of_adults'] = $value->no_adults;
+                    $temp['no_of_senior'] = $value->no_senior_citizen;
+                    $temp['no_of_children'] = $value->no_childerns;
+                    $temp['total_amount'] = $value->total_amount;
+                    $images = TourAttribute::where('tour_id',$value->id)->first();
+                    $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Book tour listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing all tour listing, count of booked tour */
+    public function FreeCallbackRequest(Request $request) 
+    {
+        try {
+            $user = Auth::user();
+            if($request->date)
+            {
+                /*Accepted */
+                $requests = CallbackRequest::where('preferred_time',$request->date)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }else{
+                /*All */
+                $requests = CallbackRequest::orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }
+            
+            
+            if(count($requests) > 0){
+                $response = array();/*Store data an array */
+                foreach ($requests as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['tour_id'] = $value->tour_id;
+                    $tour = Tour::where('id',$value->tour_id)->first();
+                    $temp['tour_title'] = $tour->title;
+                    $temp['date'] = date('d M, Y - g:i A', strtotime($tour->preferred_time));
+                    $temp['duration'] = $tour->duration;
+                    $images = TourAttribute::where('tour_id',$value->tour_id)->first();
+                    $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    $response = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Free Callback listing';
             $data['data'] = $response;
             return response()->json($data);
         } catch (\Exception $e) {
