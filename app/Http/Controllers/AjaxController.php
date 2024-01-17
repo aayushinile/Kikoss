@@ -10,6 +10,21 @@ use Illuminate\Http\Request;
 
 class AjaxController extends Controller
 {
+    public function privacy_policy()
+    {
+        return view('admin.privacy_policy');
+    }
+    
+    public function about_us()
+    {
+        return view('admin.about_us');
+    }
+    
+    public function term_condition()
+    {
+        return view('admin.term_condition');
+    }
+    
     public function getEvents()
     {
         $events = Event::all();

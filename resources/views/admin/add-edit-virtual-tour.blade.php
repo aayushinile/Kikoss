@@ -328,10 +328,10 @@
                             <div class="form-group">
                                 {{-- <a href="#" class="wh-btn"data-bs-toggle="modal" data-bs-target="#deletepopup"
                                     onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>Delete</a> --}}
-                                <button class="cancelbtn" style="background-color: red" type="button"
+                                {{-- <button class="cancelbtn" style="background-color: red" type="button"
                                     data-bs-toggle="modal" data-bs-target="#deletepopup"
                                     onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
-                                    Delete</button>
+                                    Delete</button> --}}
                                 <button class="cancelbtn"type=" button" onclick="window.location.reload();">
                                     cancel</button>
                                 <button

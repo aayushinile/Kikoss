@@ -9,13 +9,11 @@
     </style>
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
     <!-- CSS for full calender -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ assets('assets/admin-css/fullcalendar.min.css') }}">
+    <script src="{{ assets('assets/admin-js/jquery-3.6.0.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
@@ -348,39 +346,6 @@
         </div>
     </div>
 
-    <!-- Event Modal -->
-    {{-- <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="eventForm">
-                        @csrf
-                        <div class="form-group">
-                            <label for="title">Event Title:</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="start_date">Start Date:</label>
-                            <input type="datetime-local" class="form-control" id="start" name="start" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="color">Event Color:</label>
-                            <input type="color" class="form-control" id="color" name="color" value="#FF5733">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Event</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
     <!-- View Booking -->
     <div class="modal kik-modal fade" id="BookingRequest" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -499,7 +464,7 @@
                 editable: true,
                 eventSources: [
                     '/get-events', // Specify the route for the first set of events
-                    '/get-events-set2' // Specify the route for the second set of events
+                    //'/get-events-set2' // Specify the route for the second set of events
                     // Add more routes as needed
                 ],
                 //events: '/get - events ', // Specify the route to fetch events
@@ -530,7 +495,7 @@
         });
     </script>
 
-    <!-------------------- Append Popup-Jquery -------------------->
+    <!-------------------- Append Popup for booking approval using with Jquery -------------------->
     <script>
         function accept_tour(tour_id, title, booking_date, duration, total_amount) {
             // if (image == '') {

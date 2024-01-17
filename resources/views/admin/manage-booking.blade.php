@@ -5,6 +5,12 @@
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- CSS for full calender -->
+    <link rel="stylesheet" href="{{ assets('assets/admin-css/fullcalendar.min.css') }}">
+    <script src="{{ assets('assets/admin-js/jquery-3.6.0.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -219,8 +225,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-
+                            <div class="kikcard">
+                                <div class="card-body">
+                                    <div id="calendar"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -229,6 +237,7 @@
             </div>
         </div>
     </div>
+
     <!-- View Booking -->
     <div class="modal kik-modal fade" id="BookingRequest" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -334,6 +343,7 @@
             </div>
         </div>
     </div>
+
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -362,6 +372,102 @@
             </div>
         </div>
     </div>
+
+    <!-- Manage Dates popup -->
+    <div class="modal kik-modal fade" id="eventModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-form">
+                        <form id="eventForm">
+                            @csrf
+                            <h3>Manage Dates</h3>
+                            <div class="form-group">
+                                <h4>Selected Date</h4>
+                                <input type="date" name="start" min="{{ date('Y-m-d') }}" class="form-control"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <ul class="kik-datesstatus-list">
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype" value="Not Available"
+                                                id="Not Available"required>
+                                            <label for="Not Available">Not Available</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype" value="Available"
+                                                id="Available"required>
+                                            <label for="Available">Available</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="kikradio">
+                                            <input type="radio" name="datesstatustype"
+                                                value="Booked Tour"id="Tour Bookings" required>
+                                            <label for="Tour Bookings">Tour Bookings</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="kik-modal-action">
+                                <button type="submit" class="yesbtn">Confirm & Save</button>
+                                <button class="Cancelbtn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Code for calendar --}}
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                eventSources: [
+                    '/get-events', // Specify the route for the first set of events
+                    //'/get-events-set2' // Specify the route for the second set of events
+                    // Add more routes as needed
+                ],
+                //events: '/get - events ', // Specify the route to fetch events
+                eventRender: function(event, element) {
+                    element.append("<br/>" + event.description);
+                },
+                dayClick: function(date, jsEvent, view) {
+                    $('#eventModal').modal('show');
+                    $('#start_date').val(date.format());
+                }
+            });
+
+            $('#eventForm').submit(function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add-event',
+                    data: $('#eventForm').serialize(),
+                    success: function(response) {
+                        // Refresh the FullCalendar to display the new event
+                        $('#calendar').fullCalendar('refetchEvents');
+                        $('#eventModal').modal('hide');
+                        location.reload();
+                    }
+                });
+            });
+        });
+    </script>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -370,6 +476,7 @@
             document.getElementById("photo_booth_id").value = IDS;
         }
     </script>
+
     <!-------------------- Append Popup-Jquery -------------------->
     <script>
         function accept_tour(tour_id, title, booking_date, duration, total_amount) {

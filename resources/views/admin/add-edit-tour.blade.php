@@ -308,10 +308,10 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <button class="cancelbtn" style="background-color: red" type="button"
+                                {{-- <button class="cancelbtn" style="background-color: red" type="button"
                                     data-bs-toggle="modal" data-bs-target="#deletepopup"
                                     onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
-                                    Delete</button>
+                                    Delete</button> --}}
                                 <button class="cancelbtn" type="button"
                                     onclick="window.location.reload();">cancel</button>
                                 <button class="Savebtn" type="submit">{{ $data ? 'Update' : 'Save & Create Tour' }}

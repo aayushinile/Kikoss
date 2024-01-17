@@ -19,7 +19,9 @@ use App\Models\VirtualTour;
 use App\Models\TaxiBooking;
 use App\Models\PhotoBooth;
 use App\Models\PhotoBoothMedia;
-
+use Mail;
+use App\Mail\RegisterMail;
+use App\Mail\SendOTPMail;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -103,6 +105,14 @@ class UserController extends Controller
             $success['email'] = $user->email;
             $success['mobile'] = ($user->mobile) ?? '';
             $success['status'] = $user->status;
+            
+            /*User Mail*/
+            $mailData = [
+                'name'  => $user->fullname
+            ];
+            Mail::to($user->email)->send(new RegisterMail($mailData));
+            
+            
             return response()->json(["status" => true, "message" => "Registered successfully.", "data" => $success]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -243,13 +253,14 @@ class UserController extends Controller
     public function calendarEvents() 
     {
         try {
-            $booked_events = Event::where('title','Booked Event')->get();
+            $booked_events = Event::where('title','Booked Tour')->get();
             if(count($booked_events) > 0){
                 $response = array();
                 foreach ($booked_events as $key => $value) {
                     $temp['id'] = $value->id;
                     $temp['title'] = $value->title;
-                    $temp['date'] = $value->start;
+                    $temp['date'] = date('Y-m-d', strtotime($value->start));
+                    $temp['color'] = $value->color;
                     $response[] = $temp;
                 }
             }else{
@@ -262,6 +273,7 @@ class UserController extends Controller
                     $temp1['id'] = $value->id;
                     $temp1['title'] = $value->title;
                     $temp1['date'] = date('Y-m-d', strtotime($value->start));
+                    $temp1['color'] = $value->color;
                     $response1[] = $temp1;
                 }
             }else{
@@ -392,6 +404,14 @@ class UserController extends Controller
                     $data['message'] = 'Verification code has been sent';
                     $data['code'] = $code;
                     $data['email'] = $email;
+                    $mailData = 
+                    [
+                        'body' => 'You are receiving this email because you have registered on our Kikos platform',
+                        'code'  => 'Your otp is '. $code,
+                        'email'  => $email
+                    ];
+         
+                    Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }else{
                     
@@ -404,6 +424,14 @@ class UserController extends Controller
                     $data['message'] = 'Verification code has been sent';
                     $data['code'] = $code;
                     $data['email'] = $email;
+                    $mailData = 
+                    [
+                        'body' => 'You are receiving this email because you have registered on our Kikos platform',
+                        'code'  => 'Your otp is '. $code,
+                        'email'  => $email
+                    ];
+         
+                    Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }
             }else{
@@ -670,13 +698,7 @@ class UserController extends Controller
                 $temp['purchase_user_count'] = 2.1.'M';
                 $temp['purchase_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
                 $temp['audio'] = asset('public/upload/virtual-audio/'.$tour->audio_file);/*Audio file of virtual tour*/
-                if(isset($tour->trial_audio_file))
-                {
-                    $temp['trail_audio'] =  asset('public/upload/virtual-audio/'.$tour->trial_audio_file);/*Audio file of virtual tour*/
-                }else{
-                    $temp['trail_audio'] = '';/*Audio file of virtual tour*/
-                }
-                
+                $temp['trail_audio'] =  $tour->profile ? asset('public/upload/virtual-audio/'.$tour->trial_audio_file) : '';/*Audio file of virtual tour*/
                 $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/'.$tour->thumbnail_file);/*Thumbnail file of virtual tour*/
             }else{
                 $temp = '';

@@ -19,6 +19,13 @@ Route::get('/', function () {
     // return view('welcome');
     return redirect('login');
 });
+Route::get('/send_otp', [App\Http\Controllers\MailController::class, 'send_otp']);
+Route::get('/privacy-policy', [App\Http\Controllers\AjaxController::class, 'privacy_policy']);
+Route::get('/about-us', [App\Http\Controllers\AjaxController::class, 'about_us']);
+Route::get('/term-condition', [App\Http\Controllers\AjaxController::class, 'term_condition']);
+
+Route::get('/privacy-policy', [App\Http\Controllers\AjaxController::class, 'privacy_policy']);
+Route::get('/calendar', [App\Http\Controllers\AjaxController::class, 'index']);
 Route::get('/calendar', [App\Http\Controllers\AjaxController::class, 'index']);
 Route::get('/get-events', [App\Http\Controllers\AjaxController::class, 'getEvents']);
 Route::post('/add-event', [App\Http\Controllers\AjaxController::class, 'addEvent']);
