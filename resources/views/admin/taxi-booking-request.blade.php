@@ -31,7 +31,7 @@
                                                     <div class="col-md-3">
                                                         <div class="search-form-group">
                                                             <div class="TotalRequestoverview">Total Request Received:
-                                                                <span>${{ $amount }}</span>
+                                                                <span>{{count($bookings)}}</span>
                                                             </div>
                                                         </div>
                                                     </div>

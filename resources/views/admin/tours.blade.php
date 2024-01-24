@@ -47,6 +47,11 @@
                                             $FirstImage = \App\Models\TourAttribute::where('tour_id', $val->id)->first();
                                         @endphp
                                         <img src="{{ assets('/upload/tour-thumbnail/' . $FirstImage->attribute_name) }}">
+                                        <div class="managetour-seat-info">
+                                            <span class="totalseat-text">
+                                            <img src="{{ assets('assets/admin-images/seat1.svg') }}" > Total Seat - {{ $val->total_people ?? '' }}</span>
+                                            <span class="LeftSeat-text"><img src="{{ assets('assets/admin-images/seat.svg') }}"> Left Seat - 05</span>
+                                        </div>
                                     </div>
                                     <div class="manage-tour-card-content">
                                         <div class="manage-tour-card-text">
@@ -54,6 +59,8 @@
                                             <p>{{ $val->name ?? '' }} • {{ $val->duration }} Hours</p>
                                             <div class="price-text">US${{ $val->under_10_age_price }} –
                                                 US${{ $val->age_11_price }}</div>
+
+
                                         </div>
                                         <div class="manage-tour-card-action">
                                             <a

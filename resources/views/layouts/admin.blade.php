@@ -358,7 +358,7 @@
                         <div class="kik-modal-delete-card">
                             <div class="kik-modal-delete-icon">
 
-                                <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
+                                <img src="{{ assets('assets/admin-images/logout.svg') }}">
                             </div>
                             <h3>Are you sure you want to logout?</h3>
                             <h4 id="Name"></h4>

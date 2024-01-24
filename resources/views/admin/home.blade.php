@@ -29,92 +29,100 @@
     <div class="body-main-content">
         <div class="overview-section">
             <div class="row row-cols-xl-5 row-cols-xl-3 row-cols-md-2 g-2">
-                <div class="col flex-fill">
-                    <div class="overview-card">
-                        <div class="overview-card-body">
-                            <div class="overview-content">
-                                <div class="overview-content-text">
-                                    <p>Total Users</p>
-                                    @php
-                                        $users_count = \App\Models\User::where('type', 2)->count();
-                                    @endphp
-                                    <h2>{{ $users_count }}</h2>
-                                </div>
-                                <div class="overview-content-icon">
-                                    <img src="{{ assets('assets/admin-images/users.svg') }}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col flex-fill">
-                    <div class="overview-card">
-                        <div class="overview-card-body">
-                            <div class="overview-content">
-                                <div class="overview-content-text">
-                                    <p>Total Tour booked</p>
-                                    @php
-                                        $users_count = \App\Models\User::where('type', 2)->count();
-                                    @endphp
-                                    <h2>0</h2>
-                                </div>
-                                <div class="overview-content-icon">
-                                    <img src="{{ assets('assets/admin-images/Total-Tour-booked.svg') }}">
+                <a href="{{ url('users') }}">
+                    <div class="col flex-fill">
+                        <div class="overview-card">
+                            <div class="overview-card-body">
+                                <div class="overview-content">
+                                    <div class="overview-content-text">
+                                        <p>Total Users</p>
+                                        @php
+                                            $users_count = \App\Models\User::where('type', 2)->count();
+                                        @endphp
+                                        <h2>{{ $users_count }}</h2>
+                                    </div>
+                                    <div class="overview-content-icon">
+                                        <img src="{{ assets('assets/admin-images/users.svg') }}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="col flex-fill">
-                    <div class="overview-card">
-                        <div class="overview-card-body">
-                            <div class="overview-content">
-                                <div class="overview-content-text">
-                                    <p>Total Virtual Tour Purchased</p>
-                                    <h2>0</h2>
-                                </div>
-                                <div class="overview-content-icon">
-                                    <img src="{{ assets('assets/admin-images/Virtual-tour.svg') }}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col flex-fill">
-                    <div class="overview-card">
-                        <div class="overview-card-body">
-                            <div class="overview-content">
-                                <div class="overview-content-text">
-                                    <p>Total Photo Booth Purchases</p>
-                                    <h2>0</h2>
-                                </div>
-                                <div class="overview-content-icon">
-                                    <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">
+                </a>
+                <a href="{{ url('manage-booking') }}">
+                    <div class="col flex-fill">
+                        <div class="overview-card">
+                            <div class="overview-card-body">
+                                <div class="overview-content">
+                                    <div class="overview-content-text">
+                                        <p>Total Tour booked</p>
+                                        @php
+                                            $users_count = \App\Models\User::where('type', 2)->count();
+                                        @endphp
+                                        <h2>0</h2>
+                                    </div>
+                                    <div class="overview-content-icon">
+                                        <img src="{{ assets('assets/admin-images/Total-Tour-booked.svg') }}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col flex-fill">
-                    <div class="overview-card">
-                        <div class="overview-card-body">
-                            <div class="overview-content">
-                                <div class="overview-content-text">
-                                    <p>Total Taxi Booking Request</p>
-                                    <h2>0</h2>
-                                </div>
-                                <div class="overview-content-icon">
-                                    <img src="{{ assets('assets/admin-images/TaxiBooking.svg') }}">
+                </a>
+                <a href="{{ url('manage-virtual-tour') }}">
+                    <div class="col flex-fill">
+                        <div class="overview-card">
+                            <div class="overview-card-body">
+                                <div class="overview-content">
+                                    <div class="overview-content-text">
+                                        <p>Total Virtual Tour Purchased</p>
+                                        <h2>0</h2>
+                                    </div>
+                                    <div class="overview-content-icon">
+                                        <img src="{{ assets('assets/admin-images/Virtual-tour.svg') }}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
+                <a href="{{ url('manage-photo-booth') }}">
+                    <div class="col flex-fill">
+                        <div class="overview-card">
+                            <div class="overview-card-body">
+                                <div class="overview-content">
+                                    <div class="overview-content-text">
+                                        <p>Total Photo Booth Purchases</p>
+                                        <h2>0</h2>
+                                    </div>
+                                    <div class="overview-content-icon">
+                                        <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ url('taxi-booking-request') }}">
+                    <div class="col flex-fill">
+                        <div class="overview-card">
+                            <div class="overview-card-body">
+                                <div class="overview-content">
+                                    <div class="overview-content-text">
+                                        <p>Total Taxi Booking Request</p>
+                                        @php
+                                            $taxi_booking_count = \App\Models\TaxiBooking::where('status', 0)->count();
+                                        @endphp
+                                        <h2>{{ $taxi_booking_count }}</h2>
+                                    </div>
+                                    <div class="overview-content-icon">
+                                        <img src="{{ assets('assets/admin-images/TaxiBooking.svg') }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -167,7 +175,7 @@
                                                         {{ $val->Tour->duration ?? '' }} Hours
                                                     </td>
                                                     <td>
-                                                        {{ date('Y-m-d', strtotime($val->booking_date)) ?? '' }}
+                                                        {{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
                                                     </td>
                                                     <td>
                                                         Pending for Approval
@@ -463,13 +471,29 @@
                 },
                 editable: true,
                 eventSources: [
-                    '/get-events', // Specify the route for the first set of events
-                    //'/get-events-set2' // Specify the route for the second set of events
-                    // Add more routes as needed
+                    '/get-events',
                 ],
-                //events: '/get - events ', // Specify the route to fetch events
                 eventRender: function(event, element) {
-                    element.append("<br/>" + event.description);
+                    // Empty the content before appending new data
+                    element.empty();
+
+                    // Check if event.description is defined before appending
+                    if (event.description) {
+                        // Append the event description
+                        element.append("<br/>" + event.description);
+                    }
+                },
+                dayRender: function(date, cell) {
+                    // Check if there are events on this date
+                    var eventsOnThisDate = $('#calendar').fullCalendar('clientEvents', function(event) {
+                        // Check if the start date of the event matches the current date
+                        return event.start.isSame(date, 'day');
+                    });
+
+                    // If there are events, set the background color
+                    if (eventsOnThisDate.length > 0) {
+                        cell.css('background-color', 'red'); // Set your desired background color
+                    }
                 },
                 dayClick: function(date, jsEvent, view) {
                     $('#eventModal').modal('show');

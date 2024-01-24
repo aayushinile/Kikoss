@@ -8,6 +8,15 @@
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>Manage Virtual Tour</h4>
+        <div class="search-filter">
+            <div class="row g-1">
+                <div class="col-md-12">
+                    <div class="page-breadcrumb-action">
+                        <a href="{{ url('tours') }}" class="wh-btn">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="body-main-content">
         <div class="addVirtualtour-section">
@@ -332,8 +341,8 @@
                                     data-bs-toggle="modal" data-bs-target="#deletepopup"
                                     onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
                                     Delete</button> --}}
-                                <button class="cancelbtn"type=" button" onclick="window.location.reload();">
-                                    cancel</button>
+                                <a class="cancelbtn"href="{{ url('manage-virtual-tour') }}">
+                                    cancel</a>
                                 <button
                                     class="Savebtn"type="submit">{{ $data ? 'Update' : 'Save & Create Virtual Tour' }}</button>
                             </div>
@@ -343,6 +352,7 @@
             </div>
         </div>
     </div>
+
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -371,6 +381,7 @@
             </div>
         </div>
     </div>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -379,6 +390,7 @@
             document.getElementById("tour_id").value = IDS;
         }
     </script>
+
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Select all elements with the class "add"

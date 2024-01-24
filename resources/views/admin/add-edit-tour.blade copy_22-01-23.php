@@ -51,65 +51,41 @@
                         </div>
                         <div class="col-md-12">
                             <div class="row">
-                                <input type="hidden" name="same_for_all_check_data"
-                                    id="same_for_all_check_data"value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
-                                <div class="col-md-3">
-
-                                    <div class="form-group">
-                                        <div class="kikcheckbox1">
-                                            @if ($data)
-                                                <input type="checkbox" name="same_for_all_check"
-                                                    id="Same_For_All_Check_Data"
-                                                    @if ($data->same_for_all != 0) @checked(true) @endif>
-                                                <label for="Same_For_All_Check_Data">Same for all</label>
-                                            @else
-                                                <input type="checkbox" name="same_for_all_check" id="same_for_all_check">
-                                                <label for="same_for_all_check">Same for all</label>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <div class="kikcheckbox1">
-                                            @if ($data)
-                                                <input type="checkbox" name="Individual_Check" id="Individual_Check_Data"
-                                                    @if ($data->same_for_all == 0) @checked(true) @endif>
-                                                <label for="Individual_Check_Data">Individual</label>
-                                            @else
-                                                <input type="checkbox" name="Individual_Check" id="Individual_Check">
-                                                <label for="Individual_Check">Individual</label>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @error('same_for_all')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            <div class="Individual_Field_data">
-                                                <h4 for="People_Ages_11">People Ages 11+</h4>
+                                            @if ($data->same_for_all)
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" id="People Ages 11+" name="age_11" disabled>
+                                                    <label for="People Ages 11+">People Ages 11+</label>
+                                                </div>
+                                                <div class="form-group-input">
+                                                    <input type="text" min="0" class="form-control"
+                                                        name="age_11_price" placeholder="Enter Price/Person(in $)" disabled>
+                                                </div>
+                                            @else
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" id="People Ages 11+"
+                                                        name="age_11"@if (!empty($data)) checked @endif>
+                                                    <label for="People Ages 11+">People Ages 11+</label>
+                                                </div>
                                                 <div class="form-group-input">
                                                     <input type="text" min="0" class="form-control"
                                                         name="age_11_price" placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                                 </div>
-                                            </div>
+                                            @endif
                                         @else
-                                            <div class="Individual_Field">
-                                                <h4 for="People_Ages_11">People Ages 11+</h4>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_11_price" placeholder="Enter Price/Person(in $)"
-                                                        id="age_11_price"
-                                                        value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
-                                                </div>
+                                            <div class="kikcheckbox1">
+                                                <input type="checkbox" id="People_Ages_11"
+                                                    name="age_11"@if (!empty($data)) checked @endif>
+                                                <label for="People_Ages_11">People Ages 11+</label>
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="text" min="0" class="form-control"
+                                                    name="age_11_price" placeholder="Enter Price/Person(in $)"
+                                                    id="age_11_price"
+                                                    value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                             </div>
                                         @endif
                                     </div>
@@ -121,24 +97,37 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            <div class="Individual_Field_data">
-                                                <h4 for="Senior Ages 60+">Senior Ages 60+
-                                                </h4>
+                                            @if ($data->same_for_all)
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="age_60" id="Senior Ages 60+" disabled>
+                                                    <label for="Senior Ages 60+">Senior Ages 60+</label>
+                                                </div>
+                                                <div class="form-group-input">
+                                                    <input type="text" min="0" class="form-control"
+                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"disabled>
+                                                </div>
+                                            @else
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="age_60" id="Senior Ages 60+"
+                                                        @if (!empty($data)) checked @endif>
+                                                    <label for="Senior Ages 60+">Senior Ages 60+</label>
+                                                </div>
                                                 <div class="form-group-input">
                                                     <input type="text" min="0" class="form-control"
                                                         name="age_60_price" placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_60_price : old('age_60_price') }}">
                                                 </div>
-                                            </div>
+                                            @endif
                                         @else
-                                            <div class="Individual_Field">
-                                                <h4 for="Senior Ages 60+">Senior Ages 60+
-                                                </h4>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"
-                                                        value="{{ old('age_60_price') }}"id="age_60_price">
-                                                </div>
+                                            <div class="kikcheckbox1">
+                                                <input type="checkbox" name="age_60"
+                                                    id="Senior Ages 60+"id="age_60_price_check">
+                                                <label for="Senior Ages 60+">Senior Ages 60+</label>
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="text" min="0" class="form-control"
+                                                    name="age_60_price" placeholder="Enter Price/Person(in $)"
+                                                    value="{{ old('age_60_price') }}"id="age_60_price">
                                             </div>
                                         @endif
 
@@ -151,24 +140,38 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            <div class="Individual_Field_data">
-                                                <h4 for="Children Ages 10 & Under">Children
-                                                    Ages 10 & Under</h4>
+                                            @if ($data->same_for_all)
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="age_under_10"
+                                                        id="Children Ages 10 & Under" disabled>
+                                                    <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
+                                                </div>
+                                                <div class="form-group-input">
+                                                    <input type="text" min="0" class="form-control"
+                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
+                                                        disabled>
+                                                </div>
+                                            @else
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="age_under_10"
+                                                        id="Children Ages 10 & Under"@if (!empty($data)) checked @endif>
+                                                    <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
+                                                </div>
                                                 <div class="form-group-input">
                                                     <input type="text" min="0" class="form-control"
                                                         name="under_10_age_price" placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->under_10_age_price : old('under_10_age_price') }}">
                                                 </div>
-                                            </div>
+                                            @endif
                                         @else
-                                            <div class="Individual_Field">
-                                                <h4 for="Children Ages 10 & Under">Children
-                                                    Ages 10 & Under</h4>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
-                                                        value="{{ old('under_10_age_price') }}"id="under_10_age_price">
-                                                </div>
+                                            <div class="kikcheckbox1">
+                                                <input type="checkbox" name="age_under_10" id="under_10_age_price_check">
+                                                <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="text" min="0" class="form-control"
+                                                    name="under_10_age_price" placeholder="Enter Price/Person(in $)"
+                                                    value="{{ old('under_10_age_price') }}"id="under_10_age_price">
                                             </div>
                                         @endif
                                     </div>
@@ -176,30 +179,42 @@
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            <div class="form-group-input edit_data">
-                                                <h4 for="Same for all">Same for all</h4>
-                                                <input type="text" min="0" class="form-control"
-                                                    name="same_for_all"
-                                                    placeholder="Enter Price/Person(in $)"value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
-
-                                            </div>
-                                        @else
-                                            <div class="All">
+                                            @if ($data->same_for_all)
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="for_all"
+                                                        id="Same for all"@if (!empty($data->same_for_all)) checked @endif>
+                                                    <label for="Same for all">Same for all</label>
+                                                </div>
                                                 <div class="form-group-input">
-                                                    <h4 for="SameForAll">Same for all</h4>
                                                     <input type="text" min="0" class="form-control"
                                                         name="same_for_all" placeholder="Enter Price/Person(in $)"
-                                                        value="{{ old('same_for_all') }}" id="SameForAll">
-
+                                                        value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
                                                 </div>
+                                            @else
+                                                <div class="kikcheckbox1">
+                                                    <input type="checkbox" name="for_all" id="Same for all" disabled>
+                                                    <label for="Same for all">Same for all</label>
+                                                </div>
+                                                <div class="form-group-input">
+                                                    <input type="text" min="0" class="form-control"
+                                                        name="same_for_all" placeholder="Enter Price/Person(in $)"
+                                                        disabled>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="kikcheckbox1">
+                                                <input type="checkbox" name="for_all" id="Same for all"
+                                                    id="SameForAllCheck">
+                                                <label for="Same for all">Same for all</label>
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="text" min="0" class="form-control"
+                                                    name="same_for_all" placeholder="Enter Price/Person(in $)"
+                                                    value="{{ old('same_for_all') }}" id="SameForAll">
                                             </div>
                                         @endif
                                     </div>
@@ -420,40 +435,21 @@
 @push('js')
     {{-- Jquery for Hide and Show Price condition --}}
     <script>
-        $(document).ready(function() {
-            val = $("#same_for_all_check_data").val();
-            if (val != 0) {
-                $(".edit_data").show();
-                $(".Individual_Field_data").hide();
-            } else {
-                $(".edit_data").hide();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get references to the checkbox and input field
+            var checkbox = document.getElementById('SameForAllCheck');
+            var inputField = document.getElementById('SameForAll');
 
-            $(".All").hide();
-            $(".Individual_Field").hide();
-
-            $("#same_for_all_check").click(function() {
-                $(".All").show();
-                $(".Individual_Field").hide();
-                $("#Individual_Check").prop("checked", false);
-            });
-
-            $("#Individual_Check").click(function() {
-                $(".All").hide();
-                $(".Individual_Field").show();
-                $("#same_for_all_check").prop("checked", false);
-            });
-
-            $("#Individual_Check_Data").click(function() {
-                $(".edit_data").hide();
-                $(".Individual_Field_data").show();
-                $("#Same_For_All_Check_Data").prop("checked", false);
-            });
-
-            $("#Same_For_All_Check_Data").click(function() {
-                $(".Individual_Field_data").hide();
-                $(".edit_data").show();
-                $("#Individual_Check_Data").prop("checked", false);
+            // Add an event listener to the checkbox
+            checkbox.addEventListener('change', function() {
+                // Check if the checkbox is checked
+                if (checkbox.checked) {
+                    // If checked, disable the input field
+                    inputField.disabled = true;
+                } else {
+                    // If unchecked, enable the input field
+                    inputField.disabled = false;
+                }
             });
         });
     </script>

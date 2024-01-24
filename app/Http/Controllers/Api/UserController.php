@@ -18,6 +18,7 @@ use App\Models\TourBooking;
 use App\Models\VirtualTour;
 use App\Models\TaxiBooking;
 use App\Models\PhotoBooth;
+use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
 use Mail;
 use App\Mail\RegisterMail;
@@ -583,7 +584,7 @@ class UserController extends Controller
             $callback->timezone = $request->timezone;
             $callback->preferred_time = $request->preferred_time;
             $callback->note = $request->note;
-            $callback->status = 1;
+            $callback->status = 0;
             $callback->save();
             
             $data['status']=true;
@@ -636,6 +637,43 @@ class UserController extends Controller
             $tax = 100;
             $booking->tax = $tax;
             $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $tax;
+            $booking->status = 0;
+            $booking->save();
+            
+            $data['status']=true;
+            $data['message']="Boooked successfully";
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /* Booking Photo Booth */
+    public function bookingPhotoBooth(Request $request) 
+    {
+        try {
+            $data=array();
+            $validator = Validator::make($request->all() , [
+                'photo_booth_id' => 'required|integer',
+                'tour_type' => 'required|string|max:255|min:1',
+                'booking_date' => 'required',
+                'amount' => 'required',
+            ]);
+            
+            if ($validator->fails())
+            {
+                return errorMsg($validator->errors()->first());
+            }
+            $booking_id = random_alphanumeric();
+            $user = Auth::user();
+            $booking = new BookingPhotoBooth;
+            $booking->booking_id = $booking_id;
+            $booking->booth_id = $request->photo_booth_id;/*Photo Booth id save in Photo booth ID */
+            $booking->userid = $user->id;
+            $booking->booking_date = $request->booking_date;
+            $tax = 100;
+            $booking->tax = $tax;
+            $booking->total_amount = $request->amount + $tax;
             $booking->status = 0;
             $booking->save();
             
@@ -839,7 +877,7 @@ class UserController extends Controller
                     $temp['description'] = $value->description;
                     $temp['cancellation_policy'] = $value->cancellation_policy;
                     $image = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->first();
-                    $temp['image'] = $image->media;/*Image file of Photo Booth */
+                    $temp['image'] = asset('public/upload/photo-booth/'.$image->media);/*Image file of Photo Booth */
                     $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
                     $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
                     $temp['purchase_image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
@@ -850,8 +888,13 @@ class UserController extends Controller
                 $response = [];
             }
             
+            $image_count = 20;
+            $video_count = 10;
+                    
             $data['status'] = true;
             $data['message'] = 'Photo booth listing';
+            $data['total_purchase_image'] = $image_count;
+            $data['total_purchase_video'] = $video_count;
             $data['data'] = $response;
             return response()->json($data);
         } catch (\Exception $e) {
@@ -940,7 +983,10 @@ class UserController extends Controller
                     $temp['no_of_children'] = $value->no_childerns;
                     $temp['total_amount'] = $value->total_amount;
                     $images = TourAttribute::where('tour_id',$value->id)->first();
-                    $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    if($images){
+                        $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    }
+                    
                     $response[] = $temp;
                 }
             }else{
@@ -1015,14 +1061,19 @@ class UserController extends Controller
                 $temp['cancellation_policy'] = $value->cancellation_policy;
                 $temp['uploaded_date'] = date('d M, Y - g:i A', strtotime($value->created_at));
                 $images = PhotoBoothMedia::where('booth_id',$value->id)->get();/*Find all images and video accoding to photo booth id */
+                $response = array();
                 foreach ($images as $key => $val) {
+                    $temp1['id'] = $val->id;
+                    $temp1['object_type'] = $val->media_type;
                     if($val->media_type == 'Image'){
-                        $tourImage[] = asset('public/upload/photo-booth/'.$val->media);/*Images save in array */
+                        $temp1['image'] = asset('public/upload/photo-booth/'.$val->media);
                     }else{
-                        $tourImage[] = asset('public/upload/video-booth/'.$val->media);/*Video save in array */
+                        $temp1['video'] = asset('public/upload/video-booth/'.$val->media); 
                     }
+                    
+                    $response[] = $temp1;
                 }
-                $temp['all_image_video'] = $tourImage;/*Image video listing of photo booth in array */
+                $temp['all_image_video'] = $response;/*Image video listing of photo booth in array */
                 $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();/*Count of all images photo booth  */
                 $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();/*Count of all videos photo booth  */
             }else{
@@ -1032,6 +1083,48 @@ class UserController extends Controller
             $data['status'] = true;
             $data['message'] = 'Photo Booth Detail';
             $data['data'] = $temp;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Showing all Photo booth user purchase listing */
+    public function PhotoBoothPurchaseListing() 
+    {
+        try {
+            $user = Auth::user();
+            $datas = BookingPhotoBooth::where('userid',$user->id)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
+            if(count($datas) > 0){
+                $response = array();/*Store data an array */
+                foreach ($datas as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['booth_id'] = $value->booth_id;
+                    $tour = PhotoBooth::where('id',$value->booth_id)->first();
+                    $temp['title'] = $tour->title;/*Photo Booth Title*/
+                    $temp['price'] = $tour->price;/*Photo Booth Price*/
+                    $temp['description'] = $tour->description;
+                    $temp['cancellation_policy'] = $tour->cancellation_policy;
+                    $image = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$tour->id)->first();
+                    $temp['image'] = asset('public/upload/photo-booth/'.$image->media);/*Image file of Photo Booth */
+                    $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
+                    $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
+                    $temp['purchase_image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
+                    $temp['purchase_video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $image_count = 20;
+            $video_count = 10;
+                    
+            $data['status'] = true;
+            $data['message'] = 'Photo booth listing';
+            $data['total_purchase_image'] = $image_count;
+            $data['total_purchase_video'] = $video_count;
+            $data['data'] = $response;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

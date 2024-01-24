@@ -190,13 +190,13 @@ class HomeController extends Controller
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
-                    //'thumbnail' => 'required','mimes:jpeg,png,jpg,svg','max:5120',
+                    //'thumbnail.*' => 'required|image|mimes:jpeg,png,jpg,svg|max:5120',
                 ]);
 
                 $price = $request->same_for_all;
-                $age_11_price = $price;
-                $age_60_price = $price;
-                $under_10_age_price = $price;
+                $age_11_price = 0;
+                $age_60_price = 0;
+                $under_10_age_price = 0;
                 $same_for_all = $price;
             } else {
                 $validator = Validator::make($request->all(), [
@@ -260,22 +260,22 @@ class HomeController extends Controller
     public function UpdateTour(Request $request)
     {
         try {
-            if ($request->for_all_price) {
+            if ($request->same_for_all) {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
                     'total_people' => 'required',
                     'duration' => 'required|min:0',
                     'what_to_bring' => 'required',
-                    'for_all_price' => 'required|min:0',
+                    'same_for_all' => 'required|min:0',
                     'short_description' => 'required|string|min:3|max:1000',
                     'description' => 'required|string|min:3|max:1000',
                     'cancellation_policy' => 'required|min:3|max:1000',
                 ]);
-                $price = $request->for_all_price;
-                $age_11_price = $price;
-                $age_60_price = $price;
-                $under_10_age_price = $price;
+                $same_for_all = $request->same_for_all;
+                $age_11_price = 0;
+                $age_60_price = 0;
+                $under_10_age_price = 0;
             } else {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
@@ -293,6 +293,7 @@ class HomeController extends Controller
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
                 $under_10_age_price = $request->under_10_age_price;
+                $same_for_all = 0;
             }
 
             if ($validator->fails()) {
@@ -306,16 +307,10 @@ class HomeController extends Controller
             $tour->total_people = $request->total_people;
             $tour->duration = $request->duration;
             $tour->what_to_bring = $request->what_to_bring;
-            if ($request->for_all_price) {
-                $price = $request->for_all_price;
-                $tour->age_11_price = $price;
-                $tour->age_60_price = $price;
-                $tour->under_10_age_price = $price;
-            } else {
-                $tour->age_11_price = $request->age_11_price;
-                $tour->age_60_price = $request->age_60_price;
-                $tour->under_10_age_price = $request->under_10_age_price;
-            }
+            $tour->age_11_price = $age_11_price;
+            $tour->age_60_price = $age_60_price;
+            $tour->under_10_age_price = $under_10_age_price;
+            $tour->same_for_all = $same_for_all;
             $tour->short_description = $request->short_description;
             $tour->description = $request->description;
             $tour->cancellation_policy = $request->cancellation_policy;
@@ -325,7 +320,7 @@ class HomeController extends Controller
                     $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
                     $file->move($destination, $name);
                     $Attributes = TourAttribute::create([
-                        'tour_id' => $TourID,
+                        'tour_id' => $request->pid,
                         'attribute_type' => 'Image',
                         'attribute_name' => $name,
                     ]);
@@ -554,7 +549,9 @@ class HomeController extends Controller
             $Tourrequests = $requests->paginate(15);
             
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            return view('admin.manage-booking', compact('Tourrequests', 'tours','search','tour_id','date'));
+            $Acceptedtours = TourBooking::where('status', 1)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Accepted
+            $Rejectedtours = TourBooking::where('status', 2)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Rejected
+            return view('admin.manage-booking', compact('Tourrequests', 'tours','search','tour_id','date','Acceptedtours','Rejectedtours'));
                 
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -667,7 +664,7 @@ class HomeController extends Controller
             
             $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            $bookings = TourBooking::where('tour_type', 3)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
             return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -704,7 +701,7 @@ class HomeController extends Controller
             if($request->filled('date')){
                 $requests->whereDate('booking_date', '=', $request->date);
             }
-            //$requests->where('status', 0);
+            $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
             $bookings = $requests->paginate(10);
             $amount = TaxiBooking::sum('amount');

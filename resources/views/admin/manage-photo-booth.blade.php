@@ -192,35 +192,49 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="sno">1</div>
-                                                </td>
-                                                <td>Jane Doe</td>
-                                                <td>7 Am Hike</td>
-                                                <td>$59.00 <a class="infoprice" data-bs-toggle="modal" href="#infoprice"
-                                                        role="button"><i class="las la-info-circle"></i></a></td>
-                                                <td>03 Sep, 2023, 09:33:12 am</td>
-                                                <td>
-                                                    <div class="media-card">
-                                                        <div class="photos-text"><img
-                                                                src="{{ assets('assets/admin-images/gallery.svg') }}">
-                                                            432
-                                                            Photos
-                                                        </div>
-                                                        <div class="videos-text"><img
-                                                                src="{{ assets('assets/admin-images/video-play.svg') }}">
-                                                            98
-                                                            Videos</div>
-                                                        <div class="videos-action">
-                                                            <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
-                                                                data-fancybox="images" class="viewbtn">View</a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>PayPal</td>
-                                                <td>76375873874</td>
-                                            </tr>
+                                            @if ($bookings->isEmpty())
+                                                <tr>
+                                                    <td colspan="11" class="text-center">
+                                                        No record found
+                                                    </td>
+                                                </tr>
+                                            @elseif(!$bookings->isEmpty())
+                                                <?php $s_no = 1; ?>
+                                                @foreach ($bookings as $val)
+                                                    <tr>
+                                                        <td>
+                                                            <div class="sno">{{ $s_no }}</div>
+                                                        </td>
+                                                        <td>{{ $val->Users->fullname ?? '' }}</td>
+                                                        <td>{{ $val->booth->title ?? '' }}</td>
+                                                        <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
+                                                                data-bs-toggle="modal" href="#infoprice"
+                                                                role="button"><i class="las la-info-circle"></i></a></td>
+                                                        <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="media-card">
+                                                                <div class="photos-text"><img
+                                                                        src="{{ assets('assets/admin-images/gallery.svg') }}">
+                                                                    432
+                                                                    Photos
+                                                                </div>
+                                                                <div class="videos-text"><img
+                                                                        src="{{ assets('assets/admin-images/video-play.svg') }}">
+                                                                    98
+                                                                    Videos</div>
+                                                                <div class="videos-action">
+                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
+                                                                        data-fancybox="images" class="viewbtn">View</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>PayPal</td>
+                                                        <td>76375873874</td>
+                                                    </tr>
+                                                    <?php $s_no++; ?>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>

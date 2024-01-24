@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('profiles', [UserController::class, 'userDetailss']);
     Route::post('update-profile', [UserController::class, 'updateProfile']);
     Route::post('booking-tour', [UserController::class, 'bookingTour']);
+    Route::post('bookingPhotoBooth', [UserController::class, 'bookingPhotoBooth']);
     Route::post('booking-taxi', [UserController::class, 'bookingTaxi']);
     Route::get('taxi-booking-list', [UserController::class, 'TaxiBookingListing']);
     Route::get('photo-booth-listing', [UserController::class, 'PhotoBoothListing']);
@@ -41,4 +42,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('purchased-photo-booth-listing', [UserController::class, 'PurchasedPhotoBoothListing']);
     Route::post('confirmed-tour', [UserController::class, 'confirmed_tour']);
     Route::post('free-callback-request', [UserController::class, 'FreeCallbackRequest']);
+    Route::get('Photo-BoothPurchase-Listing', [UserController::class, 'PhotoBoothPurchaseListing']);
 });

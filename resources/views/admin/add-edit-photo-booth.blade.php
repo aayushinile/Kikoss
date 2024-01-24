@@ -10,6 +10,14 @@
 @endpush
 @section('content') <div class="page-breadcrumb-title-section">
         <h4>{{ $data ? 'Edit' : 'Add' }} Photo Booth</h4>
+        <div class="page-breadcrumb-action">
+            <div class="row g-1">
+                <div class="col-md-12">
+                    <a href="{{ url('manage-photo-booth') }}" class="wh-btn">Back</a>
+                </div>
+                
+            </div>
+        </div>
     </div>
     <div class="body-main-content">
         <div class="addVirtualtour-section">
@@ -260,7 +268,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <button class="cancelbtn"type="button" onclick="window.location.reload();">cancel</button>
+                                <a class="cancelbtn"href="{{ url('manage-photo-booth') }}">cancel</a>
                                 <button class="Savebtn"
                                     type="submit">{{ $data ? 'Update' : 'Save & Create Photo Booth' }}</button>
                             </div>

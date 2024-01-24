@@ -61,7 +61,7 @@
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            Here are a few things you can expect from your [Your Tour Portal Name]
+                                            Here are a few things you can expect from your Kikos Tours Oahu
                                             membership:</p>
                                         <ul style="padding:0 0 0 20px; margin: 0; list-style-position:outside ;">
                                             <li
@@ -88,8 +88,8 @@
                                                 with a worry-free booking experience.</li>
                                             <li
                                                 style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
-                                                Exclusive Offers: As a token of appreciation for choosing [Your Tour
-                                                Portal Name], be on the lookout for exclusive discounts and special
+                                                Exclusive Offers: As a token of appreciation for choosing Kikos Tours
+                                                Oahu, be on the lookout for exclusive discounts and special
                                                 promotions. We believe in making your travels not only memorable but
                                                 also affordable.</li>
                                         </ul>
@@ -102,10 +102,10 @@
                                             To get started, simply log in to your account on our website and begin your
                                             journey of discovery. Should you have any questions or need assistance at
                                             any point, our dedicated customer support team is here to help. Feel free to
-                                            reach out via email at [your support email] or give us a call at [your
-                                            support phone number].</p>
+                                            reach out via email at klinekristi@hotmail.com or give us a call at
+                                            (808)206-2205.</p>
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            Once again, welcome to the [Your Tour Portal Name] family. We can't wait to
+                                            Once again, welcome to the Kikos Tours Oahu family. We can't wait to
                                             be a part of your travel adventures!</p>
                                     </td>
                                 </tr>
@@ -120,16 +120,13 @@
                                             Best regards,</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Name]</p>
+                                            Kikos Tours Oahu</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Title/Position]</p>
+                                            klinekristi@hotmail.com</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Tour Portal Name]</p>
-                                        <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Contact Information]</p>
+                                            (808)206-2205</p>
                                     </td>
                                 </tr>
                             </tbody>

@@ -56,7 +56,12 @@ a.action-btn:hover{color: #fff}
 
 
 
-
+.BookingRequesttabs {margin-bottom: 1rem; } 
+.BookingRequesttabs ul {display: flex; position: relative; border: none; gap: 10px } 
+.BookingRequesttabs ul li {flex: auto; } 
+.BookingRequesttabs ul li a {font-weight: 700;font-size: 14px;text-align: center;padding: 10px 15px;color: var(--black);display: inline-block;width: 100%;border-bottom: none;border-radius: 5px;background: #FFF;box-shadow: 0px 8px 13px 0px rgba(35, 53, 111, 0.12);} 
+.BookingRequesttabs ul li a.active {color: var(--white);background: var(--green, #7BC043);} 
+.BookingRequesttabs ul li a i {font-size: 30px; vertical-align: middle; }
 
 
 
