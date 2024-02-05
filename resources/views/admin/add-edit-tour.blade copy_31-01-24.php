@@ -25,7 +25,7 @@
             </div>
             <div class="addtour-form">
                 <form action="{{ $data ? route('UpdateTour') : route('SaveTour') }}" method="POST"
-                    enctype="multipart/form-data"id="add_edit_tour">
+                    enctype="multipart/form-data" id="add_edit_tour">
                     @csrf
                     <div class="row">
                         <input type="hidden" name="pid" value="{{ $data->id ?? '' }}">
@@ -51,41 +51,73 @@
                         </div>
                         <div class="col-md-12">
                             <div class="row">
+                                @if ($data)
+                                    <input type="hidden" name="check_value" id="check_value"
+                                        @if ($data->same_for_all != '') value="same_for_all" @endif>
+                                @endif
+
+                                <input type="hidden" name="same_for_all_check_data" id="same_for_all_check_data"
+                                    value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
+                                <div class="col-md-3">
+
+                                    <div class="form-group">
+                                        <div class="kikcheckbox1">
+                                            @if ($data)
+                                                <input type="checkbox" name="same_for_all_check"
+                                                    id="Same_For_All_Check_Data"
+                                                    @if ($data->same_for_all != '') @checked(true) @endif
+                                                    required>
+                                                <label for="Same_For_All_Check_Data">Same for all</label>
+                                            @else
+                                                <input type="checkbox" name="same_for_all_check" id="same_for_all_check"
+                                                    value="same_for_all" required>
+                                                <label for="same_for_all_check">Same for all</label>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="kikcheckbox1">
+                                            @if ($data)
+                                                <input type="checkbox" name="same_for_all_check" id="Individual_Check_Data"
+                                                    @if ($data->same_for_all == '') @checked(true) @endif
+                                                    required>
+                                                <label for="Individual_Check_Data">Individual</label>
+                                            @else
+                                                <input type="checkbox" name="same_for_all_check" id="Individual_Check"
+                                                    value="individual_check" required>
+                                                <label for="Individual_Check">Individual</label>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @error('same_for_all')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            @if ($data->same_for_all)
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" id="People Ages 11+" name="age_11" disabled>
-                                                    <label for="People Ages 11+">People Ages 11+</label>
-                                                </div>
+                                            <div class="Individual_Field_data">
+                                                <h4 for="People_Ages_11">People Ages 11+</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_11_price" placeholder="Enter Price/Person(in $)" disabled>
-                                                </div>
-                                            @else
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" id="People Ages 11+"
-                                                        name="age_11"@if (!empty($data)) checked @endif>
-                                                    <label for="People Ages 11+">People Ages 11+</label>
-                                                </div>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_11_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="age_11_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                                 </div>
-                                            @endif
-                                        @else
-                                            <div class="kikcheckbox1">
-                                                <input type="checkbox" id="People_Ages_11"
-                                                    name="age_11"@if (!empty($data)) checked @endif>
-                                                <label for="People_Ages_11">People Ages 11+</label>
                                             </div>
-                                            <div class="form-group-input">
-                                                <input type="text" min="0" class="form-control"
-                                                    name="age_11_price" placeholder="Enter Price/Person(in $)"
-                                                    id="age_11_price"
-                                                    value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
+                                        @else
+                                            <div class="Individual_Field">
+                                                <h4 for="People_Ages_11">People Ages 11+</h4>
+                                                <div class="form-group-input">
+                                                    <input type="text" class="form-control" name="age_11_price"
+                                                        placeholder="Enter Price/Person(in $)" id="age_11_price"
+                                                        value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
@@ -97,37 +129,24 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            @if ($data->same_for_all)
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="age_60" id="Senior Ages 60+" disabled>
-                                                    <label for="Senior Ages 60+">Senior Ages 60+</label>
-                                                </div>
+                                            <div class="Individual_Field_data">
+                                                <h4 for="Senior Ages 60+">Senior Ages 60+
+                                                </h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"disabled>
-                                                </div>
-                                            @else
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="age_60" id="Senior Ages 60+"
-                                                        @if (!empty($data)) checked @endif>
-                                                    <label for="Senior Ages 60+">Senior Ages 60+</label>
-                                                </div>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="age_60_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_60_price : old('age_60_price') }}">
                                                 </div>
-                                            @endif
-                                        @else
-                                            <div class="kikcheckbox1">
-                                                <input type="checkbox" name="age_60"
-                                                    id="Senior Ages 60+"id="age_60_price_check">
-                                                <label for="Senior Ages 60+">Senior Ages 60+</label>
                                             </div>
-                                            <div class="form-group-input">
-                                                <input type="text" min="0" class="form-control"
-                                                    name="age_60_price" placeholder="Enter Price/Person(in $)"
-                                                    value="{{ old('age_60_price') }}"id="age_60_price">
+                                        @else
+                                            <div class="Individual_Field">
+                                                <h4 for="Senior Ages 60+">Senior Ages 60+
+                                                </h4>
+                                                <div class="form-group-input">
+                                                    <input type="text" class="form-control" name="age_60_price"
+                                                        placeholder="Enter Price/Person(in $)"
+                                                        value="{{ old('age_60_price') }}" id="age_60_price">
+                                                </div>
                                             </div>
                                         @endif
 
@@ -140,38 +159,24 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            @if ($data->same_for_all)
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="age_under_10"
-                                                        id="Children Ages 10 & Under" disabled>
-                                                    <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
-                                                </div>
+                                            <div class="Individual_Field_data">
+                                                <h4 for="Children Ages 10 & Under">Children
+                                                    Ages 10 & Under</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
-                                                        disabled>
-                                                </div>
-                                            @else
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="age_under_10"
-                                                        id="Children Ages 10 & Under"@if (!empty($data)) checked @endif>
-                                                    <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
-                                                </div>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="under_10_age_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->under_10_age_price : old('under_10_age_price') }}">
                                                 </div>
-                                            @endif
-                                        @else
-                                            <div class="kikcheckbox1">
-                                                <input type="checkbox" name="age_under_10" id="under_10_age_price_check">
-                                                <label for="Children Ages 10 & Under">Children Ages 10 & Under</label>
                                             </div>
-                                            <div class="form-group-input">
-                                                <input type="text" min="0" class="form-control"
-                                                    name="under_10_age_price" placeholder="Enter Price/Person(in $)"
-                                                    value="{{ old('under_10_age_price') }}"id="under_10_age_price">
+                                        @else
+                                            <div class="Individual_Field">
+                                                <h4 for="Children Ages 10 & Under">Children
+                                                    Ages 10 & Under</h4>
+                                                <div class="form-group-input">
+                                                    <input type="text" class="form-control" name="under_10_age_price"
+                                                        placeholder="Enter Price/Person(in $)"
+                                                        value="{{ old('under_10_age_price') }}" id="under_10_age_price">
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
@@ -179,42 +184,30 @@
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+                        </div>
 
+                        <div class="col-md-12">
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         @if ($data)
-                                            @if ($data->same_for_all)
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="for_all"
-                                                        id="Same for all"@if (!empty($data->same_for_all)) checked @endif>
-                                                    <label for="Same for all">Same for all</label>
-                                                </div>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="same_for_all" placeholder="Enter Price/Person(in $)"
-                                                        value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
-                                                </div>
-                                            @else
-                                                <div class="kikcheckbox1">
-                                                    <input type="checkbox" name="for_all" id="Same for all" disabled>
-                                                    <label for="Same for all">Same for all</label>
-                                                </div>
-                                                <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="same_for_all" placeholder="Enter Price/Person(in $)"
-                                                        disabled>
-                                                </div>
-                                            @endif
-                                        @else
-                                            <div class="kikcheckbox1">
-                                                <input type="checkbox" name="for_all" id="Same for all"
-                                                    id="SameForAllCheck">
-                                                <label for="Same for all">Same for all</label>
-                                            </div>
-                                            <div class="form-group-input">
-                                                <input type="text" min="0" class="form-control"
+                                            <div class="form-group-input edit_data">
+                                                <h4 for="Same for all">Same for all</h4>
+                                                <input type="text" class="form-control" id="same_for_all"
                                                     name="same_for_all" placeholder="Enter Price/Person(in $)"
-                                                    value="{{ old('same_for_all') }}" id="SameForAll">
+                                                    value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
+
+                                            </div>
+                                        @else
+                                            <div class="All">
+                                                <div class="form-group-input">
+                                                    <h4 for="SameForAll">Same for all</h4>
+                                                    <input type="text" class="form-control" name="same_for_all"
+                                                        placeholder="Enter Price/Person(in $)"
+                                                        value="{{ old('same_for_all') }}" id="SameForAll">
+
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
@@ -230,9 +223,12 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <h4>Tour Duration</h4>
-                                        <input type="text" min="0" class="form-control" name="duration"
-                                            placeholder="0 Hours"
-                                            value="{{ $data ? $data->duration : old('duration') }}">
+                                        <div class="People-form-group">
+                                            <input type="text" min="0" class="form-control" name="duration"
+                                                placeholder="0 Hours"
+                                                value="{{ $data ? $data->duration : old('duration') }}">
+                                            <span>Hours</span>
+                                        </div>
                                     </div>
                                     @error('duration')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -332,9 +328,6 @@
                                                 <div class="col-md-3">
                                                     <div class="upload-form-group">
                                                         <div class="upload-file">
-                                                            <input type="file" name="thumbnail[]"
-                                                                accept=".jpg,.jpeg,.png" id="addfile1"
-                                                                class="uploadDoc addDoc">
                                                             <label for="addfile1">
                                                                 <div class="uploaded-media-card">
                                                                     <div class="uploaded-media">
@@ -357,7 +350,7 @@
                                                 <div class="upload-form-group">
                                                     <div class="upload-file">
                                                         <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
-                                                            id="addfile1" class="uploadDoc addDoc"required>
+                                                            id="addfile1" class="uploadDoc addDoc" required>
                                                         <label for="addfile1">
                                                             <div class="upload-file-item">
                                                                 <div class="upload-media">
@@ -384,7 +377,7 @@
                                 {{-- <button class="cancelbtn" style="background-color: red" type="button"
                                     data-bs-toggle="modal" data-bs-target="#deletepopup"
                                     onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>
-                                    Delete</button> --}}
+                            Delete</button> --}}
                                 <a class="cancelbtn" href="{{ url('tours') }}">cancel</a>
                                 <button class="Savebtn" type="submit">{{ $data ? 'Update' : 'Save & Create Tour' }}
                                 </button>
@@ -412,9 +405,9 @@
                                 <form action="{{ route('DeleteTour') }}" method="POST">
                                     @csrf
                                     <input type="hidden" value="" name="id" id="tour_id">
-                                    <button class="yesbtn"type="submit">Yes Confirm Delete</button>
-                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
-                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
+                                    <button class="yesbtn" type="submit">Yes Confirm Delete</button>
+                                    <button class="Cancelbtn" type="button" data-bs-dismiss="modal" aria-label="Close"
+                                        onClick="window.location.reload();">Cancel</button>
                                 </form>
                             </div>
                         </div>
@@ -423,6 +416,8 @@
             </div>
         </div>
     </div>
+@endsection
+@push('js')
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -431,28 +426,87 @@
             document.getElementById("tour_id").value = IDS;
         }
     </script>
-@endsection
-@push('js')
+
     {{-- Jquery for Hide and Show Price condition --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get references to the checkbox and input field
-            var checkbox = document.getElementById('SameForAllCheck');
-            var inputField = document.getElementById('SameForAll');
+        $(document).ready(function() {
+            val = $("#same_for_all_check_data").val();
+            if (val != '') {
+                $(".edit_data").show();
+                $(".Individual_Field_data").hide();
+                $("[name='same_for_all']").attr("required", true); // Append required field
+            } else {
+                $(".edit_data").hide();
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
+            }
 
-            // Add an event listener to the checkbox
-            checkbox.addEventListener('change', function() {
-                // Check if the checkbox is checked
-                if (checkbox.checked) {
-                    // If checked, disable the input field
-                    inputField.disabled = true;
-                } else {
-                    // If unchecked, enable the input field
-                    inputField.disabled = false;
-                }
+            $(".All").hide();
+            $(".Individual_Field").hide();
+
+            //For Save 
+            $("#same_for_all_check").click(function() {
+                $(".All").show();
+                $(".Individual_Field").hide();
+                $("#Individual_Check").prop("checked", false);
+                $("#same_for_all_check").prop("checked", true);
+                $("[name='under_10_age_price']").attr("required", false); // Append required field
+                $("[name='age_60_price']").attr("required", false); // Append required field
+                $("[name='age_11_price']").attr("required", false); // Append required field
+                $("[name='same_for_all']").attr("required", true); // Append required field
+                $('#age_11_price-error').hide(); // Hide the error message
+                $('#age_60_price-error').hide(); // Hide the error message
+                $('#under_10_age_price-error').hide(); // Hide the error message
+            });
+
+            $("#Individual_Check").click(function() {
+                $(".All").hide();
+                $(".Individual_Field").show();
+                $("#same_for_all_check").prop("checked", false);
+                $("#Individual_Check").prop("checked", true);
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
+                $("[name='same_for_all']").attr("required", false); // Append required field
+                $('#SameForAll-error').hide(); // Hide the error message
+            });
+
+            //For Edit 
+            $("#Individual_Check_Data").click(function() {
+                $('.error-message').hide();
+                $(".edit_data").hide();
+                $(".Individual_Field_data").show();
+                $("#Same_For_All_Check_Data").prop("checked", false);
+                $("#Individual_Check_Data").prop("checked", true);
+                $("#check_value").val("Individual");
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
+                $("[name='same_for_all']").attr("required", false); // Append required field
+                $('#same_for_all-error').hide(); // Hide the error message
+
+            });
+
+
+            $("#Same_For_All_Check_Data").click(function() {
+                $('.error-message').hide();
+                $(".Individual_Field_data").hide();
+                $(".edit_data").show();
+                $("#Individual_Check_Data").prop("checked", false);
+                $("#Same_For_All_Check_Data").prop("checked", true);
+                $("#check_value").val("same_for_all");
+                $("[name='under_10_age_price']").attr("required", false); // Append required field
+                $("[name='age_60_price']").attr("required", false); // Append required field
+                $("[name='age_11_price']").attr("required", false); // Append required field
+                $("[name='same_for_all']").attr("required", true); // Append required field
+                $('#age_11_price-error').hide(); // Hide the error message
+                $('#age_60_price-error').hide(); // Hide the error message
+                $('#under_10_age_price-error').hide(); // Hide the error message
             });
         });
     </script>
+
     {{-- Code for appending Image box --}}
     <script>
         var imgCount = 1;
@@ -485,15 +539,20 @@
             $("#images_container").append(newImageBox);
         }
     </script>
+
     {{-- form validation --}}
     <script>
         $(document).ready(function() {
+
             $('#add_edit_tour').validate({
                 rules: {
                     title: {
                         required: true,
                         minlength: 6,
                         maxlength: 255,
+                    },
+                    same_for_all_check: {
+                        required: true,
                     },
                     name: {
                         required: true,
@@ -505,45 +564,24 @@
                         digits: true,
                     },
 
-                    age_under_10: {
-                        //required: true,
-                        // digits: true,
-                    },
                     under_10_age_price: {
-                        //required: true,
                         digits: true,
                     },
 
                     age_11_price: {
-                        //required: true,
                         digits: true,
-                    },
-                    age_11: {
-                        //required: true,
-                        // digits: true,
                     },
 
                     age_60_price: {
-                        //required: true,
                         digits: true,
                     },
-                    age_60: {
-                        //required: true,
-                        // digits: true,
-                    },
 
-                    for_all: {
-                        //required: true,
-                        //digits: true,
-                    },
-                    for_all_price: {
-                        //required: true,
+                    same_for_all: {
                         digits: true,
                     },
 
                     what_to_bring: {
                         required: true,
-                        minlength: 6,
                         maxlength: 255,
                     },
 
@@ -566,6 +604,16 @@
 
                     thumbnail: {
                         required: true,
+                        accept: "image/*",
+                        filesize: 1024 * 1024, // 1 MB
+
+                    },
+                },
+                messages: {
+                    thumbnail: {
+                        required: "Please select an image.",
+                        accept: "Only image files are allowed.",
+                        filesize: "Maximum file size is 1 MB.",
                     },
                 },
                 //errorElement: "small",
@@ -577,6 +625,8 @@
                 errorPlacement: function(error, element) {
                     error.addClass("invalid-feedback");
                     element.closest(".form-group").append(error);
+                    element.closest(".upload-form-group").append(error);
+
                 },
                 highlight: function(element, errorClass, validClass) {
                     $(element).addClass("is-invalid");
@@ -584,9 +634,32 @@
                 unhighlight: function(element, errorClass, validClass) {
                     $(element).removeClass("is-invalid");
                 },
-            })
+                submitHandler: function(form) {
+                    // Check file size before submitting
+                    var fileSize = 0;
+                    var input = $('#addfile1')[0];
+                    if (input.files.length > 0) {
+                        fileSize = input.files[0].size; // in bytes
+                    }
+
+                    if (fileSize > 1024 * 1024) { // 1 MB in bytes
+                        // Proceed with form submission
+                        toastr.error('File size must be less than 1 MB');
+                        return false;
+
+                    } else {
+
+                        form.submit();
+                        // Display an error message or perform other actions
+                        // Prevent form submission
+                    }
+                }
+
+            });
         });
     </script>
+
+    {{-- Code for Changing Image box --}}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Use event delegation to handle change events on dynamically added elements

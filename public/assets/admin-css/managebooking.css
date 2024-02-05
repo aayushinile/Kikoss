@@ -76,7 +76,7 @@ a.action-btn:hover{color: #fff}
 
 a.btn-bl {background: var(--blue); border: 1px solid var(--blue); padding:5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--white); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 a.btn-bla {background: var(--black); border: 1px solid var(--black); padding: 5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--white); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
-a.btn-gr{background: var(--green);border: 1px solid var(--green);padding: 5px 10px;display: inline-block;font-size: 12px; width:100%;color:var(--white);border-radius: 5px;text-transform: uppercase;font-weight: bold; text-align: center;}
+a.btn-gr{cursor: pointer; background: var(--green);border: 1px solid var(--green);padding: 5px 10px;display: inline-block;font-size: 12px; width:100%;color:var(--white);border-radius: 5px;text-transform: uppercase;font-weight: bold; text-align: center;}
 a.btn-gra {background: var(--gray); border: 1px solid var(--gray); padding: 5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--black); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 a.btn-br {background: var(--brown); border: 1px solid var(--brown); padding: 5px 10px; display: inline-block; font-size: 12px; width: 100%; color: var(--white); border-radius: 5px; text-transform: uppercase; font-weight: bold; text-align: center; }
 

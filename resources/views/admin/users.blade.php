@@ -4,22 +4,34 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/user.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>User Management</h4>
         <div class="search-filter wd4">
-            <div class="row g-1">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <div class="search-form-group">
-                            <input type="text" name="Search" id="search" class="form-control"
-                                placeholder="Search by Name, Email, Contact Number">
-                            <span class="search-icon"><img src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+            <form action="{{ route('Users') }}" method="POST">
+                @csrf
+                <div class="row g-1">
+                    <div class="col-md-11">
+                        <div class="form-group">
+                            <div class="search-form-group">
+                                <input type="text" name="search" class="form-control"
+                                    value="{{ $search ? $search : '' }}"
+                                    placeholder="Search by Name, Email, Contact Number">
+                                <span class="search-icon"><img
+                                        src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <button type="submit" class="btn-gr"><i class="fa fa-search" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
     <div class="body-main-content">
@@ -36,6 +48,7 @@
                                             <th>Name</th>
                                             <th>Email ID</th>
                                             <th>Contact number</th>
+                                            <th>Status</th>
                                             <th>Created Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -62,7 +75,16 @@
                                                         {{ $val->email ?? '' }}
                                                     </td>
                                                     <td>
-                                                        +1 {{ $val->mobile ?? '' }}
+                                                        {{ $val->mobile ?? '' }}
+                                                    </td>
+                                                    <td>
+                                                        <label class="toggle" for="myToggle">
+                                                            <input class="toggle__input myToggleClass_"
+                                                                @if ($val->status == 1) checked @endif
+                                                                name="" type="checkbox" id="myToggle"
+                                                                data-id="{{ $val->id }}">
+                                                            <div class="toggle__fill"></div>
+                                                        </label>
                                                     </td>
                                                     <td>
                                                         {{ date('d M, Y, h:i:s a', strtotime($val->created_at)) }}
@@ -93,6 +115,34 @@
     {{-- Live Search of users --}}
     <script>
         $(document).ready(function() {
+
+            //Change Status for User
+            $('.myToggleClass_').on('change', function() {
+                var newStatus = this.checked ? '1' : '0';
+                //Get Data of Read Status
+                var request_id = $(this).attr("data-id"); //Get Data of Request ID
+
+                $.ajax({
+                    url: '{{ url('toggleUserStatus') }}',
+                    type: 'POST',
+                    data: {
+                        user_id: request_id,
+                        status: newStatus,
+                        _token: '{{ csrf_token() }}'
+                    }, // Add CSRF token
+                    success: function(response) {
+                        // Update the UI or perform other actions based on the response
+                        if (response.success) {
+                            toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message)
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error toggling user status:', error);
+                    }
+                });
+            });
 
             //fetch_customer_data();
             function fetch_customer_data(query = '') {

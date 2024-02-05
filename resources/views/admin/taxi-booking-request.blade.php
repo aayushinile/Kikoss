@@ -31,7 +31,7 @@
                                                     <div class="col-md-3">
                                                         <div class="search-form-group">
                                                             <div class="TotalRequestoverview">Total Request Received:
-                                                                <span>{{count($bookings)}}</span>
+                                                                <span>{{ count($bookings) }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -45,7 +45,7 @@
                                                         <div class="search-form-group">
                                                             <input type="text" name="search" class="form-control"
                                                                 value="{{ $search ? $search : '' }}"
-                                                                placeholder=" Search User name,Booking ID">
+                                                                placeholder=" Search User Name,Booking ID">
                                                             <span class="search-icon"><img
                                                                     src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                         </div>
@@ -81,12 +81,14 @@
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
-                                            <th>Name</th>
+                                            <th>User Name</th>
+                                            <th>Booked For</th>
+                                            <th>Phone</th>
                                             <th>Booking ID</th>
                                             <th>Booking Date & Time</th>
                                             <th>Pickup Location</th>
                                             <th>Drop Off Location</th>
-                                            <th>Travel Distanse </th>
+                                            <th>Travel Distance </th>
                                             <th>Hotel Name</th>
                                             {{-- <th>Action</th> --}}
                                         </tr>
@@ -97,75 +99,28 @@
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
-                                                <td>{{ $item->Username ? $item->Username->fullname : 'N/A' }}</td>
+                                                <td>{{ $item->user_name }}</td>
+                                                <td>{{ $item->fullname }}</td>
+                                                <td>{{ $item->mobile }}</td>
                                                 <td>{{ $item->booking_id ?? 'N/A' }}</td>
-                                                <td>{{ date('d M, Y, h:i:s a', strtotime($item->booking_time)) }}
+                                                <td>{{ date('d M, Y', strtotime($item->booking_time)) }}
 
                                                 <td>{{ $item->pickup_location }}</td>
                                                 <td>{{ $item->drop_location }}</td>
 
                                                 <td>{{ $item->distance }} KM</td>
                                                 <td> {{ $item->hotel_name }} </td>
-                                                {{-- <td>
-                                                    <div class="action-btn-info">
-                                                        <a class="action-btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                            <i class="las la-ellipsis-v"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu">
-                                                            <a class="dropdown-item view-btn" href="users-detail.html"><i
-                                                                    class="las la-eye"></i> View</a>
-                                                        </div>
-                                                    </div>
-                                                </td> --}}
                                             </tr>
                                         @empty
                                             <tr>
                                                 <td colspan="8" align="center"> No Booking requests</td>
                                             </tr>
                                         @endforelse
-
-
-
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    {{-- Previous Page Link --}}
-                                    @if ($bookings->onFirstPage())
-                                        <li class="disabled">
-                                            <span>Previous</span>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a href="{{ $bookings->previousPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $bookings->currentPage() - 2 }}">Previous</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($bookings->getUrlRange(1, $bookings->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $bookings->currentPage() ? 'active' : '' }}">
-                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
-                                                class="page-link"
-                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($bookings->hasMorePages())
-                                        <li>
-                                            <a href="{{ $bookings->nextPageUrl() }}" aria-controls="example" tabindex="0"
-                                                class="page-link" data-dt-idx="{{ $bookings->currentPage() }}">Next</a>
-                                        </li>
-                                    @else
-                                        <li class="disabled">
-                                            <span>Next</span>
-                                        </li>
-                                    @endif
-                                </ul>
+                                <div class="d-flex justify-content-left">
+                                    {{ $bookings->links('pagination::bootstrap-4') }}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -33,6 +33,7 @@
     <div class="page-breadcrumb-title-section">
         <h4>Manage Tour</h4>
         <div class="page-breadcrumb-action">
+            <a href="{{ url('tours') }}" class="wh-btn">Back</a>
             <a href="#" class="wh-btn"data-bs-toggle="modal" data-bs-target="#deletepopup"
                 onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>Delete</a>
             <a href="{{ url('edit-tour/' . encrypt_decrypt('encrypt', $data->id)) }}" class="wh-btn">Edit Tour</a>
@@ -58,19 +59,24 @@
                         <div class="view-tour-content">
                             <div class="view-tour-card-text">
                                 <h3>{{ $data->title ?? '' }}</h3>
-                                <p>{{ $data->name ?? '' }} • 8 {{ $data->duration ?? '' }}</p>
-                                <div class="price-text">US${{ $data->under_10_age_price ?? '' }} –
-                                    /US${{ $data->age_11_price ?? '' }}</div>
+                                <p>{{ $data->name ?? '' }} • {{ $data->duration ?? '' }} Hours</p>
+                                @if ($data->same_for_all == '')
+                                    <div class="price-text">US${{ $data->under_10_age_price ?? '' }} –
+                                        US${{ $data->age_11_price ?? '' }}</div>
+                                @else
+                                    <div class="price-text">US${{ $data->same_for_all ?? '' }} </div>
+                                @endif
+
                             </div>
 
                             <div class="view-tour-card-text">
-                                <h3>About</h3>
+                                <h3>Description</h3>
                                 <p>{{ $data->description ?? '' }}</p>
                             </div>
 
                             <div class="view-tour-card-text">
                                 <h3>What to bring</h3>
-                                <p>Do not forget your sunscreen or camera!</p>
+                                <p>{{ $data->what_to_bring ?? '' }}</p>
                             </div>
 
                             <div class="view-tour-card-text">

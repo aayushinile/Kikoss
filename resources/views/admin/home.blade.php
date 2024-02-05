@@ -57,9 +57,11 @@
                                     <div class="overview-content-text">
                                         <p>Total Tour booked</p>
                                         @php
-                                            $users_count = \App\Models\User::where('type', 2)->count();
+                                            $tourBooking_count = \App\Models\TourBooking::where('tour_type', 1)
+                                                ->whereIn('status', [0, 1, 2])
+                                                ->count();
                                         @endphp
-                                        <h2>0</h2>
+                                        <h2>{{ $tourBooking_count }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/Total-Tour-booked.svg') }}">
@@ -76,7 +78,12 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total Virtual Tour Purchased</p>
-                                        <h2>0</h2>
+                                        @php
+                                            $VirtualtourBooking_count = \App\Models\TourBooking::where('tour_type', 2)
+                                                ->whereIn('status', [0, 1, 2])
+                                                ->count();
+                                        @endphp
+                                        <h2>{{ $VirtualtourBooking_count }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/Virtual-tour.svg') }}">
@@ -93,7 +100,10 @@
                                 <div class="overview-content">
                                     <div class="overview-content-text">
                                         <p>Total Photo Booth Purchases</p>
-                                        <h2>0</h2>
+                                        @php
+                                            $PhotoBoothBooking_count = \App\Models\BookingPhotoBooth::whereIn('status', [0, 1, 2])->count();
+                                        @endphp
+                                        <h2>{{ $PhotoBoothBooking_count }}</h2>
                                     </div>
                                     <div class="overview-content-icon">
                                         <img src="{{ assets('assets/admin-images/PhotoBooth.svg') }}">

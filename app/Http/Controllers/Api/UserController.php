@@ -16,6 +16,7 @@ use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
 use App\Models\TourBooking;
 use App\Models\VirtualTour;
+use App\Models\TimeZone;
 use App\Models\TaxiBooking;
 use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
@@ -26,6 +27,9 @@ use App\Mail\SendOTPMail;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
+use ZipArchive;
+use Illuminate\Support\Facades\File;
+
 
 class UserController extends Controller
 {
@@ -104,7 +108,7 @@ class UserController extends Controller
             $success['userId'] = $user->id;
             $success['fullname'] = $user->fullname;
             $success['email'] = $user->email;
-            $success['mobile'] = ($user->mobile) ?? '';
+            $success['mobile'] = '+1'.($user->mobile) ?? '';
             $success['status'] = $user->status;
             
             /*User Mail*/
@@ -132,11 +136,15 @@ class UserController extends Controller
             $success['email'] = $user->email;
             $success['mobile'] = ($user->mobile) ?? '';
             $success['status'] = $user->status;
-            $success['profile'] = $user->user_profile ? asset('public/upload/profile/'.$user->user_profile) : '';;
-            $success['confirmed_tour'] = 02;
-            $success['virtual_audio_purchased'] = 06;
-            $success['total_purchased_video'] = 40;
-            $success['total_purchased_photo'] = 20;
+            $success['profile'] = $user->user_profile ? asset('public/upload/profile/'.$user->user_profile) : '';
+            $bookings = TourBooking::where('tour_type',1)->whereIn('status',[1,2])->where('user_id',$user->id)->count();//Get count of Normal tour accoding to user id
+            $virtual_bookings = TourBooking::where('tour_type',2)->whereIn('status',[1,2])->where('user_id',$user->id)->count();//Get count of virtual tour accoding to user id
+            $image_count = BookingPhotoBooth::where('userid',$user->id)->sum('image_count');//Get count of virtual tour accoding to user id
+            $video_count = BookingPhotoBooth::where('userid',$user->id)->sum('video_count');//Get count of virtual tour accoding to user id
+            $success['confirmed_tour'] = $bookings;
+            $success['virtual_audio_purchased'] = $virtual_bookings;
+            $success['total_purchased_video'] = $image_count;
+            $success['total_purchased_photo'] = $video_count;
             return response()->json(["status" => true, "message" => "Profile.", "data" => $success]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -150,10 +158,9 @@ class UserController extends Controller
             $user = User::where('id',Auth::user()->id)->first();
             $validator = Validator::make($request->all() , [
                 'fullname' => 'required|string|max:255',
-                'email' =>   ['required','email',Rule::unique('users')->ignore($user->id)],
+                //'email' =>   ['required','email',Rule::unique('users')->ignore(Auth::user()->id)],
                 'mobile' => ['required',Rule::unique('users')->ignore($user->id)],
-                'mobile' => ['required'],
-                'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'image' => ['mimes:jpeg,png,jpg,max:1024'],
             ]);
             if ($validator->fails())
             {
@@ -213,6 +220,7 @@ class UserController extends Controller
                     $temp['id'] = $value->id;
                     $temp['title'] = $value->title;
                     $temp['name'] = $value->name;
+                    $temp['same_for_all'] = $value->same_for_all;
                     $temp['age_11_price'] = $value->age_11_price;
                     $temp['age_60_price'] = $value->age_60_price;
                     $temp['under_10_age_price'] = $value->under_10_age_price;
@@ -254,7 +262,18 @@ class UserController extends Controller
     public function calendarEvents() 
     {
         try {
-            $booked_events = Event::where('title','Booked Tour')->get();
+                /*$push_message = $message; 
+                // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+                $device_token = $user->firebase_token;
+                $img='';
+                $type=''; 
+                $id='';
+                $title= $user->first_name.' '.$user->last_name;
+                $id1='';
+                $sound ='default';
+                $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+                $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+                $booked_events = Event::where('title','Booked Tour')->get();*/
             if(count($booked_events) > 0){
                 $response = array();
                 foreach ($booked_events as $key => $value) {
@@ -301,6 +320,7 @@ class UserController extends Controller
                 $temp['id'] = $tour->id;
                 $temp['title'] = $tour->title;
                 $temp['name'] = $tour->name;
+                $temp['same_for_all'] = $tour->same_for_all;
                 $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
                 $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
                 $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
@@ -751,7 +771,7 @@ class UserController extends Controller
         }
     }
     
-    /*Taxi booking api  */
+    /*We can create a booking with & without login | Taxi booking api  */
     public function bookingTaxi(Request $request) 
     {
         try {
@@ -771,26 +791,35 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()],404);
             }
-            $user_id = Auth::user()->id;
-            $user = Auth::user();
+            /*Checking User Auth */
+            if($request->user_id)
+            {
+                $user = User::where('id',$request->user_id)->first();
+                $user_id = $request->user_id;
+                $user_name = $user->fullname;
+            }else{
+                $user_id = null;
+                $user_name = $request->fullname;
+            }
+            
             /*Create taxi booking with booking id*/
             $booking_id = rand(10000000,99999999);/*Generate random booking  ID*/
             
             /*Calculate Distance in KM*/
             $pick_lat_lng = explode(',', $request->pickup_lat_long, 2);/*Expload the data */
             $drop_lat_long = explode(',', $request->drop_lat_long, 2);/*Expload the data */
-            $distance = getDistanceFromLatLonInKm($pick_lat_lng[0], $pick_lat_lng[1], $drop_lat_long[0], $drop_lat_long[1]);
-            $Distance = number_format((float)$distance, 2, '.', '') . " Km"; 
-            $distance_int = round((int)$distance);
+            $distance = getDistanceBetweenPoints($pick_lat_lng[0], $pick_lat_lng[1], $drop_lat_long[0], $drop_lat_long[1]);
+           
+            $Distance = number_format((float)$distance['miles'], 2, '.', ''); 
             
-            $amount = $distance_int * 10;
+            $amount = $Distance * 10;
             
             
             $bookingID = TaxiBooking::insertGetId([
                 'booking_time' => $request->booking_date_time,/*Date and Time */
                 'booking_date' => date('y-m-d', strtotime($request->booking_date_time)),/*Filter date and save */
                 'user_id' => $user_id,
-                'user_name' => $user->fullname,
+                'user_name' => $user_name,
                 'booking_id' => $booking_id,
                 'fullname' => $request->fullname,
                 'pickup_location' => $request->pickup_location,
@@ -799,7 +828,7 @@ class UserController extends Controller
                 'drop_lat_long' => $request->drop_lat_long,
                 'mobile' => $request->mobile,
                 'hotel_name' => $request->hotel_name,
-                'distance' => $distance_int,
+                'distance' => $Distance,
                 'amount' => $amount,
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
@@ -903,10 +932,9 @@ class UserController extends Controller
     }
     
     /*Showing all tour listing, count of bookrd tour */
-    public function book_tour() 
+    public function book_tour(Request $request) 
     {
         try {
-            
             $tours = Tour::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
             if(count($tours) > 0){
                 $response = array();/*Store data an array */
@@ -914,6 +942,7 @@ class UserController extends Controller
                     $temp['id'] = $tour->id;
                     $temp['title'] = $tour->title;
                     $temp['name'] = $tour->name;
+                    $temp['same_for_all'] = $tour->same_for_all;/* Tour Price for all person */
                     $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
                     $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
                     $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
@@ -926,10 +955,30 @@ class UserController extends Controller
                 $response = [];
             }
             
-            if(Auth::user()){
-                $user = Auth::user();
-                $bookings = TourBooking::where('tour_type',1)->whereIn('status',[1,2])->where('user_id',$user->id)->count();//Get count of Normal tour accoding to user id
-                $CallbackRequest = CallbackRequest::where('tour_type',1)->where('user_id',$user->id)->count();//Get all datas of Normal tour
+            $popular_tours = Tour::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
+            if(count($popular_tours) > 0){
+                $popular_response = array();/*Store data an array */
+                foreach ($popular_tours as $key => $tour) {
+                    $temp1['id'] = $tour->id;
+                    $temp1['title'] = $tour->title;
+                    $temp1['name'] = $tour->name;
+                    $temp1['same_for_all'] = $tour->same_for_all;/* Tour Price for all person */
+                    $temp1['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
+                    $temp1['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
+                    $temp1['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
+                    $temp1['duration'] = $tour->duration;/* Tour Time */
+                    $images = TourAttribute::where('tour_id',$tour->id)->first();
+                    $temp1['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    $popular_response[] = $temp1;
+                }
+            }else{
+                $popular_response = [];
+            }
+            
+            if($request->user_id){
+                $user_id = $request->user_id;
+                $bookings = TourBooking::where('tour_type',1)->whereIn('status',[1,2])->where('user_id',$user_id)->count();//Get count of Normal tour accoding to user id
+                $CallbackRequest = CallbackRequest::where('user_id',$user_id)->count();//Get all datas of Normal tour
             }else{
                 $bookings = 0;
                 $CallbackRequest = 0;
@@ -940,6 +989,7 @@ class UserController extends Controller
             $data['status'] = true;
             $data['message'] = 'Book tour listing';
             $data['data'] = $response;
+            $data['popular_tour'] = $popular_response;
             $data['confirmed_tour'] = $bookings;
             $data['free_callback_request'] = $CallbackRequest;
             return response()->json($data);
@@ -1065,14 +1115,16 @@ class UserController extends Controller
                 foreach ($images as $key => $val) {
                     $temp1['id'] = $val->id;
                     $temp1['object_type'] = $val->media_type;
-                    if($val->media_type == 'Image'){
-                        $temp1['image'] = asset('public/upload/photo-booth/'.$val->media);
-                    }else{
-                        $temp1['video'] = asset('public/upload/video-booth/'.$val->media); 
-                    }
                     
+                    if($val->media_type == 'Image'){
+                        $media = asset('public/upload/photo-booth/'.$val->media);
+                    }else{
+                        $media = asset('public/upload/video-booth/'.$val->media); 
+                    }
+                    $temp1['media'] = $media;
                     $response[] = $temp1;
                 }
+               
                 $temp['all_image_video'] = $response;/*Image video listing of photo booth in array */
                 $temp['image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();/*Count of all images photo booth  */
                 $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();/*Count of all videos photo booth  */
@@ -1130,5 +1182,30 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-
+    
+    /*TimeZone listing */
+    public function TimeZoneList() 
+    {
+        try {
+            $timezone = TimeZone::where('status',1)->orderBy('id','DESC')->get();//Get all datas of timezone
+            if(count($timezone) > 0){
+                $response = array();/*Store data an array */
+                foreach ($timezone as $key => $value) {
+                    $temp['id'] = $value->id;
+                    $temp['name'] = $value->timezone;
+                    $temp['status'] = $value->status;
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+                    
+            $data['status'] = true;
+            $data['message'] = 'TimeZone Listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 }

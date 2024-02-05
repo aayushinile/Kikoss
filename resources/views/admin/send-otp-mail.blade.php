@@ -33,7 +33,7 @@
                                         style="font-family:tahoma, geneva, sans-serif;color:#29054a;font-size:12px; padding:10px;background:rgb(61 161 227 / 8%); padding: 10px; width: 50%; text-align: right;">
                                         <a style="padding: 15px 30px;display: inline-block;background: #3da1e3;border-radius: 89px;color: #fff;white-space: nowrap;text-decoration: none;font-weight: 600;font-size: 13px;box-shadow: 0 0 30px hsl(203.86deg 74.77% 56.47% / 29%);"
                                             href="https://fareharbor.com/embeds/book/kikostoursoahu/items/?amp;u=e3e7d395-4925-40cf-a890-309f15f685d9&amp;from-ssl=yes&amp;ga=UA-197809685-1,1871970958.1701157046;&amp;ga4t=G-GK3MKD1BQY,__;&amp;g4=yes&amp;cp=no&amp;csp=no&amp;back=https://kikostoursoahu.com/&amp;language=en-gb&amp;full-items=yes"
-                                            target="_blank">BOOK NOW</a>
+                                            target="_blank"></a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -67,16 +67,13 @@
                                             Best regards,</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Name]</p>
+                                            Kikos Tours Oahu</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Title/Position]</p>
+                                            klinekristi@hotmail.com</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Your Tour Portal Name]</p>
-                                        <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
-                                            [Contact Information]</p>
+                                            (808)206-2205</p>
                                     </td>
                                 </tr>
                             </tbody>

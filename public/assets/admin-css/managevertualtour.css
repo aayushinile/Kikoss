@@ -15,7 +15,7 @@ h4.heading-title {font-size: 16px;font-weight: 600;margin: 0;padding: 0;color: #
 .search-filter .search-form-group span.search-icon {position: absolute;top: 50%;left: 10px;pointer-events: none;transform: translateY(-50%) scaleX(-1);color: #6362e7;font-size: 18px;}
 .search-filter .search-form-group input.form-control{padding: 10px 15px 10px 40px}
 
-a.wh-btn {border-radius: 5px; background: var(--white, #fff); padding: 15px 10px; color: var(--black); font-size: 14px; font-style: normal; font-weight: 500; line-height: 100%; letter-spacing: -0.14px; width: 100%; display: inline-block; text-align: center; }
+a.wh-btn {display: inline-block;box-shadow: 0 4px 13px #0c293c4d;border-radius: 5px; background: var(--white, #fff); padding: 15px 10px; color: var(--black); font-size: 14px; font-style: normal; font-weight: 500; line-height: 100%; letter-spacing: -0.14px; width: 100%; text-align: center; }
 
 
 .kik-table table{border: 1px solid #eaedf7;border-radius: 5px;}
@@ -168,6 +168,20 @@ a.addmorefile {vertical-align: baseline; }
 .addDoc+label:hover {color: #92b116; }
 .addDoc+label figure {width: 100px; height: 100px; border-radius: 50%; background-color: #d3394c; display: block; padding: 20px; margin: 0 auto 10px; }
 .upload-text {font-size: 12px; color: #455A64; font-weight: bold; }
+
+.manage-tour-card-media {
+    width: 100%;
+    position: relative;
+    height: 230px;
+    overflow: hidden;
+    border-radius: 0.4rem 0.4rem 0 0;
+}
+
+.manage-tour-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 button.btn-gr {
     background: var(--green);

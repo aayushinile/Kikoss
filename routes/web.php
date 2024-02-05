@@ -37,12 +37,12 @@ Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 't
 Route::post("/toggleRequestStatus", [App\Http\Controllers\AjaxController::class, 'toggleRequestStatus'])->name('toggleRequestStatus');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
+Route::match(['get', 'post'],'/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
 Route::get('/add-tour', [App\Http\Controllers\HomeController::class, 'AddTour'])->name('AddTour');
 Route::get('/edit-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditTour'])->name('EditTour');
 Route::post('/SaveTour', [App\Http\Controllers\HomeController::class, 'SaveTour'])->name('SaveTour');
 Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'UpdateTour'])->name('UpdateTour');
-Route::get('/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
+Route::match(['get', 'post'],'/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::match(['get', 'post'],'manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
 Route::match(['get', 'post'],'/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
@@ -57,7 +57,7 @@ Route::post('/update-virtual-tour', [App\Http\Controllers\HomeController::class,
 Route::get('/edit-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditVirtualTour'])->name('EditVirtualTour');
 Route::post('/delete-virtual-tour', [App\Http\Controllers\HomeController::class, 'DeleteVirtualTour'])->name('DeleteVirtualTour');
 
-Route::get('/manage-photo-booth', [App\Http\Controllers\HomeController::class, 'ManagePhotoBooth'])->name('ManagePhotoBooth');
+Route::match(['get', 'post'],'/manage-photo-booth', [App\Http\Controllers\HomeController::class, 'ManagePhotoBooth'])->name('ManagePhotoBooth');
 Route::get('/add-photo-booth', [App\Http\Controllers\HomeController::class, 'AddPhoto'])->name('AddPhoto');
 Route::get('/edit-photo-booth/{id}', [App\Http\Controllers\HomeController::class, 'EditPhotoBooth'])->name('EditPhotoBooth');
 Route::post('/delete-photo-booth', [App\Http\Controllers\HomeController::class, 'DeletePhotoBooth'])->name('DeletePhotoBooth');
@@ -81,3 +81,5 @@ Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_use
 Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
 Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');
 Route::get('/booked-dates',[App\Http\Controllers\HomeController::class, 'getBookedDates'])->name('booked-dates');
+Route::get('/add-edit-master-data',[App\Http\Controllers\HomeController::class, 'AddEditMasterData'])->name('AddEditMasterData');
+Route::get('/DownloadWithWatermark',[App\Http\Controllers\HomeController::class, 'DownloadWithWatermark'])->name('DownloadWithWatermark');

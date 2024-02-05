@@ -51,6 +51,11 @@
                         </div>
                         <div class="col-md-12">
                             <div class="row">
+                                @if ($data)
+                                    <input type="hidden" name="check_value" id="check_value"
+                                        @if ($data->same_for_all != '') value="same_for_all" @endif>
+                                @endif
+
                                 <input type="hidden" name="same_for_all_check_data"
                                     id="same_for_all_check_data"value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
                                 <div class="col-md-3">
@@ -60,10 +65,12 @@
                                             @if ($data)
                                                 <input type="checkbox" name="same_for_all_check"
                                                     id="Same_For_All_Check_Data"
-                                                    @if ($data->same_for_all != 0) @checked(true) @endif>
+                                                    @if ($data->same_for_all != '') @checked(true) @endif
+                                                    required>
                                                 <label for="Same_For_All_Check_Data">Same for all</label>
                                             @else
-                                                <input type="checkbox" name="same_for_all_check" id="same_for_all_check">
+                                                <input type="checkbox" name="same_for_all_check" id="same_for_all_check"
+                                                    value="same_for_all" required>
                                                 <label for="same_for_all_check">Same for all</label>
                                             @endif
                                         </div>
@@ -73,11 +80,13 @@
                                     <div class="form-group">
                                         <div class="kikcheckbox1">
                                             @if ($data)
-                                                <input type="checkbox" name="Individual_Check" id="Individual_Check_Data"
-                                                    @if ($data->same_for_all == 0) @checked(true) @endif>
+                                                <input type="checkbox" name="same_for_all_check" id="Individual_Check_Data"
+                                                    @if ($data->same_for_all == '') @checked(true) @endif
+                                                    required>
                                                 <label for="Individual_Check_Data">Individual</label>
                                             @else
-                                                <input type="checkbox" name="Individual_Check" id="Individual_Check">
+                                                <input type="checkbox" name="same_for_all_check" id="Individual_Check"
+                                                    value="individual_check" required>
                                                 <label for="Individual_Check">Individual</label>
                                             @endif
                                         </div>
@@ -96,8 +105,8 @@
                                             <div class="Individual_Field_data">
                                                 <h4 for="People_Ages_11">People Ages 11+</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_11_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="age_11_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                                 </div>
                                             </div>
@@ -105,9 +114,8 @@
                                             <div class="Individual_Field">
                                                 <h4 for="People_Ages_11">People Ages 11+</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_11_price" placeholder="Enter Price/Person(in $)"
-                                                        id="age_11_price"
+                                                    <input type="text" class="form-control" name="age_11_price"
+                                                        placeholder="Enter Price/Person(in $)" id="age_11_price"
                                                         value="{{ $data ? $data->age_11_price : old('age_11_price') }}">
                                                 </div>
                                             </div>
@@ -125,8 +133,8 @@
                                                 <h4 for="Senior Ages 60+">Senior Ages 60+
                                                 </h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="age_60_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->age_60_price : old('age_60_price') }}">
                                                 </div>
                                             </div>
@@ -135,8 +143,8 @@
                                                 <h4 for="Senior Ages 60+">Senior Ages 60+
                                                 </h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="age_60_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="age_60_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ old('age_60_price') }}"id="age_60_price">
                                                 </div>
                                             </div>
@@ -155,8 +163,8 @@
                                                 <h4 for="Children Ages 10 & Under">Children
                                                     Ages 10 & Under</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="under_10_age_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ $data ? $data->under_10_age_price : old('under_10_age_price') }}">
                                                 </div>
                                             </div>
@@ -165,8 +173,8 @@
                                                 <h4 for="Children Ages 10 & Under">Children
                                                     Ages 10 & Under</h4>
                                                 <div class="form-group-input">
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="under_10_age_price" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="under_10_age_price"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ old('under_10_age_price') }}"id="under_10_age_price">
                                                 </div>
                                             </div>
@@ -186,7 +194,7 @@
                                         @if ($data)
                                             <div class="form-group-input edit_data">
                                                 <h4 for="Same for all">Same for all</h4>
-                                                <input type="text" min="0" class="form-control"
+                                                <input type="text" class="form-control"id="same_for_all"
                                                     name="same_for_all"
                                                     placeholder="Enter Price/Person(in $)"value="{{ $data ? $data->same_for_all : old('same_for_all') }}">
 
@@ -195,8 +203,8 @@
                                             <div class="All">
                                                 <div class="form-group-input">
                                                     <h4 for="SameForAll">Same for all</h4>
-                                                    <input type="text" min="0" class="form-control"
-                                                        name="same_for_all" placeholder="Enter Price/Person(in $)"
+                                                    <input type="text" class="form-control" name="same_for_all"
+                                                        placeholder="Enter Price/Person(in $)"
                                                         value="{{ old('same_for_all') }}" id="SameForAll">
 
                                                 </div>
@@ -215,9 +223,12 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <h4>Tour Duration</h4>
-                                        <input type="text" min="0" class="form-control" name="duration"
-                                            placeholder="0 Hours"
-                                            value="{{ $data ? $data->duration : old('duration') }}">
+                                        <div class="People-form-group">
+                                            <input type="text" min="0" class="form-control" name="duration"
+                                                placeholder="0 Hours"
+                                                value="{{ $data ? $data->duration : old('duration') }}">
+                                            <span>Hours</span>
+                                        </div>
                                     </div>
                                     @error('duration')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -317,9 +328,6 @@
                                                 <div class="col-md-3">
                                                     <div class="upload-form-group">
                                                         <div class="upload-file">
-                                                            <input type="file" name="thumbnail[]"
-                                                                accept=".jpg,.jpeg,.png" id="addfile1"
-                                                                class="uploadDoc addDoc">
                                                             <label for="addfile1">
                                                                 <div class="uploaded-media-card">
                                                                     <div class="uploaded-media">
@@ -408,6 +416,8 @@
             </div>
         </div>
     </div>
+@endsection
+@push('js')
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -416,47 +426,87 @@
             document.getElementById("tour_id").value = IDS;
         }
     </script>
-@endsection
-@push('js')
+
     {{-- Jquery for Hide and Show Price condition --}}
     <script>
         $(document).ready(function() {
             val = $("#same_for_all_check_data").val();
-            if (val != 0) {
+            if (val != '') {
                 $(".edit_data").show();
                 $(".Individual_Field_data").hide();
+                $("[name='same_for_all']").attr("required", true); // Append required field
             } else {
                 $(".edit_data").hide();
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
             }
 
             $(".All").hide();
             $(".Individual_Field").hide();
 
+            //For Save 
             $("#same_for_all_check").click(function() {
                 $(".All").show();
                 $(".Individual_Field").hide();
                 $("#Individual_Check").prop("checked", false);
+                $("#same_for_all_check").prop("checked", true);
+                $("[name='under_10_age_price']").attr("required", false); // Append required field
+                $("[name='age_60_price']").attr("required", false); // Append required field
+                $("[name='age_11_price']").attr("required", false); // Append required field
+                $("[name='same_for_all']").attr("required", true); // Append required field
+                $('#age_11_price-error').hide(); // Hide the error message
+                $('#age_60_price-error').hide(); // Hide the error message
+                $('#under_10_age_price-error').hide(); // Hide the error message
             });
 
             $("#Individual_Check").click(function() {
                 $(".All").hide();
                 $(".Individual_Field").show();
                 $("#same_for_all_check").prop("checked", false);
+                $("#Individual_Check").prop("checked", true);
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
+                $("[name='same_for_all']").attr("required", false); // Append required field
+                $('#SameForAll-error').hide(); // Hide the error message
             });
 
+            //For Edit 
             $("#Individual_Check_Data").click(function() {
+                $('.error-message').hide();
                 $(".edit_data").hide();
                 $(".Individual_Field_data").show();
                 $("#Same_For_All_Check_Data").prop("checked", false);
+                $("#Individual_Check_Data").prop("checked", true);
+                $("#check_value").val("Individual");
+                $("[name='under_10_age_price']").attr("required", true); // Append required field
+                $("[name='age_60_price']").attr("required", true); // Append required field
+                $("[name='age_11_price']").attr("required", true); // Append required field
+                $("[name='same_for_all']").attr("required", false); // Append required field
+                $('#same_for_all-error').hide(); // Hide the error message
+
             });
 
+
             $("#Same_For_All_Check_Data").click(function() {
+                $('.error-message').hide();
                 $(".Individual_Field_data").hide();
                 $(".edit_data").show();
                 $("#Individual_Check_Data").prop("checked", false);
+                $("#Same_For_All_Check_Data").prop("checked", true);
+                $("#check_value").val("same_for_all");
+                $("[name='under_10_age_price']").attr("required", false); // Append required field
+                $("[name='age_60_price']").attr("required", false); // Append required field
+                $("[name='age_11_price']").attr("required", false); // Append required field
+                $("[name='same_for_all']").attr("required", true); // Append required field
+                $('#age_11_price-error').hide(); // Hide the error message
+                $('#age_60_price-error').hide(); // Hide the error message
+                $('#under_10_age_price-error').hide(); // Hide the error message
             });
         });
     </script>
+
     {{-- Code for appending Image box --}}
     <script>
         var imgCount = 1;
@@ -489,6 +539,7 @@
             $("#images_container").append(newImageBox);
         }
     </script>
+
     {{-- form validation --}}
     <script>
         $(document).ready(function() {
@@ -498,6 +549,9 @@
                         required: true,
                         minlength: 6,
                         maxlength: 255,
+                    },
+                    same_for_all_check: {
+                        required: true,
                     },
                     name: {
                         required: true,
@@ -509,45 +563,24 @@
                         digits: true,
                     },
 
-                    age_under_10: {
-                        //required: true,
-                        // digits: true,
-                    },
                     under_10_age_price: {
-                        //required: true,
                         digits: true,
                     },
 
                     age_11_price: {
-                        //required: true,
                         digits: true,
-                    },
-                    age_11: {
-                        //required: true,
-                        // digits: true,
                     },
 
                     age_60_price: {
-                        //required: true,
                         digits: true,
                     },
-                    age_60: {
-                        //required: true,
-                        // digits: true,
-                    },
 
-                    for_all: {
-                        //required: true,
-                        //digits: true,
-                    },
-                    for_all_price: {
-                        //required: true,
+                    same_for_all: {
                         digits: true,
                     },
 
                     what_to_bring: {
                         required: true,
-                        minlength: 6,
                         maxlength: 255,
                     },
 
@@ -570,13 +603,18 @@
 
                     thumbnail: {
                         required: true,
+                        accept: "image/*",
+                        multiplefilesize_max: 1024 * 1024, // 1 MB
                     },
                 },
-                //errorElement: "small",
-                submitHandler: function(form) {
-                    // This function will be called when the form is valid and ready to be submitted
-                    form.submit();
+                messages: {
+                    thumbnail: {
+                        required: "Please select an image.",
+                        accept: "Only image files are allowed.",
+                        multiplefilesize_max: "Maximum file size is 1 MB.",
+                    },
                 },
+
                 errorElement: "span",
                 errorPlacement: function(error, element) {
                     error.addClass("invalid-feedback");
@@ -588,9 +626,53 @@
                 unhighlight: function(element, errorClass, validClass) {
                     $(element).removeClass("is-invalid");
                 },
-            })
+                submitHandler: function(form) {
+                    // Check file size for each uploaded file
+                    var isValid = true;
+                    var isUploaded = true;
+                    $('.uploadDoc').each(function() {
+                        var fileSize = 0;
+                        var input = $(this)[0];
+                        if (input.files.length > 0) {
+                            fileSize = input.files[0].size; // in bytes
+                            if (fileSize > 1024 * 1024) { // 1 MB in bytes
+                                toastr.error(
+                                    'File size must be less than 1 MB for each uploaded file.'
+                                );
+                                isValid = false;
+                                return false; // Break the loop
+                            }
+                        } else {
+                            isUploaded = false;
+                        }
+
+
+                    });
+
+                    // If all files are valid, proceed with form submission
+                    if (isUploaded == false) {
+                        toastr.error(
+                            'Please select a file before uploading.'
+                        );
+                        return false;
+                    }
+                    if (isValid) {
+                        form.submit();
+
+                    } else {
+
+
+                        return false;
+
+                    }
+
+
+                }
+            });
         });
     </script>
+
+    {{-- Code for Changing Image box --}}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Use event delegation to handle change events on dynamically added elements

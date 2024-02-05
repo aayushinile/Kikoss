@@ -77,13 +77,17 @@
                         @foreach ($tours as $val)
                             <div class="item">
                                 <div class="managevertualtour-card">
-                                    <div class="managevertualtour-card-media">
-                                        <img src="{{ assets('upload/virtual-thumbnail/' . $val->thumbnail_file) }}"
-                                            width="100%" height="200">
+                                    <div class="managevertualtour-card-media manage-tour-card-media">
+                                        <img src="{{ assets('upload/virtual-thumbnail/' . $val->thumbnail_file) }}">
                                     </div>
                                     <div class="managevertualtour-card-audio">
                                         <audio width="100%" controls>
                                             <source src="{{ assets('upload/virtual-audio/' . $val->audio_file) }}"
+                                                type="audio/mpeg">
+                                            Your browser does not support the audio tag.
+                                        </audio>
+                                        <audio width="100%" controls>
+                                            <source src="{{ assets('upload/virtual-audio/' . $val->trial_audio_file) }}"
                                                 type="audio/mpeg">
                                             Your browser does not support the audio tag.
                                         </audio>

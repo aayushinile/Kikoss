@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('photo_booths', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('tour_id')->nullable();
+            $table->integer('delete_days')->nullable();
             $table->string('users_id')->nullable();
             $table->string('title')->nullable();
             $table->float('price',100)->nullable();

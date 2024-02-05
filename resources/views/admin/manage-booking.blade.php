@@ -202,7 +202,7 @@
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
                                                                     <div class="status-text Pending-status"><i
@@ -214,7 +214,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestPending"
-                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
+                                                                            onclick='accept_tour("{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -329,7 +329,7 @@
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
                                                                     <div class="status-text Pending-status"><i
@@ -457,7 +457,7 @@
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
                                                                     <div class="status-text Pending-status"><i
@@ -599,7 +599,7 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Amount Recieved On</h3>
-                                                <h4>03 Sep, 2023, 09:33:12 am</h4>
+                                                <h4 id="created_date"></h4>
                                             </div>
                                         </div>
                                     </div>
@@ -804,7 +804,7 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Amount Recieved On</h3>
-                                                <h4>03 Jan, 2024, 09:33:12 am</h4>
+                                                <h4 id="created_dateRejected"></h4>
                                             </div>
                                         </div>
                                     </div>
@@ -991,12 +991,16 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
+            var created_date = booking_date;
             var booking_date = 'Selected Date: ' + booking_date;
+
             document.getElementById("title").innerText =
                 title;
             document.getElementById("tour_id").value = tour_id;
             document.getElementById("TourID").innerText =
                 tour_id;
+            document.getElementById("created_date").innerText = created_date;
+
             document.getElementById("booking_date").innerText = booking_date;
             document.getElementById(
                 "duration").innerText = duration;
@@ -1032,12 +1036,16 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
+            var created_date = booking_date;
             var booking_date = 'Selected Date: ' + booking_date;
             document.getElementById("title").innerText =
                 title;
             document.getElementById("tour_id").value = tour_id;
+
             document.getElementById("TourID").innerText =
                 tour_id;
+
+            document.getElementById("created_date").innerText = created_date;
             document.getElementById("booking_date").innerText = booking_date;
             document.getElementById(
                 "duration").innerText = duration;
@@ -1074,12 +1082,15 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
+            var created_date = booking_date;
             var booking_date = 'Selected Date: ' + booking_date;
             document.getElementById("titleRejected").innerText =
                 title;
             document.getElementById("tour_idRejected").value = tour_id;
             document.getElementById("TourIDRejected").innerText =
                 tour_id;
+
+            document.getElementById("created_dateRejected").innerText = created_date;
             document.getElementById("booking_dateRejected").innerText = booking_date;
             document.getElementById("durationRejected").innerText = duration;
             document.getElementById("total_amountRejected").innerText = total_amount;

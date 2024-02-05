@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('callback_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('tour_id')->nullable();
+            $table->bigInteger('user_id')->nullable();
             $table->string('name')->nullable();
             $table->string('mobile',100)->nullable();
             $table->string('timezone',100)->nullable();

@@ -50,8 +50,7 @@
                                                             <option value="">Select Tour</option>
                                                             @if (!$tours->isEmpty())
                                                                 @foreach ($tours as $tour)
-                                                                    <option
-                                                                        value="{{ $tour->id }}"value="{{ $tour->id }}"
+                                                                    <option value="{{ $tour->id }}"
                                                                         @if ($tour->id == $tour_id) selected='selected' @else @endif>
                                                                         {{ $tour->name }}</option>
                                                                 @endforeach

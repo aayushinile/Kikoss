@@ -29,7 +29,12 @@
                 <div class="row g-1 align-items-center">
                     <div class="col-md-3">
                         <div class="side-profile-item">
-                            <div class="side-profile-media"><img src="{{ assets('assets/admin-images/user-default.png') }}">
+                            <div class="side-profile-media">
+                                @if ($data->user_profile)
+                                    <img src="{{ assets('upload/profile/' . $data->user_profile) }}">
+                                @else
+                                    <img src="{{ assets('assets/admin-images/user-default.png') }}">
+                                @endif
                             </div>
                             <div class="side-profile-text">
                                 <h2>{{ $data->fullname ?? '' }}</h2>
@@ -57,7 +62,7 @@
                                     </div>
                                     <div class="User-contact-info-content">
                                         <h2>Phone Number</h2>
-                                        <p>+1 {{ $data->mobile ?? '' }}</p>
+                                        <p>{{ $data->mobile ?? '' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -295,50 +300,12 @@
                                                 <td colspan="8" align="center">No tours found</td>
                                             </tr>
                                         @endforelse
-
-
                                     </tbody>
                                 </table>
+                                <div class="d-flex justify-content-left">
+                                    {{ $normal_tours->links('pagination::bootstrap-4') }}
+                                </div>
                             </div>
-                            <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    {{-- Previous Page Link --}}
-                                    @if ($normal_tours->onFirstPage())
-                                        <li class="disabled">
-                                            <span>Previous</span>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a href="{{ $normal_tours->previousPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $normal_tours->currentPage() - 2 }}">Previous</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($normal_tours->getUrlRange(1, $normal_tours->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $normal_tours->currentPage() ? 'active' : '' }}">
-                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
-                                                class="page-link"
-                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($normal_tours->hasMorePages())
-                                        <li>
-                                            <a href="{{ $normal_tours->nextPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $normal_tours->currentPage() }}">Next</a>
-                                        </li>
-                                    @else
-                                        <li class="disabled">
-                                            <span>Next</span>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </div>
-
                         </div>
                         <div class="card-body virtual_tours d-none">
                             <div class="kik-table">
@@ -385,44 +352,9 @@
 
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    {{-- Previous Page Link --}}
-                                    @if ($virtual_tours->onFirstPage())
-                                        <li class="disabled">
-                                            <span>Previous</span>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a href="{{ $virtual_tours->previousPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $virtual_tours->currentPage() - 2 }}">Previous</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($virtual_tours->getUrlRange(1, $virtual_tours->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $virtual_tours->currentPage() ? 'active' : '' }}">
-                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
-                                                class="page-link"
-                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($virtual_tours->hasMorePages())
-                                        <li>
-                                            <a href="{{ $virtual_tours->nextPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $virtual_tours->currentPage() }}">Next</a>
-                                        </li>
-                                    @else
-                                        <li class="disabled">
-                                            <span>Next</span>
-                                        </li>
-                                    @endif
-                                </ul>
+                                <div class="d-flex justify-content-left">
+                                    {{ $virtual_tours->links('pagination::bootstrap-4') }}
+                                </div>
                             </div>
 
                         </div>
@@ -470,43 +402,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    {{-- Previous Page Link --}}
-                                    @if ($PhotoBooths->onFirstPage())
-                                        <li class="disabled">
-                                            <span>Previous</span>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a href="{{ $PhotoBooths->previousPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $PhotoBooths->currentPage() - 2 }}">Previous</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($PhotoBooths->getUrlRange(1, $PhotoBooths->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $PhotoBooths->currentPage() ? 'active' : '' }}">
-                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
-                                                class="page-link"
-                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($PhotoBooths->hasMorePages())
-                                        <li>
-                                            <a href="{{ $PhotoBooths->nextPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $PhotoBooths->currentPage() }}">Next</a>
-                                        </li>
-                                    @else
-                                        <li class="disabled">
-                                            <span>Next</span>
-                                        </li>
-                                    @endif
-                                </ul>
+                            <div class="d-flex justify-content-left">
+                                {{ $PhotoBooths->links('pagination::bootstrap-4') }}
                             </div>
 
                         </div>
@@ -553,46 +450,10 @@
 
                                     </tbody>
                                 </table>
+                                <div class="d-flex justify-content-left">
+                                    {{ $taxi_booking_requests->links('pagination::bootstrap-4') }}
+                                </div>
                             </div>
-                            <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    {{-- Previous Page Link --}}
-                                    @if ($taxi_booking_requests->onFirstPage())
-                                        <li class="disabled">
-                                            <span>Previous</span>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a href="{{ $taxi_booking_requests->previousPageUrl() }}"
-                                                aria-controls="example" tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() - 2 }}">Previous</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($taxi_booking_requests->getUrlRange(1, $taxi_booking_requests->lastPage()) as $page => $url)
-                                        <li class="{{ $page == $taxi_booking_requests->currentPage() ? 'active' : '' }}">
-                                            <a href="{{ $url }}" aria-controls="example" tabindex="0"
-                                                class="page-link"
-                                                data-dt-idx="{{ $page - 1 }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($taxi_booking_requests->hasMorePages())
-                                        <li>
-                                            <a href="{{ $taxi_booking_requests->nextPageUrl() }}" aria-controls="example"
-                                                tabindex="0" class="page-link"
-                                                data-dt-idx="{{ $taxi_booking_requests->currentPage() }}">Next</a>
-                                        </li>
-                                    @else
-                                        <li class="disabled">
-                                            <span>Next</span>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </div>
-
                         </div>
                     </div>
                 </div>

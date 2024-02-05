@@ -126,19 +126,21 @@
                                     </div>
                                     <div class="btn-option-info wd7">
                                         <div class="search-filter">
-                                            <form action="{{ route('ManageVirtualTour') }}" method="POST">
+                                            <form action="{{ route('ManagePhotoBooth') }}" method="POST">
                                                 @csrf
                                                 <div class="row g-1">
                                                     <div class="col-md-1">
                                                         <div class="form-group">
-                                                            <a href="{{ url('manage-virtual-tour') }}" class="btn-gr"><i
+                                                            <a href="{{ url('manage-photo-booth') }}" class="btn-gr"><i
                                                                     class="fa fa-refresh" aria-hidden="true"></i></a>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
                                                             <div class="search-form-group">
-                                                                <input type="text" name="" class="form-control"
+                                                                <input type="text" name="search"
+                                                                    value="{{ $search ? $search : '' }}"
+                                                                    class="form-control"
                                                                     placeholder="Search User name, Amount & virtual tour name..">
                                                                 <span class="search-icon"><img
                                                                         src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
@@ -147,12 +149,13 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <select class="form-control">
-                                                                <option>Select Tour</option>
+                                                            <select class="form-control"name="booth_id">
+                                                                <option>Select Booth Id</option>
                                                                 @if (!$tours->isEmpty())
-                                                                    @foreach ($tours as $tour)
-                                                                        <option value="{{ $tour->id }}">
-                                                                            {{ $tour->name }}</option>
+                                                                    @foreach ($PhotoBooths as $tour)
+                                                                        <option
+                                                                            value="{{ $tour->id }}"@if ($tour->id == $booth_id) selected='selected' @else @endif>
+                                                                            {{ $tour->title }}</option>
                                                                     @endforeach
                                                                 @endif
                                                             </select>
@@ -161,7 +164,8 @@
 
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <input type="date" name="date" class="form-control">
+                                                            <input type="date" name="date"
+                                                                value="{{ $date ? $date : '' }}" class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-1">
@@ -186,8 +190,8 @@
                                                 <th>Tour Name</th>
                                                 <th>Amount Paid</th>
                                                 <th>Amount Recieved On</th>
-                                                <th>Payment Made Via</th>
                                                 <th>Media Purchase</th>
+                                                <th>Payment Made Via</th>
                                                 <th>Transaction ID</th>
                                             </tr>
                                         </thead>
@@ -201,36 +205,42 @@
                                             @elseif(!$bookings->isEmpty())
                                                 <?php $s_no = 1; ?>
                                                 @foreach ($bookings as $val)
-                                                    <tr>
-                                                        <td>
-                                                            <div class="sno">{{ $s_no }}</div>
-                                                        </td>
-                                                        <td>{{ $val->Users->fullname ?? '' }}</td>
-                                                        <td>{{ $val->booth->title ?? '' }}</td>
-                                                        <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
-                                                                data-bs-toggle="modal" href="#infoprice"
-                                                                role="button"><i class="las la-info-circle"></i></a></td>
-                                                        <td>{{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
-                                                        </td>
-                                                        <td>
-                                                            <div class="media-card">
-                                                                <div class="photos-text"><img
-                                                                        src="{{ assets('assets/admin-images/gallery.svg') }}">
-                                                                    432
-                                                                    Photos
-                                                                </div>
-                                                                <div class="videos-text"><img
-                                                                        src="{{ assets('assets/admin-images/video-play.svg') }}">
-                                                                    98
-                                                                    Videos</div>
-                                                                <div class="videos-action">
-                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
-                                                                        data-fancybox="images" class="viewbtn">View</a>
-                                                                </div>
+                                                    <td>
+                                                        <div class="sno">{{ $s_no }}</div>
+                                                    </td>
+                                                    <td>{{ $val->Users->fullname ?? '' }}</td>
+                                                    <td>{{ $val->booth->title ?? '' }}</td>
+                                                    <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
+                                                            data-bs-toggle="modal" href="#infoprice" role="button"
+                                                            onclick='GetDataPrice("{{ $val->total_amount }}","{{ $val->amount }}","{{ $val->tax_percent }}","{{ $val->tax }}")'><i
+                                                                class="las la-info-circle"></i></a></td>
+                                                    <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                    </td>
+                                                    <td>
+                                                        <div class="media-card">
+                                                            <div class="photos-text"><img
+                                                                    src="{{ assets('assets/admin-images/gallery.svg') }}">
+                                                                {{ $val->image_count }}
+                                                                Photos
                                                             </div>
-                                                        </td>
-                                                        <td>PayPal</td>
-                                                        <td>76375873874</td>
+                                                            <div class="videos-text"><img
+                                                                    src="{{ assets('assets/admin-images/video-play.svg') }}">
+                                                                {{ $val->video_count }}
+                                                                Videos</div>
+                                                            <div class="videos-action">
+                                                                <div class="video-gallery-list" style="display:none;">
+                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
+                                                                        data-fancybox="images" class="viewbtn"></a>
+                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
+                                                                        data-fancybox="images" class="viewbtn"></a>
+                                                                </div>
+                                                                <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
+                                                                    data-fancybox="images" class="viewbtn">View</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>PayPal</td>
+                                                    <td>76375873874</td>
                                                     </tr>
                                                     <?php $s_no++; ?>
                                                 @endforeach
@@ -245,6 +255,7 @@
             </div>
         </div>
     </div>
+
     <!-- price Info -->
     <div class="modal kik-modal fade" id="infoprice" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -264,20 +275,21 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Purchase at</h3>
-                                                <h4>$23.00</h4>
+                                                <h4 id="amount">
+                                                </h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="request-point-item">
-                                                <h3>Tax <span>2%</span></h3>
-                                                <h4>$43</h4>
+                                                <h3>Tax <span id="tax_percent"></span></h3>
+                                                <h4 id="tax"></h4>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="kik-request-item-card-foot">
-                                <div class="request-price-text">Total Cost<span>$66.00</span></div>
+                                <div class="request-price-text"id="total_amount">Total Cost<span></span></div>
                             </div>
                         </div>
                     </div>
@@ -313,12 +325,25 @@
             </div>
         </div>
     </div>
-    <!-------------------- Appenf Popup -Jquery -------------------->
+    <!-------------------- Append Popup -Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
             document.getElementById("Name").innerText =
                 Name;
             document.getElementById("photo_booth_id").value = IDS;
+        }
+    </script>
+    <!-------------------- Append Price Data -------------------->
+    <script>
+        function GetDataPrice(total_amount, amount, tax_percent, tax) {
+            var total_amount = '$' + total_amount;
+            var amount = '$' + amount;
+            var tax = '$' + tax;
+            var tax_percent = tax_percent + '%';
+            document.getElementById("total_amount").innerText = total_amount;
+            document.getElementById("tax_percent").innerText = tax_percent;
+            document.getElementById("tax").innerText = tax;
+            document.getElementById("amount").innerText = amount;
         }
     </script>
 @endsection

@@ -12,13 +12,18 @@ use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
 use App\Models\VirtualTour;
 use App\Models\PhotoBooth;
+use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
 use App\Models\TaxiBooking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use ZipArchive;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
+
 
 class HomeController extends Controller
 {
@@ -53,10 +58,21 @@ class HomeController extends Controller
     }
     
 
-    public function users()
+    public function users(Request $request)
     {
-        $datas = User::where('type', 2)->orderBy('id', 'DESC')->paginate(10);
-        return view('admin.users', compact('datas'));
+        $requests = User::query();
+        $requests->where('type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+        $search = $request->search ? $request->search : '';
+        
+        if($request->filled('search')){
+            $requests->Where('fullname', 'LIKE', '%'.$request->search.'%');
+            $requests->orWhere('email', 'LIKE', '%'.$request->search.'%');
+            $requests->orWhere('mobile', 'LIKE', '%'.$request->search.'%');
+        }
+        
+        $requests->orderBy('id', 'DESC');
+        $datas = $requests->paginate(10);
+        return view('admin.users', compact('datas','search'));
     }
 
     public function userDetail($id)
@@ -170,21 +186,30 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Virtual Tour deleted successfully');
     }
 
-    public function tours()
+    public function tours(Request $request)
     {
-        $datas = Tour::where('status', 1)->orderBy('id', 'DESC')->paginate(9);
-        return view('admin.tours', compact('datas'));
+        $requests = Tour::query();
+        $requests->where('status', 1);
+        $search = $request->search ? $request->search : '';
+        
+        if($request->filled('search')){
+            $requests->Where('title', 'LIKE', '%'.$request->search.'%');
+            $requests->orWhere('name', 'LIKE', '%'.$request->search.'%');
+        }
+        
+        $requests->orderBy('id', 'DESC');
+        $datas = $requests->paginate(9);
+
+        return view('admin.tours', compact('datas','search'));
     }
 
     public function SaveTour(Request $request)
     {
         try {
-            if ($request->same_for_all) {
+            if ($request->same_for_all_check == 'same_for_all') {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
-                    'total_people' => 'required',
-                    'duration' => 'required|min:0',
                     'what_to_bring' => 'required',
                     'same_for_all' => 'required',
                     'short_description' => 'required|string|min:3|max:1000',
@@ -194,16 +219,14 @@ class HomeController extends Controller
                 ]);
 
                 $price = $request->same_for_all;
-                $age_11_price = 0;
-                $age_60_price = 0;
-                $under_10_age_price = 0;
+                $age_11_price = '';
+                $age_60_price = '';
+                $under_10_age_price = '';
                 $same_for_all = $price;
             } else {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
-                    'total_people' => 'required',
-                    'duration' => 'required|min:0',
                     'what_to_bring' => 'required',
                     'age_11_price' => 'required|min:0',
                     'age_60_price' => 'required|min:0',
@@ -216,7 +239,7 @@ class HomeController extends Controller
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
                 $under_10_age_price = $request->under_10_age_price;
-                $same_for_all = 0;
+                $same_for_all = '';
             }
 
 
@@ -227,8 +250,8 @@ class HomeController extends Controller
             $TourID = Tour::insertGetId([
                 'title' => $request->title,
                 'name' => $request->name,
-                'total_people' => $request->total_people,
-                'duration' => $request->duration,
+                'total_people' => $request->total_people ? $request->total_people:0,
+                'duration' => $request->duration ? $request->duration:0,
                 'what_to_bring' => $request->what_to_bring,
                 'age_11_price' => $age_11_price,
                 'age_60_price' => $age_60_price,
@@ -260,7 +283,7 @@ class HomeController extends Controller
     public function UpdateTour(Request $request)
     {
         try {
-            if ($request->same_for_all) {
+            if ($request->check_value == 'same_for_all') {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
                     'name' => 'required|string|max:255|min:1',
@@ -273,9 +296,9 @@ class HomeController extends Controller
                     'cancellation_policy' => 'required|min:3|max:1000',
                 ]);
                 $same_for_all = $request->same_for_all;
-                $age_11_price = 0;
-                $age_60_price = 0;
-                $under_10_age_price = 0;
+                $age_11_price = '';
+                $age_60_price = '';
+                $under_10_age_price = '';
             } else {
                 $validator = Validator::make($request->all(), [
                     'title' => 'required|string|max:255|min:1',
@@ -293,7 +316,7 @@ class HomeController extends Controller
                 $age_11_price = $request->age_11_price;
                 $age_60_price = $request->age_60_price;
                 $under_10_age_price = $request->under_10_age_price;
-                $same_for_all = 0;
+                $same_for_all = '';
             }
 
             if ($validator->fails()) {
@@ -327,7 +350,7 @@ class HomeController extends Controller
                 }
             }
             $tour->save();
-            return redirect('tours')->with('success', 'Tour Updated successfully');
+            return redirect('tour-detail/' . encrypt_decrypt('encrypt', $request->pid))->with('success', 'Tour Updated successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
         }
@@ -546,6 +569,7 @@ class HomeController extends Controller
             }
             $requests->where('tour_type', 1);//1:Tour, 2:Virtual tour
             $requests->where('status', 0);
+            $requests->orderBy('id', 'DESC');
             $Tourrequests = $requests->paginate(15);
             
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
@@ -557,8 +581,6 @@ class HomeController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
-
-    
 
     public function AddVirtualTour()
     {
@@ -636,36 +658,35 @@ class HomeController extends Controller
     }
 
     /*listing of tour Photo/Video */
-    public function ManagePhotoBooth()
+    public function ManagePhotoBooth(Request $request)
     {
         try {
-            // $requests = TourBooking::query();
-            // $requests->where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            // $search = $request->search ? $request->search : '';
-            // $tour_id = $request->tour_id ? $request->tour_id : '';
-            // $date = $request->date ? $request->date : '';
+            $requests = BookingPhotoBooth::query();
+            $search = $request->search ? $request->search : '';
+            $booth_id = $request->booth_id ? $request->booth_id : '';
+            $date = $request->date ? $request->date : '';
             
-            // if($request->filled('search')){
-            //     $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
-            //     $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
-            // }
+            if($request->filled('search')){
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+            }
 
-            // if($request->filled('tour_id')){
-            //     $requests->where('tour_id', $request->tour_id);
-            // }
+            if($request->filled('booth_id')){
+                $requests->where('booth_id', $request->booth_id);
+            }
 
-            // if($request->filled('date')){
-            //     $requests->whereDate('booking_date', '=', $request->date);
-            // }
+            if($request->filled('date')){
+                $requests->whereDate('booking_date', '=', $request->date);
+            }
+            $requests->whereIn('status', [0,1]);
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
             
-            // $requests->orderBy('id', 'DESC');
-            // $bookings = $requests->paginate(10);
             
-            
-            $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+            $PhotoBooths = PhotoBooth::orderBy('id', 'DESC')->get();
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 3)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours'));
+            
+            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours','search','date','booth_id'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -766,6 +787,8 @@ class HomeController extends Controller
                 'price' => 'required|min:0',
                 'description' => 'required',
                 'cancellation_policy' => 'required',
+                'delete_days' => 'required',
+                
                 //'image[]' => 'required',
             ]);
 
@@ -776,6 +799,7 @@ class HomeController extends Controller
             /*Save all input data of photobooth */
             $boothID = PhotoBooth::insertGetId([
                 'title' => $request->title,
+                'delete_days' => $request->delete_days,
                 'users_id' => implode(',', $request->users),/*Multiple user id change into implode like 2,3,4 */
                 'price' => $request->price,
                 'tour_id' => $request->tour_id,
@@ -868,6 +892,7 @@ class HomeController extends Controller
 
             $photo->tour_id = $request->tour_id;
             $photo->title = $request->title;
+            $photo->delete_days = $request->delete_days;
             $photo->price = $request->price;
             $photo->description = $request->description;
             $photo->cancellation_policy = $request->cancellation_policy;
@@ -1034,102 +1059,6 @@ class HomeController extends Controller
         }
     }
 
-    //Live Search of tours
-    public function live_tours(Request $request)
-    {
-        $query = $request['query'];
-
-        $datas = Tour::where('title', 'like', '%' . $query . '%')
-            ->orderBy('id', 'DESC')
-            ->limit(50)
-            ->get();
-        $i = 1;
-        $table_data = '';
-        if ($datas->count() > 0) {
-            foreach ($datas as $val) {
-                $table_data .= '
-                    <div class="col-md-4">
-                        <div class="manage-tour-card">
-                            <div class="manage-tour-card-media">
-                                <img src="' . assets('assets/admin-images/IMG_9838.jpg') . '">
-                            </div>
-                            <div class="manage-tour-card-content">
-                                <div class="manage-tour-card-text">
-                                    <h3>' . $val->title . '</h3>
-                                    <p>' . $val->name  . ' • ' . $val->duration . ' Hours</p>
-                                    <div class="price-text">US$' . $val->under_10_age_price . ' –
-                                        US$' . $val->age_11_price . '</div>
-                                    </div>
-                                    <div class="manage-tour-card-action">
-                                        <a href="' . url('tour-detail/' . encrypt_decrypt('encrypt', $val->id)) . '">View</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>';
-            }
-        } else {
-            $table_data = '<tr>
-                <td colspan="10">
-                    <h5 style="text-align: center">No Record Found</h5>
-                </td>
-            </tr>';
-        }
-        echo json_encode($table_data);
-    }
-
-    //Live Search of users
-    public function live_users(Request $request)
-    {
-        $query = $request['query'];
-
-        $datas = User::where('fullname', 'like', '%' . $query . '%')
-            ->Orwhere('email', 'like', '%' . $query . '%')
-            ->Orwhere('mobile', 'like', '%' . $query . '%')
-            ->where('type', '!=', 1)
-            ->orderBy('id', 'DESC')
-            ->limit(50)
-            ->get();
-        $i = 1;
-        $table_data = '';
-        if ($datas->count() > 0) {
-            foreach ($datas as $val) {
-                $table_data .= '
-                <tr>
-                    <td>
-                       ' . $i++ . '
-                    </td>
-                    <td>
-                        ' . $val->fullname  . '
-                    </td>
-
-                    <td>
-                        ' . $val->email  . '
-                    </td>
-                    <td>
-                        ' . '+1 ' . $val->mobile  . '
-                    </td>
-                    <td>
-                        ' . date('d M, Y, h:i:s a', strtotime($val->created_at)) . '
-                    </td>
-                <td>
-                    <div class="action-btn-info">
-                    <a class="dropdown-item view-btn"
-                    href="' . url('user-details/' . encrypt_decrypt('encrypt', $val->id)) . '"><i
-                        class="las la-eye"></i> View</a>
-                    </div>
-                </td>
-            </tr>';
-            }
-        } else {
-            $table_data = '<tr>
-                <td colspan="10">
-                    <h5 style="text-align: center">No Record Found</h5>
-                </td>
-            </tr>';
-        }
-        echo json_encode($table_data);
-    }
-
     //Live Search of users
     public function search_name(Request $request)
     {
@@ -1261,5 +1190,54 @@ class HomeController extends Controller
             </tr>';
         }
         echo json_encode($table_data);
+    }
+    
+    /*Showing all Photo booth user purchase listing */
+    public function DownloadWithWatermark() 
+    {
+        try {
+            // Create a new zip archive
+            $zip = new ZipArchive;
+        
+            // Path to the directory you want to compress
+            $directory = public_path('upload/photo-booth');
+            
+            // Path to the zip file you want to create
+            $zipFile = public_path('downloads-files.zip');
+            
+            // Open the zip file for writing
+            if ($zip->open($zipFile, ZipArchive::CREATE) === TRUE) {
+                
+                // Add all files from the directory to the zip file
+                $files = File::allFiles($directory);
+                
+                foreach ($files as $file) {
+                    $zip->addFile($file->getPathname(), $file->getBasename());
+                }
+                
+                // Close the zip file
+                $zip->close();
+            }
+            
+            // Check if the zip file was created successfully
+            if (!File::exists($zipFile)) {
+                return response()->json(['error' => 'Failed to create the zip file.'], 500);
+            }
+        
+            // Download the zip file
+            return response()->download($zipFile)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Exception -> ' . $e->getMessage()], 500);
+        }
+    }
+    
+    /*Add a master data of admin*/
+    public function AddEditMasterData()
+    {
+        try {
+            return view('admin.add-edit-master');
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
     }
 }

@@ -18,9 +18,13 @@ return new class extends Migration
             $table->bigInteger("booth_id")->nullable();
             $table->date("booking_date")->nullable();
             $table->float("amount")->nullable();
+            $table->integer("image_count")->nullable();
+            $table->integer("video_count")->nullable();
             $table->float("tax")->nullable();
+            $table->float("tax_percent")->nullable();
             $table->float("total_amount")->nullable();
             $table->bigInteger("userid")->nullable();
+            $table->string("user_name")->nullable();
             $table->string("status")->nullable();
             $table->timestamps();
         });

@@ -15,7 +15,12 @@
                 <div class="col-md-4">
                     <div class="user-side-profile">
                         <div class="side-profile-item">
-                            <div class="side-profile-media"><img src="{{ assets('assets/admin-images/admin-icon.png') }}">
+                            <div class="side-profile-media">
+                                @if (!empty(Auth::user()->user_profile))
+                                    <img src="{{ assets('upload/profile/' . Auth::user()->user_profile) }}" alt="user">
+                                @else
+                                    <img src="{{ assets('assets/admin-images/admin-icon.png') }}" alt="user">
+                                @endif
                             </div>
                             <div class="side-profile-text">
                                 <h2>{{ $data->fullname ?? '' }}</h2>

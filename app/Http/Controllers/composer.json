@@ -11,8 +11,6 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.2",
-        "paypal/paypal-checkout-sdk": "^1.0",
-        "srmklive/paypal": "^3.0",
         "yajra/laravel-datatables-oracle": "9.20.0"
     },
     "require-dev": {

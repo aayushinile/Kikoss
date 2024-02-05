@@ -87,16 +87,19 @@ if (!function_exists('assets')) {
 }
 
 /*Calculate Distance in KM accoding to pickup_lat_long and drop_lat_long */
-if (!function_exists('getDistanceFromLatLonInKm')) {
-    function getDistanceFromLatLonInKm($lat1, $lon1, $lat2, $lon2)
+if (!function_exists('getDistanceBetweenPoints')) {
+    function getDistanceBetweenPoints($lat1, $lon1, $lat2, $lon2)
     {
-        $R = 6371;
-        $dLat = ($lat2 - $lat1) * (3.14159 / 180);
-        $dLon = ($lon2 - $lon1) * (3.14159 / 180);
-        $a = sin($dLat / 2) * sin($dLat / 2) + cos(($lat1) * (3.14159 / 180)) * cos(($lat2) * (3.14159 / 180)) * sin($dLon / 2) * sin($dLon / 2);
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        $d = $R * $c;
-        return $d;
+        $theta = $lon1 - $lon2;
+        $miles = (sin(deg2rad($lat1)) * sin(deg2rad($lat2))) + (cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta)));
+        $miles = acos($miles);
+        $miles = rad2deg($miles);
+        $miles = $miles * 60 * 1.1515;
+        $feet = $miles * 5280;
+        $yards = $feet / 3;
+        $kilometers = $miles * 1.609344;
+        $meters = $kilometers * 1000;
+        return compact('miles', 'feet', 'yards', 'kilometers', 'meters');
     }
 }
 
