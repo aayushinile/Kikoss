@@ -39,10 +39,8 @@ class PaymentController extends Controller
     // }
     public function pay(Request $request)
     {
-        $amount = $request->amount;
         $successUrl = route('success.payment'); // Replace 'payment.success' with your actual route name for success
         $cancelUrl = route('cancel.payment'); // Replace 'payment.cancel' with your actual route name for cancellation
-        
         $environment = new SandboxEnvironment(env('PAYPAL_CLIENT_ID'), env('PAYPAL_SECRET'));
         $client = new PayPalHttpClient($environment);
         $request = new OrdersCreateRequest();
@@ -56,7 +54,7 @@ class PaymentController extends Controller
             "purchase_units" => [[
                 "amount" => [
                     "currency_code" => "USD",
-                    "value" => $amount
+                    "value" => "1.00"
                 ]
             ]]
         ];
@@ -77,19 +75,15 @@ class PaymentController extends Controller
             dd($e);
         }
     }
-    
-    
     public function success(Request $request)
     {
         // Payment success logic
         //{"status":true,"message":"Payment successful!","response":{"token":"60Y92069YH7381032","PayerID":"TCFFB7L3FMKXS"},"paymentId":null}
-        // Retrieve transaction ID from request parameters
-        $transactionId = $request->input('transaction_id');
         $data['status'] = true;
         $data['message'] = 'Payment successful!';
         $data['PayerID'] = $request->input('PayerID');
         $data['token'] = $request->input('token');
-        $data['transactionId'] = $request->input('transactionId');
+        $ransactionId = $response->result->id; // Assuming 'id' contains the transaction ID
         $data['response'] = $request->all();
         
         return response()->json($data);

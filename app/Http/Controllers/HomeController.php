@@ -14,6 +14,7 @@ use App\Models\VirtualTour;
 use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
+use App\Models\Master;
 use App\Models\TaxiBooking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -1235,7 +1236,8 @@ class HomeController extends Controller
     public function AddEditMasterData()
     {
         try {
-            return view('admin.add-edit-master');
+            $data = Master::first();
+            return view('admin.add-edit-master',compact('data'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
