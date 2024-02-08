@@ -247,7 +247,7 @@
                         </li>
 
                         <li class="nav-item @if ($currentURL == 'AddEditMasterData') active @endif">
-                            <a class="nav-link" href="{{ url('AddEditMasterData') }}">
+                            <a class="nav-link" href="{{ url('add-edit-master') }}">
                                 <span class="menu-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">

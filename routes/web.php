@@ -81,5 +81,5 @@ Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_use
 Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
 Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');
 Route::get('/booked-dates',[App\Http\Controllers\HomeController::class, 'getBookedDates'])->name('booked-dates');
-Route::get('/add-edit-master-data',[App\Http\Controllers\HomeController::class, 'AddEditMasterData'])->name('AddEditMasterData');
+Route::get('/add-edit-master',[App\Http\Controllers\HomeController::class, 'AddEditMasterData'])->name('AddEditMasterData');
 Route::get('/DownloadWithWatermark',[App\Http\Controllers\HomeController::class, 'DownloadWithWatermark'])->name('DownloadWithWatermark');

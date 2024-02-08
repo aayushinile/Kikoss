@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentVenmoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,7 @@ Route::get('TimeZoneList', [UserController::class, 'TimeZoneList']);
 Route::get('legal-links', [UserController::class, 'legal_links']);
 Route::post('booking-taxi', [UserController::class, 'bookingTaxi']);//with and without booking
 Route::post('/pay', [PaymentController::class,'pay']);
+Route::post('/payV', [PaymentVenmoController::class,'paywithVenmo']);
 Route::get('/payment/success', [PaymentController::class,'success'])->name('success.payment');
 Route::get('/payment/cancel', [PaymentController::class,'cancel'])->name('cancel.payment');
 Route::middleware('auth:sanctum')->group(function () {

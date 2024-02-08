@@ -14,6 +14,7 @@ use App\Models\VirtualTour;
 use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
+use App\Models\Master;
 use App\Models\TaxiBooking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +48,35 @@ class HomeController extends Controller
         // Showing All datas of app like tourbooking
         $Tourrequests = TourBooking::with("Tour")->where('status', 0)->orderBy('id', 'DESC')->paginate(10);
         $booked_dates = TourBooking::where('status', 1)->groupBy('booking_date')->pluck('booking_date');
-        return view('admin.home', compact('Tourrequests', 'booked_dates'));
+        $tour_booking = DB::table('tour_bookings')
+        ->select(DB::raw('MONTH(booking_date) as month'), DB::raw('SUM(total_amount) as total_amount'))
+        ->whereYear('booking_date', Carbon::now()->year)
+        ->where('status', '!=',3)
+        ->where('tour_type',1)
+        ->groupBy(DB::raw('MONTH(booking_date)'))
+        ->get();
+
+        $virtual_tour_booking = DB::table('tour_bookings')
+        ->select(DB::raw('MONTH(booking_date) as month'), DB::raw('SUM(total_amount) as total_amount'))
+        ->whereYear('booking_date', Carbon::now()->year)
+        ->where('status', '!=',3)
+        ->where('tour_type',2)
+        ->groupBy(DB::raw('MONTH(booking_date)'))
+        ->get();
+
+        $photo_booth_booking = DB::table('photo_booth_booking')
+        ->select(DB::raw('MONTH(booking_date) as month'), DB::raw('SUM(total_amount) as total_amount'))
+        ->whereYear('booking_date', Carbon::now()->year)
+        ->groupBy(DB::raw('MONTH(booking_date)'))
+        ->get();
+
+        $taxi_booking_request = DB::table('book_taxis')
+        ->select(DB::raw('MONTH(booking_date) as month'), DB::raw('SUM(amount) as total_amount'))
+        ->whereYear('booking_date', Carbon::now()->year)
+        ->groupBy(DB::raw('MONTH(booking_date)'))
+        ->get();
+
+        return view('admin.home', compact('Tourrequests', 'booked_dates','tour_booking','virtual_tour_booking','photo_booth_booking','taxi_booking_request'));
     }
     
     public function getBookedDates()
@@ -1235,7 +1264,8 @@ class HomeController extends Controller
     public function AddEditMasterData()
     {
         try {
-            return view('admin.add-edit-master');
+            $data = Master::first();
+            return view('admin.add-edit-master',compact('data'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

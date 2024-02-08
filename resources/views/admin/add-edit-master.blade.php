@@ -7,7 +7,7 @@
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
-        <h4>Manage Virtual Tour</h4>
+        <h4>Manage Master</h4>
         <div class="search-filter">
             <div class="row g-1">
                 <div class="col-md-12">

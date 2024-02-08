@@ -6,6 +6,15 @@
             background-color: #021906 !important;
             /* Set your desired background color */
         }
+        .tab-content {
+            display: none;
+            padding: 40px; /* Adjust padding value as needed */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
     </style>
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
     <!-- CSS for full calender -->
@@ -250,7 +259,7 @@
             </div>
         </div>
 
-
+                                                              
         <div class="booking-availability-section">
             <div class="row">
                 <div class="col-md-12">
@@ -263,7 +272,7 @@
                                 <div class="btn-option-info wd9">
                                     <div class="search-filter">
                                         <div class="search-filter">
-                                            <div class="row g-1">
+                                            <div class="row g-1 d-flex">
 
                                                 <div class="col-md-2">
                                                     <div class="form-group">
@@ -277,22 +286,22 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-bl">Tour Booking</a>
+                                                        <a href="#tour-booking" class="btn-bl" id="tour-booking-btn">Tour Booking</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-bla">Virtual Tour</a>
+                                                        <a href="#virtual-tour" class="btn-bla">Virtual Tour</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-br">Photo Booth</a>
+                                                        <a href="#photo-booth" class="btn-br">Photo Booth</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gra">Taxi Booking</a>
+                                                        <a href="#taxi-booking" class="btn-gra">Taxi Booking</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -301,9 +310,38 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card">
+                            <div class="card-header">
+                                Filter Options
+                            </div>
+                            <div class="card-body">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Filter By
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                        <li><a class="dropdown-item" href="#" id="filterDate">Date</a></li>
+                                        <li><a class="dropdown-item" href="#" id="filterMonth">Month</a></li>
+                                        <li><a class="dropdown-item" href="#" id="filterYear">Year</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body">
-                            <div class="kik-chart">
-                                <div id="chartBar"></div>
+                            <div class="tab-content" id="tour-booking" style="display: block;"> 
+                                <canvas id="tour-booking-chart" style="height: 457px;width: 1076px;"></canvas>
+                            </div>
+                            <div class="tab-content" id="virtual-tour" style="display: none;"> 
+                                <canvas id="virtual-tour-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
+                            </div>
+                            <div class="tab-content" id="photo-booth" style="display: none;">
+                                <canvas id="photo-booth-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
+                            </div>
+                            <div class="tab-content" id="taxi-booking" style="display: none;">
+                                <canvas id="taxi-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
                             </div>
                         </div>
                     </div>
@@ -572,4 +610,273 @@
             // $('.mix-2').append(imageElement);
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    
+
+    var ctx = document.getElementById('tour-booking-chart').getContext('2d');
+    var monthData = <?php echo json_encode($tour_booking->pluck('month')->toArray()); ?>;
+    var totalAmountData = <?php echo json_encode($tour_booking->pluck('total_amount')->toArray()); ?>;
+
+    // Create an array to hold the data for each month
+    var monthlyData = Array.from({ length: 12 }, () => 0);
+
+    // Assign the total amount data to the corresponding month
+    monthData.forEach((month, index) => {
+        monthlyData[month - 1] = totalAmountData[index];
+    });
+
+    var tourBookingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // All months
+            datasets: [{
+                label: 'Total Sales',
+                data: monthlyData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Filled bar color with transparency
+                borderColor: 'rgba(54, 162, 235, 1)', // Border color
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+
+    var ctx = document.getElementById('virtual-tour-booking-chart').getContext('2d');
+    var monthData = <?php echo json_encode($virtual_tour_booking->pluck('month')->toArray()); ?>;
+    var totalAmountData = <?php echo json_encode($virtual_tour_booking->pluck('total_amount')->toArray()); ?>;
+
+    // Create an array to hold the data for each month
+    var monthlyData = Array.from({ length: 12 }, () => 0);
+
+    // Assign the total amount data to the corresponding month
+    monthData.forEach((month, index) => {
+        monthlyData[month - 1] = totalAmountData[index];
+    });
+    var tourBookingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // All months
+            datasets: [{
+                label: 'Total Sales',
+                data: monthlyData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Filled bar color with transparency
+            borderColor: 'rgba(54, 162, 235, 1)', // Border color
+            borderWidth: 1,
+            barThickness: 25,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Total Virtual Tour Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    var ctx = document.getElementById('photo-booth-booking-chart').getContext('2d');
+    var monthData = <?php echo json_encode($photo_booth_booking->pluck('month')->toArray()); ?>;
+    var totalAmountData = <?php echo json_encode($photo_booth_booking->pluck('total_amount')->toArray()); ?>;
+
+    // Create an array to hold the data for each month
+    var monthlyData = Array.from({ length: 12 }, () => 0);
+
+    // Assign the total amount data to the corresponding month
+    monthData.forEach((month, index) => {
+        monthlyData[month - 1] = totalAmountData[index];
+    });
+    var tourBookingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // All months
+            datasets: [{
+                label: 'Total Sales',
+                data: monthlyData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Filled bar color with transparency
+            borderColor: 'rgba(54, 162, 235, 1)', // Border color
+            borderWidth: 1,
+            barThickness: 25,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Total Photo Booth Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    var ctx = document.getElementById('taxi-booking-chart').getContext('2d');
+    var monthData = <?php echo json_encode($taxi_booking_request->pluck('month')->toArray()); ?>;
+    var totalAmountData = <?php echo json_encode($taxi_booking_request->pluck('total_amount')->toArray()); ?>;
+
+    // Create an array to hold the data for each month
+    var monthlyData = Array.from({ length: 12 }, () => 0);
+
+    // Assign the total amount data to the corresponding month
+    monthData.forEach((month, index) => {
+        monthlyData[month - 1] = totalAmountData[index];
+    });
+    var tourBookingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // All months
+            datasets: [{
+                label: 'Total Sales',
+                data: monthlyData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Filled bar color with transparency
+            borderColor: 'rgba(54, 162, 235, 1)', // Border color
+            borderWidth: 1,
+            barThickness: 25,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display:false,
+                    text: 'Total Taxi Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all tab buttons
+        var tabButtons = document.querySelectorAll('.form-group a');
+        
+        // Add click event listener to each tab button
+        tabButtons.forEach(function(tabButton) {
+            tabButton.addEventListener('click', function(event) {
+                // Prevent default link behavior
+                event.preventDefault();
+                
+                // Remove 'active' class from all tab buttons
+                tabButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                
+                // Add 'active' class to the clicked tab button
+                tabButton.classList.add('active');
+                
+                // Get the ID of the clicked tab
+                var tabId = tabButton.getAttribute('href').substring(1);
+                
+                // Hide all tab contents
+                var tabContents = document.querySelectorAll('.tab-content');
+                tabContents.forEach(function(tabContent) {
+                    tabContent.style.display = 'none';
+                });
+                
+                // Show the corresponding tab content
+                var activeTabContent = document.getElementById(tabId);
+                activeTabContent.style.display = 'block';
+            });
+        });
+    });
+</script>
 @endsection
