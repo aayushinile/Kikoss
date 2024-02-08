@@ -28,6 +28,7 @@ return new class extends Migration
             $table->float('tax')->nullable();
             $table->float('total_amount')->nullable();
             $table->string('status',10)->nullable();
+            $table->string('transaction_id')->nullable();
             $table->timestamps();
         });
     }

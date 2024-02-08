@@ -11,6 +11,9 @@ class PaymentController extends Controller
 {
     // public function pay(Request $request)
     // {
+    //     $successUrl = route('success.payment'); // Replace 'payment.success' with your actual route name for success
+    //     $cancelUrl = route('cancel.payment'); // Replace 'payment.cancel' with your actual route name for cancellation
+
     //     $environment = new SandboxEnvironment(env('PAYPAL_CLIENT_ID'), env('PAYPAL_SECRET'));
     //     $client = new PayPalHttpClient($environment);
 
@@ -18,16 +21,21 @@ class PaymentController extends Controller
     //     $request->prefer('return=representation');
     //     $request->body = [
     //         "intent" => "CAPTURE",
+    //         "application_context" => [
+    //             "return_url" => $successUrl . '?transaction_id=' . $transactionId, // Append transaction ID to success URL
+    //             "cancel_url" => $cancelUrl
+    //         ],
     //         "purchase_units" => [[
     //             "amount" => [
     //                 "currency_code" => "USD",
-    //                 "value" => "31.00"
+    //                 "value" => "1.00"
     //             ]
     //         ]]
     //     ];
 
     //     try {
     //         $response = $client->execute($request);
+    //         $transactionId = $response->result->id; // Get transaction ID from the response
     //         $data['status'] = true;
     //         $data['message'] = 'Link';
     //         $data['data'] = $response->result->links[1]->href;
@@ -40,62 +48,61 @@ class PaymentController extends Controller
     public function pay(Request $request)
     {
         $amount = $request->amount;
-        $successUrl = route('success.payment'); // Replace 'payment.success' with your actual route name for success
-        $cancelUrl = route('cancel.payment'); // Replace 'payment.cancel' with your actual route name for cancellation
-        
+        $successUrl = route('success.payment'); // Replace 'success.payment' with your actual route name for success
+        $cancelUrl = route('cancel.payment'); // Replace 'cancel.payment' with your actual route name for cancellation
+
         $environment = new SandboxEnvironment(env('PAYPAL_CLIENT_ID'), env('PAYPAL_SECRET'));
         $client = new PayPalHttpClient($environment);
+
         $request = new OrdersCreateRequest();
         $request->prefer('return=representation');
         $request->body = [
             "intent" => "CAPTURE",
             "application_context" => [
-                "return_url" => $successUrl,
+                "return_url" => $successUrl, // Success URL without transaction ID
                 "cancel_url" => $cancelUrl
             ],
-            "purchase_units" => [[
-                "amount" => [
-                    "currency_code" => "USD",
-                    "value" => $amount
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $amount
+                    ]
                 ]
-            ]]
+            ]
         ];
 
         try {
             $response = $client->execute($request);
+            $transactionId = $response->result->id; // Get transaction ID from the response
+
+            // Append transaction ID to success URL
+            $successUrl .= '?transaction_id=' . $transactionId;
+            //Log::info('Success URL: ' . $successUrl); // Log the success URL
+
             $data['status'] = true;
             $data['message'] = 'Link';
-            $url = $response->result->links[1]->href;
-            
-            $decodedUrl = urldecode($url);
-            $data['data'] = $url;// Now use the decoded URL
-            //dd($data);
+            $data['transactionId'] = $transactionId;
+            $data['data'] = $response->result->links[1]->href;
             return response()->json($data);
-            
-            //return redirect($response->result->links[1]->href);
         } catch (\Throwable $e) {
             dd($e);
         }
     }
-    
-    
+
     public function success(Request $request)
     {
-        // Payment success logic
-        //{"status":true,"message":"Payment successful!","response":{"token":"60Y92069YH7381032","PayerID":"TCFFB7L3FMKXS"},"paymentId":null}
-        // Retrieve transaction ID from request parameters
-        $transactionId = $request->input('transaction_id');
+        // Log all request data
+        //Log::info('Request data:', $request->all());
+
         $data['status'] = true;
         $data['message'] = 'Payment successful!';
         $data['PayerID'] = $request->input('PayerID');
         $data['token'] = $request->input('token');
-        $data['transactionId'] = $request->input('transactionId');
         $data['response'] = $request->all();
-        
         return response()->json($data);
-        //return "Payment successful!";
+        // Further processing logic...
     }
-    
 
 
 

@@ -148,7 +148,7 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <select class="form-control"name="tour_id">
+                                                            <select class="form-control"name="tour_id" id="tour_id">
                                                                 <option value="">Select Virtual Tour</option>
                                                                 @if (!$virtual_tours->isEmpty())
                                                                     @foreach ($virtual_tours as $tour)
@@ -323,6 +323,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2_one.min.css') }}">
+    <!-- Include Select2 JS -->
+    <script src="{{ assets('assets/admin-js/select2_one.min.js') }}" type="text/javascript"></script>
+
+    <!-- Initialize Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id').select2({
+                placeholder: "Search Tour",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {

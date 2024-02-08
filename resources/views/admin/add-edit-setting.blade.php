@@ -9,13 +9,7 @@
     <div class="page-breadcrumb-title-section">
         <h4>Manage Master</h4>
         <div class="search-filter">
-            <div class="row g-1">
-                <div class="col-md-12">
-                    <div class="page-breadcrumb-action">
-                        <a href="{{ url('add-edit-master') }}" class="wh-btn">Back</a>
-                    </div>
-                </div>
-            </div>
+            {{--  --}}
         </div>
     </div>
     <div class="body-main-content">
@@ -24,7 +18,7 @@
                 <h3>Manage Master</h3>
             </div>
             <div class="addVirtualtour-form">
-                <form action="{{ route('UpdateMaster') }}" method="POST" enctype="multipart/form-data"
+                <form action="{{ route('UpdateSettings') }}" method="POST" enctype="multipart/form-data"
                     id="add_edit_master">
                     @csrf
                     <input type="hidden" name="pid" value="1" id="pid">
@@ -47,7 +41,7 @@
                                 <h4>Tax(%)</h4>
                                 <div class="People-form-group">
                                     <input type="number" min="0" class="form-control" name="tax"
-                                        value="{{ $data ? $data->price : old('tax') }}"placeholder="Enter Tax">
+                                        value="{{ $data ? $data->tax : old('tax') }}"placeholder="Enter Tax">
                                 </div>
 
                             </div>
@@ -59,7 +53,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <a class="cancelbtn"href="{{ url('add-edit-master') }}">
+                                <a class="cancelbtn"href="{{ url('add-edit-setting') }}">
                                     cancel</a>
                                 <button
                                     class="Savebtn"type="submit">{{ $data ? 'Update' : 'Save & Create Virtual Tour' }}</button>

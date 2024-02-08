@@ -7,6 +7,7 @@ use App\Models\CallbackRequest;
 use App\Models\Event;
 use App\Models\TourBooking;
 use Illuminate\Http\Request;
+use App\Models\TaxiBookingEvent;
 
 class AjaxController extends Controller
 {
@@ -30,12 +31,7 @@ class AjaxController extends Controller
         $events = Event::all();
         return response()->json($events);
     }
-    public function getEventsSet2()
-    {
-        //$eventsSet2 = TourBooking::where('tour_type',1)->where('status',1)->get();
-        return response()->json($eventsSet2);
-    }
-
+    
     public function addEvent(Request $request)
     {
         //dd($request->all());
@@ -60,6 +56,40 @@ class AjaxController extends Controller
         $event = new Event;
         $event->title = $title;
         $event->start = $request->start;
+        $event->color = $color;
+        $event->save();
+
+        return response()->json($event);
+    }
+    
+    public function getEventsSet2()
+    {
+        //$eventsSet2 = TourBooking::where('tour_type',1)->where('status',1)->get();
+        return response()->json($eventsSet2);
+    }
+    
+    public function getTaxiBookingEvent()
+    {
+        $events = TaxiBookingEvent::all();
+        return response()->json($events);
+    }
+    
+    public function addTaxiBookingEvent(Request $request)
+    {
+        if($request->datesstatustype == 'Not Available')
+        {
+            $title = 'Not Available';
+            $color = '#9C9D9F';
+        }elseif($request->datesstatustype == 'Booked Taxi'){
+            $title = 'Booked Tour';
+            $color = '#4CBA08';
+        }else{
+            $title = 'Available';
+            $color = '#FFFFFF';
+        }
+        $event = new TaxiBookingEvent;
+        $event->title = $title;
+        $event->date = $request->date;
         $event->color = $color;
         $event->save();
 

@@ -641,7 +641,7 @@ class HomeController extends Controller
     {
         try {
             $datas = TourBooking::where('id', $id)->update(['status' => 1]);/*0:pending,1:accept,2:reject */
-            return redirect()->back()->with('success', 'Tour Booking request accepted');
+            return redirect('manage-booking')->with('success', 'Tour Booking request accepted');
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -652,7 +652,7 @@ class HomeController extends Controller
     {
         try {
             $datas = TourBooking::where('id', $id)->update(['status' => 2]);/*0:pending,1:accept,2:reject */
-            return redirect()->back()->with('success', 'Tour Booking request rejected');;
+            return redirect('manage-booking')->with('success', 'Tour Booking request rejected');;
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -1233,11 +1233,38 @@ class HomeController extends Controller
     }
     
     /*Add a master data of admin*/
-    public function AddEditMasterData()
+    public function AddEditSettingData()
     {
         try {
             $data = Master::first();
-            return view('admin.add-edit-master',compact('data'));
+            return view('admin.add-edit-setting',compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /* Update Settings */
+    public function UpdateSettings(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'tax' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
+            $id = Master::where('id', 1)->update([
+                'device_token' => $request->device_token,
+                'tax' => $request->tax,
+            ]);
+
+            if (!empty($id)) {
+                return redirect()->back()->with('success', 'Setting updated successfully');
+            } else {
+                return redirect()->back()->with('error', 'Something went wrong!');
+            }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

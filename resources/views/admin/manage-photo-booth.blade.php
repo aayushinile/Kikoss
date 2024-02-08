@@ -149,9 +149,9 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <select class="form-control"name="booth_id">
+                                                            <select class="form-control"name="booth_id" id="booth_id">
                                                                 <option>Select Booth Id</option>
-                                                                @if (!$tours->isEmpty())
+                                                                @if (!$PhotoBooths->isEmpty())
                                                                     @foreach ($PhotoBooths as $tour)
                                                                         <option
                                                                             value="{{ $tour->id }}"@if ($tour->id == $booth_id) selected='selected' @else @endif>
@@ -297,6 +297,7 @@
             </div>
         </div>
     </div>
+
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -325,6 +326,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2_one.min.css') }}">
+    <!-- Include Select2 JS -->
+    <script src="{{ assets('assets/admin-js/select2_one.min.js') }}" type="text/javascript"></script>
+
+    <!-- Initialize Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#booth_id').select2({
+                placeholder: "Search Photo Booth",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+
     <!-------------------- Append Popup -Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -346,4 +363,5 @@
             document.getElementById("amount").innerText = amount;
         }
     </script>
+
 @endsection

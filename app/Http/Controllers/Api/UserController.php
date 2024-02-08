@@ -21,9 +21,11 @@ use App\Models\TaxiBooking;
 use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
+use App\Models\PaymentDetail;
 use Mail;
 use App\Mail\RegisterMail;
 use App\Mail\SendOTPMail;
+use App\Mail\TaxiBookingMail;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -621,17 +623,28 @@ class UserController extends Controller
     {
         try {
             $data=array();
-            $validator = Validator::make($request->all() , [
-                'tour_id' => 'required|integer',
-                'tour_type' => 'required|string|max:255|min:1',
-                'booking_date' => 'required',
-                'no_adults' => 'required',
-                'no_senior_citizen' => 'required',
-                'no_childerns' => 'required',
-                'adults_amount' => 'required',
-                'senior_amount' => 'required',
-                'childrens_amount' => 'required',
-            ]);
+            //Check Validation accoding to Tour type
+            if($request->tour_type == 1){
+                $validator = Validator::make($request->all() , [
+                    'tour_id' => 'required|integer',
+                    'tour_type' => 'required|string|max:255|min:1',
+                    'booking_date' => 'required',
+                    'no_adults' => 'required',
+                    'no_senior_citizen' => 'required',
+                    'no_childerns' => 'required',
+                    'adults_amount' => 'required',
+                    'senior_amount' => 'required',
+                    'childrens_amount' => 'required',
+                ]);
+            }else{
+                $validator = Validator::make($request->all() , [
+                    'tour_id' => 'required|integer',
+                    'tour_type' => 'required|string|max:255|min:1',
+                    'booking_date' => 'required',
+                    'amount' => 'required',
+                ]);
+            }
+            
             
             if ($validator->fails())
             {
@@ -656,14 +669,37 @@ class UserController extends Controller
             $booking->senior_amount = $senior_amount;
             $childrens_amount = $request->childrens_amount*$request->no_childerns;
             $booking->childrens_amount = $childrens_amount;
+            $booking->transaction_id = $request->transaction_id;
             $tax = 100;
             $booking->tax = $tax;
-            $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $tax;
+            //Checking Tour type
+            if($request->amount){
+                $booking->total_amount = $request->amount + $tax;/*Virtual amount */
+            }else{
+                $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $tax;/*Tour amount */
+            }
+            
             $booking->status = 0;
             $booking->save();
+            $booking_id = $booking->id;
+            
+            $PaymentDetail = new PaymentDetail;
+            $PaymentDetail->booking_id = $booking_id;
+            $PaymentDetail->transaction_id = $request->transaction_id;
+            $PaymentDetail->payment_provider = 'PayPal';
+            //Checking Tour type
+            if($request->amount){
+                $PaymentDetail->amount = $request->amount + $tax;/*Virtual amount */
+            }else{
+                $PaymentDetail->amount = $adults_amount + $senior_amount + $childrens_amount + $tax;/*Tour amount */
+            }
+            $PaymentDetail->status = 1;
+            $PaymentDetail->type = $request->tour_type;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
+            $PaymentDetail->save();
             
             $data['status']=true;
             $data['message']="Boooked successfully";
+            $data['booking_id']=$booking_id;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -698,9 +734,20 @@ class UserController extends Controller
             $booking->total_amount = $request->amount + $tax;
             $booking->status = 0;
             $booking->save();
+            $booking_id = $booking->id;
+            
+            $PaymentDetail = new PaymentDetail;
+            $PaymentDetail->booking_id = $booking_id;
+            $PaymentDetail->transaction_id = $request->transaction_id;
+            $PaymentDetail->payment_provider = 'PayPal';
+            $PaymentDetail->amount = $request->amount + $tax;/*PhotoBOOTH amount */
+            $PaymentDetail->status = 1;
+            $PaymentDetail->type = 3;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
+            $PaymentDetail->save();
             
             $data['status']=true;
             $data['message']="Boooked successfully";
+            $data['booking_id']=$booking_id;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -777,7 +824,6 @@ class UserController extends Controller
     public function bookingTaxi(Request $request) 
     {
         try {
-            
             //Validation for Taxi booking
             $validator = Validator::make($request->all(), [
                 'booking_date_time' => 'required',
@@ -835,12 +881,37 @@ class UserController extends Controller
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
             ]);
+            
+            $PaymentDetail = new PaymentDetail;
+            $PaymentDetail->booking_id = $bookingID;
+            $PaymentDetail->transaction_id = $request->transaction_id;
+            $PaymentDetail->payment_provider = 'PayPal';
+            $PaymentDetail->amount = $request->amount;/*TaxiBooking amount */
+            $PaymentDetail->status = 1;
+            $PaymentDetail->type = 4;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
+            $PaymentDetail->save();
+            
             if($bookingID){
                 $data['status'] = true;
                 $data['message'] = 'Booking request send successfully';
             }else{
                 $data['status'] = false;
                 $data['message'] = 'Something went wrong';
+            }
+            
+            /*Without login Send mail to user via emailId */
+            if($request->email_id)
+            {
+                /*User Mail*/
+                $mailData = [
+                    'name'  => $request->fullname,
+                    'booking_id'  => $booking_id,
+                    'pickup_address'  => $request->pickup_location,
+                    'drop_address'  => $request->drop_location,
+                    'date_time'  => $request->booking_date_time,
+                    'driver_details'  => ''
+                ];
+                Mail::to($request->email_id)->send(new TaxiBookingMail($mailData));
             }
             
             return response()->json($data);
@@ -1014,7 +1085,7 @@ class UserController extends Controller
                 $all_bookings = TourBooking::where('status',2)->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }else{
                 /*All */
-                $all_bookings = TourBooking::whereIn('status',[1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+                $all_bookings = TourBooking::whereIn('status',[0,1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }
             
             
@@ -1023,7 +1094,7 @@ class UserController extends Controller
                 foreach ($all_bookings as $key => $value) {
                     $temp['id'] = $value->id;
                     $temp['status_id'] = $value->status;
-                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : ""));
+                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
                     $temp['boooking_id'] = $value->booking_id;
                     $tour = Tour::where('id',$value->tour_id)->first();
                     $temp['tour_title'] = $tour->title;
@@ -1038,6 +1109,8 @@ class UserController extends Controller
                     $images = TourAttribute::where('tour_id',$value->id)->first();
                     if($images){
                         $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    }else{
+                        $temp['images'] = '';
                     }
                     
                     $response[] = $temp;
@@ -1061,7 +1134,7 @@ class UserController extends Controller
         try {
             $user = Auth::user();
             $value = TourBooking::where('id',$request->booking_id)->first();//Get datas of tour booking of user
-            
+            $tourImage = array();
             $temp['id'] = $value->id;
             $temp['status_id'] = $value->status;
             $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : ""));
@@ -1071,15 +1144,24 @@ class UserController extends Controller
             $temp['cancellation_policy'] = $tour->cancellation_policy;
             $temp['selectd_date'] = date('d M, Y', strtotime($value->booking_date));
             $temp['duration'] = $tour->duration;/* Tour Time */
+            $temp['what_to_bring'] = $tour->what_to_bring;
+            $temp['short_description'] = $tour->short_description;
+            $temp['description'] = $tour->description;
             $temp['no_of_adults'] = $value->no_adults;
             $temp['no_of_senior'] = $value->no_senior_citizen;
             $temp['no_of_children'] = $value->no_childerns;
             $temp['total_amount'] = $value->total_amount;
+            $temp['same_for_all'] = $tour->same_for_all;/* Tour Price for all person */
+            $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
+            $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
+            $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
             $temp['no_of_person'] = $value->no_adults+$value->no_senior_citizen+$value->no_childerns;
-            $images = TourAttribute::where('tour_id',$value->id)->first();
-            if($images){
-                $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+            $images = TourAttribute::where('tour_id',$value->id)->get();
+            foreach ($images as $key => $val) {
+                $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
             }
+                
+                $temp['images'] = $tourImage;
             
             $data['status'] = true;
             $data['message'] = 'Book tour listing';

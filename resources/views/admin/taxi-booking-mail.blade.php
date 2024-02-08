@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kikos Tours Oahu</title>
+    <title>Your Taxi Booking Confirmation with Kikos Tours Oahu</title>
     <style>
 
     </style>
@@ -50,21 +50,52 @@
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;"><b>Dear
                                                 {{ $mailData['name'] }},</b></p>
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
-                                            Aloha and e komo mai,</p>
+                                            Your Taxi Booking Confirmation with Kikos</p>
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
-                                            A new adventure awaits you in Honolulu! If you are alone or with a large
-                                            group, you found the spot! KIKOS TOURS OAHU
-                                        </p>
+                                            We hope this message finds you well and ready for a smooth and convenient
+                                            ride with Kikos Tours Oahu. We're thrilled to inform you that your taxi
+                                            booking
+                                            has been successfully confirmed!</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            It’s our pleasure to show you paradise!</p>
+                                            Here are the details of your upcoming ride:</p>
+                                        <ul style="padding:0 0 0 20px; margin: 0; list-style-position:outside ;">
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Booking Reference Number: {{ $mailData['booking_id'] }}</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Pickup Location: {{ $mailData['pickup_address'] }}</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Drop-off Location: {{ $mailData['drop_address'] }}</li>
+
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Date and Time: {{ $mailData['date_time'] }}</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Driver Details: {{ $mailData['driver_details'] }}</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td valign="top" style="vertical-align: top;">
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            First timers, try our Circle Island Tour! Second or more, customize your
-                                            day, and visit new destinations on our island! Plus there’s hiking, zip
-                                            lining, skydiving, walking tours, tips, and more!</p>
+                                            Your comfort and safety are our top priorities, and we assure you that our
+                                            experienced driver will ensure a pleasant journey for you.</p>
+                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                            If you have any specific requirements or need to make changes to your
+                                            booking, please reach out to our customer support team at
+                                            klinekristi@hotmail.com/(808)206-2205 as soon as possible.</p>
+                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                            We appreciate your trust in [App Name] for your transportation needs. As
+                                            always, our goal is to provide you with a reliable and convenient service.
+                                        </p>
                                     </td>
                                 </tr>
 
@@ -72,10 +103,10 @@
                                     <td valign="top" style="vertical-align: top;">
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
-                                            Happy travels!</p>
+                                            Thank you for choosing [App Name]! We look forward to serving you.</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
-                                            Best regards,</p>
+                                            Safe travels!</p>
                                         <p
                                             style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
                                             Kikos Tours Oahu</p>

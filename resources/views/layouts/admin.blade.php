@@ -242,38 +242,26 @@
                                             stroke-linejoin="round" />
                                     </svg>
                                 </span>
-                                <span class="menu-title">Tour Free Callback Requests</span>
+                                <span class="menu-title">Free Callback Requests</span>
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'AddEditMasterData') active @endif">
-                            <a class="nav-link" href="{{ url('add-edit-master') }}">
+                        <li class="nav-item @if ($currentURL == 'AddEditSettingData') active @endif">
+                            <a class="nav-link" href="{{ url('add-edit-setting') }}">
                                 <span class="menu-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <path
-                                            d="M15.51 2.83H8.49C6 2.83 5.45 4.07 5.13 5.59L4 11H20L18.87 5.59C18.55 4.07 18 2.83 15.51 2.83Z"
-                                            stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
+                                            d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                                            stroke="white" stroke-width="2" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke-linejoin="round" />
                                         <path
-                                            d="M21.99 19.82C22.1 20.99 21.16 22 19.96 22H18.08C17 22 16.85 21.54 16.66 20.97L16.46 20.37C16.18 19.55 16 19 14.56 19H9.44C8 19 7.79 19.62 7.54 20.37L7.34 20.97C7.15 21.54 7 22 5.92 22H4.04C2.84 22 1.9 20.99 2.01 19.82L2.57 13.73C2.71 12.23 3 11 5.62 11H18.38C21 11 21.29 12.23 21.43 13.73L21.99 19.82Z"
-                                            stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M4 8H3" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M21 8H20" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M12 3V5" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M10.5 5H13.5" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M6 15H9" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M15 15H18" stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
+                                            d="M2 12.88V11.12C2 10.08 2.85 9.22 3.9 9.22C5.71 9.22 6.45 7.94 5.54 6.37C5.02 5.47 5.33 4.3 6.24 3.78L7.97 2.79C8.76 2.32 9.78 2.6 10.25 3.39L10.36 3.58C11.26 5.15 12.74 5.15 13.65 3.58L13.76 3.39C14.23 2.6 15.25 2.32 16.04 2.79L17.77 3.78C18.68 4.3 18.99 5.47 18.47 6.37C17.56 7.94 18.3 9.22 20.11 9.22C21.15 9.22 22.01 10.07 22.01 11.12V12.88C22.01 13.92 21.16 14.78 20.11 14.78C18.3 14.78 17.56 16.06 18.47 17.63C18.99 18.54 18.68 19.7 17.77 20.22L16.04 21.21C15.25 21.68 14.23 21.4 13.76 20.61L13.65 20.42C12.75 18.85 11.27 18.85 10.36 20.42L10.25 20.61C9.78 21.4 8.76 21.68 7.97 21.21L6.24 20.22C5.33 19.7 5.02 18.53 5.54 17.63C6.45 16.06 5.71 14.78 3.9 14.78C2.85 14.78 2 13.92 2 12.88Z"
+                                            stroke="white" stroke-width="2" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </span>
-                                <span class="menu-title">Manage Master</span>
+                                <span class="menu-title">Manage Setting</span>
                             </a>
                         </li>
 

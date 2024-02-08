@@ -195,7 +195,7 @@
                                                         <div class="action-btn-info">
                                                             <a class="dropdown-item view-btn" data-bs-toggle="modal"
                                                                 href="#BookingRequest"
-                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'><i
+                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'><i
                                                                     class="las la-eye"></i> View</a>
                                                             {{-- <div class="dropdown-menu">
                                                                 <a class="dropdown-item view-btn" href="#"><i
@@ -375,7 +375,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
-                                <div class="request-id-text">Booking ID:<span id="TourID"></span></div>
+                                <div class="request-id-text">Booking ID:<span id="Booking_id"></span></div>
                                 <div class="request-status-text"><i class="las la-hourglass-start"></i> Pending
                                     for
                                     Approval</div>
@@ -443,13 +443,14 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Transaction ID</h3>
-                                                <h4>76375873874</h4>
+                                                <h4 id="transaction_id"></h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Amount Recieved On</h3>
-                                                <h4>03 Sep, 2023, 09:33:12 am</h4>
+                                                <h4 id="created_date">
+                                                </h4>
                                             </div>
                                         </div>
                                     </div>
@@ -471,7 +472,7 @@
     </div>
 
     {{-- Code for calendar --}}
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $('#calendar').fullCalendar({
                 header: {
@@ -527,11 +528,68 @@
                 });
             });
         });
+    </script> --}}
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                eventSources: [
+                    '/get-events',
+                ],
+                eventRender: function(event, element) {
+                    // Check if event has color defined
+                    if (event.color) {
+                        // Get the date of the event
+                        var eventDate = moment(event.start).format('YYYY-MM-DD');
+
+                        // Find the cell corresponding to the event date
+                        var cell = $('.fc-day[data-date="' + eventDate + '"]');
+
+                        // Set the background color of the cell
+                        cell.css('background-color', event.color);
+                    }
+
+                    // Empty the content before appending new data
+                    element.empty();
+
+                    // Check if event.description is defined before appending
+                    if (event.description) {
+                        // Append the event description
+                        element.append("<br/>" + event.description);
+                    }
+                },
+                dayClick: function(date, jsEvent, view) {
+                    $('#eventModal').modal('show');
+                    $('#start_date').val(date.format());
+                }
+            });
+
+            $('#eventForm').submit(function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add-event',
+                    data: $('#eventForm').serialize(),
+                    success: function(response) {
+                        // Refresh the FullCalendar to display the new event
+                        $('#calendar').fullCalendar('refetchEvents');
+                        $('#eventModal').modal('hide');
+                        location.reload();
+                    }
+                });
+            });
+        });
     </script>
 
     <!-------------------- Append Popup for booking approval using with Jquery -------------------->
     <script>
-        function accept_tour(tour_id, title, booking_date, duration, total_amount) {
+        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -539,8 +597,9 @@
             // }
 
             var total_amount = '$' + total_amount;
-            currentURL = window.location.href;
-            // Remove the "manage-booking" part
+            var currentURL = window.location.href;
+            //alert(currentURL);
+            //Remove the "manage-booking" part
             var base_url = currentURL.replace('/home', '');
 
             var reject_url = base_url + '/reject-tour-booking/' + tour_id;
@@ -548,15 +607,18 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
-            var booking_date = 'Selected Date: ' + booking_date;
-            document.getElementById("title").innerText =
-                title;
+            // Date formate
+            var created_date = formatDate(booking_date);
+            var booking_date = 'Selected Date: ' + created_date;
+
+            document.getElementById("title").innerText = title;
             document.getElementById("tour_id").value = tour_id;
-            document.getElementById("TourID").innerText =
-                tour_id;
+            document.getElementById("Booking_id").innerText = booking_id;
+            document.getElementById("created_date").innerText = created_date;
+
             document.getElementById("booking_date").innerText = booking_date;
-            document.getElementById(
-                "duration").innerText = duration;
+            document.getElementById("duration").innerText = duration;
+            document.getElementById("transaction_id").innerText = transaction_id;
             document.getElementById("total_amount").innerText = total_amount;
             var url = document.getElementById("rejectbtn");
             url.href = reject_url;
@@ -570,6 +632,23 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
+        }
+
+        function formatDate(dateString) {
+            // Create a Date object from the input string
+            var date = new Date(dateString);
+
+            // Options for formatting the date
+            var options = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            };
+
+            // Format the date using the toLocaleDateString method
+            var formattedDate = date.toLocaleDateString('en-US', options);
+
+            return formattedDate;
         }
     </script>
 @endsection

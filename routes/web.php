@@ -29,6 +29,8 @@ Route::get('/calendar', [App\Http\Controllers\AjaxController::class, 'index']);
 Route::get('/calendar', [App\Http\Controllers\AjaxController::class, 'index']);
 Route::get('/get-events', [App\Http\Controllers\AjaxController::class, 'getEvents']);
 Route::post('/add-event', [App\Http\Controllers\AjaxController::class, 'addEvent']);
+Route::get('/getTaxiBookingEvent', [App\Http\Controllers\AjaxController::class, 'getTaxiBookingEvent']);
+Route::post('/addTaxiBookingEvent', [App\Http\Controllers\AjaxController::class, 'addTaxiBookingEvent']);
 Route::get('/get-events-set2', [App\Http\Controllers\AjaxController::class, 'getEventsSet2']);
 
 Auth::routes();
@@ -81,6 +83,6 @@ Route::get('/live_users', [App\Http\Controllers\HomeController::class, 'live_use
 Route::get('/live_callbacks', [App\Http\Controllers\HomeController::class, 'live_callbacks'])->name('live_callbacks');
 Route::get('/search_name', [App\Http\Controllers\HomeController::class, 'search_name'])->name('search_name');
 Route::get('/booked-dates',[App\Http\Controllers\HomeController::class, 'getBookedDates'])->name('booked-dates');
-Route::get('/add-edit-master',[App\Http\Controllers\HomeController::class, 'AddEditMasterData'])->name('AddEditMasterData');
-Route::get('/update-master',[App\Http\Controllers\HomeController::class, 'UpdateMaster'])->name('UpdateMaster');
+Route::get('/add-edit-setting',[App\Http\Controllers\HomeController::class, 'AddEditSettingData'])->name('AddEditSettingData');
+Route::post('/update-setting',[App\Http\Controllers\HomeController::class, 'UpdateSettings'])->name('UpdateSettings');
 Route::get('/DownloadWithWatermark',[App\Http\Controllers\HomeController::class, 'DownloadWithWatermark'])->name('DownloadWithWatermark');

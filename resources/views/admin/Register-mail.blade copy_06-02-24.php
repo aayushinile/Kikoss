@@ -50,21 +50,63 @@
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;"><b>Dear
                                                 {{ $mailData['name'] }},</b></p>
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
-                                            Aloha and e komo mai,</p>
+                                            Greetings and a warm welcome to kikos Tour! We are thrilled to have you on
+                                            board as a valued member of our travel community.</p>
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
-                                            A new adventure awaits you in Honolulu! If you are alone or with a large
-                                            group, you found the spot! KIKOS TOURS OAHU
-                                        </p>
+                                            Thank you for choosing us as your go-to platform for booking tours and
+                                            embarking on exciting journeys. Your trust means the world to us, and we are
+                                            committed to making your travel experiences truly exceptional.</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            It’s our pleasure to show you paradise!</p>
+                                            Here are a few things you can expect from your Kikos Tours Oahu
+                                            membership:</p>
+                                        <ul style="padding:0 0 0 20px; margin: 0; list-style-position:outside ;">
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Diverse Selection: Explore a wide range of carefully curated tours,
+                                                spanning breathtaking landscapes, cultural wonders, and thrilling
+                                                adventures. We strive to provide options that cater to every type of
+                                                traveler.</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                User-Friendly Platform: Our website is designed with your convenience in
+                                                mind. Navigate effortlessly, discover new destinations, and book your
+                                                dream tours with just a few clicks.</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Personalized Recommendations: Tailored suggestions based on your
+                                                preferences ensure that you find the perfect itinerary for your
+                                                interests and travel style.</li>
+
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Secure Booking: Your security is our priority. Rest assured that all
+                                                transactions on our platform are encrypted and secure, providing you
+                                                with a worry-free booking experience.</li>
+                                            <li
+                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                Exclusive Offers: As a token of appreciation for choosing Kikos Tours
+                                                Oahu, be on the lookout for exclusive discounts and special
+                                                promotions. We believe in making your travels not only memorable but
+                                                also affordable.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td valign="top" style="vertical-align: top;">
                                         <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            First timers, try our Circle Island Tour! Second or more, customize your
-                                            day, and visit new destinations on our island! Plus there’s hiking, zip
-                                            lining, skydiving, walking tours, tips, and more!</p>
+                                            To get started, simply log in to your account on our website and begin your
+                                            journey of discovery. Should you have any questions or need assistance at
+                                            any point, our dedicated customer support team is here to help. Feel free to
+                                            reach out via email at klinekristi@hotmail.com or give us a call at
+                                            (808)206-2205.</p>
+                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                            Once again, welcome to the Kikos Tours Oahu family. We can't wait to
+                                            be a part of your travel adventures!</p>
                                     </td>
                                 </tr>
 

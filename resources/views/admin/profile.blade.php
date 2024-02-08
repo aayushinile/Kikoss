@@ -49,7 +49,7 @@
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Phone Number</h2>
-                                            <p>+1 {{ $data->mobile ?? '' }}</p>
+                                            <p>{{ $data->mobile ?? '' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -99,7 +99,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <h4>Upload profile</h4>
+                                            <h4>Upload Profile</h4>
                                             <input type="file" class="file-form-control"
                                                 name="user_profile"accept=".png, .jpg, .jpeg">
                                         </div>
@@ -120,7 +120,7 @@
                     </div>
                     <div class="myprofile-form-section">
                         <div class="myprofile-form-heading">
-                            <h3>Change password</h3>
+                            <h3>Change Password</h3>
                         </div>
                         <div class="myprofile-form">
                             <form action="{{ route('UpdatePassword') }}" method="POST" enctype="multipart/form-data">
@@ -149,7 +149,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <h4>Confirm New password</h4>
+                                            <h4>Confirm New Password</h4>
                                             <input type="password" class="form-control" name="confirm_new_password"
                                                 placeholder="Enter Confirm New Password">
                                         </div>
