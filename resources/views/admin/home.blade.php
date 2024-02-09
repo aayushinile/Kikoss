@@ -272,7 +272,7 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gr">Download report</a>
+                                                        <a href="#" class="btn-gr">Download Excel</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">

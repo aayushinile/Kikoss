@@ -19,6 +19,9 @@ Route::get('/', function () {
     // return view('welcome');
     return redirect('login');
 });
+Route::get('phpmyinfo', function () {
+    phpinfo(); 
+})->name('phpmyinfo');
 Route::get('/send_otp', [App\Http\Controllers\MailController::class, 'send_otp']);
 Route::get('/privacy-policy', [App\Http\Controllers\AjaxController::class, 'privacy_policy']);
 Route::get('/about-us', [App\Http\Controllers\AjaxController::class, 'about_us']);
@@ -38,8 +41,13 @@ Auth::routes();
 Route::post("/toggleUserStatus", [App\Http\Controllers\AjaxController::class, 'toggleUserStatus'])->name('toggleUserStatus');
 Route::post("/toggleRequestStatus", [App\Http\Controllers\AjaxController::class, 'toggleRequestStatus'])->name('toggleRequestStatus');
 
+Route::post("/toggleTourStatus", [App\Http\Controllers\AjaxController::class, 'toggleTourStatus'])->name('toggleTourStatus');
+Route::post("/toggleVirtualTourStatus", [App\Http\Controllers\AjaxController::class, 'toggleVirtualTourStatus'])->name('toggleVirtualTourStatus');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::match(['get', 'post'],'/users', [App\Http\Controllers\HomeController::class, 'users'])->name('Users');
+Route::match(['get', 'post'],'/virtual-tour-archive', [App\Http\Controllers\HomeController::class, 'VirtualTourArchive'])->name('VirtualTourArchive');
+Route::match(['get', 'post'],'/tour-archive', [App\Http\Controllers\HomeController::class, 'TourArchive'])->name('TourArchive');
 Route::get('/add-tour', [App\Http\Controllers\HomeController::class, 'AddTour'])->name('AddTour');
 Route::get('/edit-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditTour'])->name('EditTour');
 Route::post('/SaveTour', [App\Http\Controllers\HomeController::class, 'SaveTour'])->name('SaveTour');
@@ -52,12 +60,14 @@ Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::cl
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
 Route::post('/delete-tour', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
+Route::post('/archive-tour', [App\Http\Controllers\HomeController::class, 'ArchiveTour'])->name('ArchiveTour');
 Route::match(['get', 'post'],'/manage-virtual-tour', [App\Http\Controllers\HomeController::class, 'ManageVirtualTour'])->name('ManageVirtualTour');
 Route::get('/add-edit-virtual-tour', [App\Http\Controllers\HomeController::class, 'AddVirtualTour'])->name('AddVirtualTour');
 Route::post('/submit-virtual-tour', [App\Http\Controllers\HomeController::class, 'SaveVirtualTour'])->name('SaveVirtualTour');
 Route::post('/update-virtual-tour', [App\Http\Controllers\HomeController::class, 'UpdateVirtualTour'])->name('UpdateVirtualTour');
 Route::get('/edit-virtual-tour/{id}', [App\Http\Controllers\HomeController::class, 'EditVirtualTour'])->name('EditVirtualTour');
 Route::post('/delete-virtual-tour', [App\Http\Controllers\HomeController::class, 'DeleteVirtualTour'])->name('DeleteVirtualTour');
+Route::post('/archive-virtual-tour', [App\Http\Controllers\HomeController::class, 'ArchiveVirtualTour'])->name('ArchiveVirtualTour');
 
 Route::match(['get', 'post'],'/manage-photo-booth', [App\Http\Controllers\HomeController::class, 'ManagePhotoBooth'])->name('ManagePhotoBooth');
 Route::get('/add-photo-booth', [App\Http\Controllers\HomeController::class, 'AddPhoto'])->name('AddPhoto');

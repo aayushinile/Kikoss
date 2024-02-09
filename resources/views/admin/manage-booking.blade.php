@@ -977,7 +977,7 @@
     <script>
         $(document).ready(function() {
             $('#tour_id_pending').select2({
-                placeholder: "Search Tour",
+                placeholder: "Search By Tour Name",
                 allowClear: true // Optional, adds a clear button
             });
         });
@@ -986,7 +986,7 @@
     <script>
         $(document).ready(function() {
             $('#tour_id_accepted').select2({
-                placeholder: "Search Tour",
+                placeholder: "Search By Tour Name",
                 allowClear: true // Optional, adds a clear button
             });
         });
@@ -995,7 +995,7 @@
     <script>
         $(document).ready(function() {
             $('#tour_id_rejected').select2({
-                placeholder: "Search Tour",
+                placeholder: "Search By Tour Name",
                 allowClear: true // Optional, adds a clear button
             });
         });

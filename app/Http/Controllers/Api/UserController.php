@@ -26,6 +26,12 @@ use Mail;
 use App\Mail\RegisterMail;
 use App\Mail\SendOTPMail;
 use App\Mail\TaxiBookingMail;
+use App\Mail\freeCallBackMail;
+use App\Mail\PhotoBoothBookingadminMail;
+use App\Mail\PhotoBoothBookingUserMail;
+use App\Mail\TaxiBookingAdminMail;
+use App\Mail\TourBookingAdminMail;
+use App\Mail\TourBookingUserMail;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -53,6 +59,8 @@ class UserController extends Controller
             }
            
             if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+                $data=array('device_token'=>request('device_token'));
+                User::where('id', Auth::user()->id)->update($data);
                 $user = Auth::user();
                 $token = $user->createToken('kikos')->plainTextToken;
                 $success['token'] = $token;
@@ -609,6 +617,30 @@ class UserController extends Controller
             $callback->note = $request->note;
             $callback->status = 0;
             $callback->save();
+            $callback_id = $callback->id;
+            
+            /*Admin Mail and Push Notification*/
+            $admin = User::where('id',1)->first();
+            $mailData = [
+                'name'  => $admin->fullname,
+                'booking_id'  => $callback_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($admin->email)->send(new freeCallBackMail($mailData));
+            $push_message = 'Free Callback Request'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $admin->firebase_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $admin->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Request Send";
@@ -681,10 +713,10 @@ class UserController extends Controller
             
             $booking->status = 0;
             $booking->save();
-            $booking_id = $booking->id;
+            $tour_booking_id = $booking->id;
             
             $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $booking_id;
+            $PaymentDetail->booking_id = $tour_booking_id;
             $PaymentDetail->transaction_id = $request->transaction_id;
             $PaymentDetail->payment_provider = 'PayPal';
             //Checking Tour type
@@ -696,6 +728,51 @@ class UserController extends Controller
             $PaymentDetail->status = 1;
             $PaymentDetail->type = $request->tour_type;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
             $PaymentDetail->save();
+            
+            /*Admin Mail*/
+            $admin = User::where('id',1)->first();
+            $mailData = [
+                'name'  => $admin->fullname,
+                'booking_id'  => $booking_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($admin->email)->send(new TourBookingAdminMail($mailData));
+            $push_message = 'New Tour Booking'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $admin->firebase_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $admin->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+            
+            /*User Mail*/
+            $mailData = [
+                'name'  => $user->fullname,
+                'booking_id'  => $booking_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($user->email)->send(new TourBookingAdminMail($mailData));
+            $push_message = 'New Tour Booking'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $user->device_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $user->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Boooked successfully";
@@ -724,26 +801,77 @@ class UserController extends Controller
             }
             $booking_id = random_alphanumeric();
             $user = Auth::user();
+            $image_count = PhotoBoothMedia::where('booth_id',$request->photo_booth_id)->where('media_type','Image')->count();
+            $video_count = PhotoBoothMedia::where('booth_id',$request->photo_booth_id)->where('media_type','video')->count();
             $booking = new BookingPhotoBooth;
             $booking->booking_id = $booking_id;
             $booking->booth_id = $request->photo_booth_id;/*Photo Booth id save in Photo booth ID */
             $booking->userid = $user->id;
+            $booking->image_count = $image_count;
+            $booking->video_count = $video_count;
             $booking->booking_date = $request->booking_date;
             $tax = 100;
             $booking->tax = $tax;
             $booking->total_amount = $request->amount + $tax;
             $booking->status = 0;
+            $booking->transaction_id =  $request->transaction_id;
             $booking->save();
-            $booking_id = $booking->id;
+            $photo_booth_booking_id = $booking->id;
             
             $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $booking_id;
+            $PaymentDetail->booking_id = $photo_booth_booking_id;
             $PaymentDetail->transaction_id = $request->transaction_id;
             $PaymentDetail->payment_provider = 'PayPal';
             $PaymentDetail->amount = $request->amount + $tax;/*PhotoBOOTH amount */
             $PaymentDetail->status = 1;
             $PaymentDetail->type = 3;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
             $PaymentDetail->save();
+            
+            
+            /*User Mail and Push Notification*/
+            $mailData = [
+                'name'  => $user->fullname,
+                'booking_id'  => $booking_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($user->email)->send(new PhotoBoothBookingUserMail($mailData));
+            $push_message = 'Photo Booth Booked'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $user->device_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $user->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+            
+            /*Admin Mail and Push Notification*/
+            $admin = User::where('id',1)->first();
+            $mailData = [
+                'name'  => $admin->fullname,
+                'booking_id'  => $booking_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($admin->email)->send(new PhotoBoothBookingadminMail($mailData));
+            $push_message = 'New Taxi Booking'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $admin->firebase_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $admin->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Boooked successfully";
@@ -902,7 +1030,7 @@ class UserController extends Controller
             /*Without login Send mail to user via emailId */
             if($request->email_id)
             {
-                /*User Mail*/
+                /*User Mail and Push Notification*/
                 $mailData = [
                     'name'  => $request->fullname,
                     'booking_id'  => $booking_id,
@@ -912,7 +1040,45 @@ class UserController extends Controller
                     'driver_details'  => ''
                 ];
                 Mail::to($request->email_id)->send(new TaxiBookingMail($mailData));
+                if($request->user_id){
+                    $user = User::where('id',$request->user_id)->first();
+                    $push_message = 'Taxi Booked'; 
+                    // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+                    $device_token = $user->device_token;
+                    $img='';
+                    $type=''; 
+                    $id='';
+                    $title= $user->fullname;
+                    $id1='';
+                    $sound ='default';
+                    $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+                    $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+                }
             }
+            
+            /*Admin Mail and Push Notification*/
+            $admin = User::where('id',1)->first();
+            $mailData = [
+                'name'  => $admin->fullname,
+                'booking_id'  => $booking_id,
+                'pickup_address'  => '',
+                'drop_address'  => '',
+                'date_time'  => '',
+                'driver_details'  => ''
+            ];
+            Mail::to($admin->email)->send(new TaxiBookingAdminMail($mailData));
+            $push_message = 'New Taxi Booking'; 
+            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
+            $device_token = $admin->firebase_token;
+            $img='';
+            $type=''; 
+            $id='';
+            $title= $admin->fullname;
+            $id1='';
+            $sound ='default';
+            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+            
             
             return response()->json($data);
         } catch (\Exception $e) {
@@ -935,7 +1101,7 @@ class UserController extends Controller
                     $temp['booking_time'] = date('d M, Y - g:i A', strtotime($value->booking_time));
                     $temp['user_id'] = $value->user_id;
                     $temp['user_name'] = $user->fullname;
-                    $temp['user_profile'] = $user->profile ? asset('public/upload/photo-booth/'.$user->profile): '';
+                    $temp['user_profile'] = $user->profile ? asset('public/upload/profile/'.$user->profile): '';
                     $temp['pickup_location'] = $value->pickup_location;
                     $temp['pickup_lat_long'] = $value->pickup_lat_long;
                     $temp['drop_location'] = $value->drop_location;
@@ -1327,5 +1493,36 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
+    }
+    
+    public function send_notification($serverKey='', $push_message='',$device_token='',$title='')
+    {
+        $msg = array(
+            'body'  => $push_message,
+            'title' => $title,
+            'sound' => 'default',
+        );
+        $load = array(
+            'body'  => $push_message,
+            'title' => $title,
+            'sound' => 'default',
+        );
+        $token = $device_token;
+        $fields = array('to' => $token, 'notification' => $msg, 'data' => $load, "priority" => "high");
+        $serverKey = $serverKey;
+        $headers = [
+            'Authorization:key=' . $serverKey,
+            'Content-Type: application/json',
+        ];
+        #Send Reponse To FireBase Server
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close($ch);
     }
 }

@@ -76,6 +76,39 @@ class HomeController extends Controller
         return view('admin.users', compact('datas','search'));
     }
 
+    /*Get all data of tour archive(4:Archive) */
+    public function TourArchive(Request $request)
+    {
+        $requests = Tour::query();
+        $requests->where('status', 4);/*0:Pending, 1:Active, 3:Delete, 4:Archive*/
+        $search = $request->search ? $request->search : '';
+        
+        if($request->filled('search')){
+            $requests->Where('title', 'LIKE', '%'.$request->search.'%');
+            $requests->orWhere('name', 'LIKE', '%'.$request->search.'%');
+        }
+        
+        $requests->orderBy('id', 'DESC');
+        $datas = $requests->paginate(10);
+        return view('admin.tour-archive', compact('datas','search'));
+    }
+    
+    /*Get all data of virtual tour archive(4:Archive) */
+    public function VirtualTourArchive(Request $request)
+    {
+        $requests = VirtualTour::query();
+        $requests->where('status', 4);/*0:Pending, 1:Active, 3:Delete, 4:Archive*/
+        $search = $request->search ? $request->search : '';
+        
+        if($request->filled('search')){
+            $requests->Where('name', 'LIKE', '%'.$request->search.'%');
+        }
+        
+        $requests->orderBy('id', 'DESC');
+        $datas = $requests->paginate(10);
+        return view('admin.virtual-tour-archive', compact('datas','search'));
+    }
+    
     public function userDetail($id)
     {
         // Decrypt the user ID using the encrypt_decrypt function
@@ -179,11 +212,26 @@ class HomeController extends Controller
         $data = Tour::where('id', $request->id)->update(['status' => 3]);/*3:Delete*/
         return redirect('tours')->with('success', 'Tour deleted successfully');
     }
+    
+    //Archive Tour
+    public function ArchiveTour(Request $request)
+    {
+        //Update status of tour
+        $data = Tour::where('id', $request->id)->update(['status' => 4]);/*4:Archive*/
+        return redirect('tours')->with('success', 'Tour archive successfully');
+    }
 
-    //Delete Virtual Tour
+    //Archive Virtual Tour
     public function DeleteVirtualTour(Request $request)
     {
-        $data = VirtualTour::where('id', $request->id)->update(['status' => 3]);/*0:Pending,1:Approved, 3:Delete*/
+        $data = VirtualTour::where('id', $request->id)->update(['status' => 3]);/*0:Pending,1:Approved, 3:Delete,4:Archive*/
+        return redirect()->back()->with('success', 'Virtual tour archive successfully');
+    }
+    
+    //Delete Virtual Tour
+    public function ArchiveVirtualTour(Request $request)
+    {
+        $data = VirtualTour::where('id', $request->id)->update(['status' => 4]);/*0:Pending,1:Approved, 3:Delete, 4:Archive*/
         return redirect()->back()->with('success', 'Virtual Tour deleted successfully');
     }
 
@@ -658,54 +706,9 @@ class HomeController extends Controller
         }
     }
 
-    /*listing of tour Photo/Video */
-    public function ManagePhotoBooth(Request $request)
-    {
-        try {
-            $requests = BookingPhotoBooth::query();
-            $search = $request->search ? $request->search : '';
-            $booth_id = $request->booth_id ? $request->booth_id : '';
-            $date = $request->date ? $request->date : '';
-            
-            if($request->filled('search')){
-                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
-                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
-            }
+    
 
-            if($request->filled('booth_id')){
-                $requests->where('booth_id', $request->booth_id);
-            }
-
-            if($request->filled('date')){
-                $requests->whereDate('booking_date', '=', $request->date);
-            }
-            $requests->whereIn('status', [0,1]);
-            $requests->orderBy('id', 'DESC');
-            $bookings = $requests->paginate(10);
-            
-            
-            $PhotoBooths = PhotoBooth::orderBy('id', 'DESC')->get();
-            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            
-            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours','search','date','booth_id'));
-        } catch (\Exception $e) {
-            return errorMsg("Exception -> " . $e->getMessage());
-        }
-    }
-
-    /*Add a details of Photo/Video tour*/
-    public function AddPhoto()
-    {
-        try {
-            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();/*Get listing of tour*/
-            $data = null;/*Empty booth data to handle add page*/
-            $images = [];/*Empty Images to handle add page*/
-            $videos = [];/*Empty Videos to handle add page*/
-            return view('admin.add-edit-photo-booth', compact('tours', 'data', 'images', 'videos'));
-        } catch (\Exception $e) {
-            return errorMsg("Exception -> " . $e->getMessage());
-        }
-    }
+    
 
     /*Add a details of Photo/Video tour*/
     public function TaxiBookingRequest(Request $request)
@@ -775,6 +778,55 @@ class HomeController extends Controller
                 ->get();
         }
         return response()->json($users);
+    }
+    
+    /*listing of tour Photo/Video */
+    public function ManagePhotoBooth(Request $request)
+    {
+        try {
+            $requests = BookingPhotoBooth::query();
+            $search = $request->search ? $request->search : '';
+            $booth_id = $request->booth_id ? $request->booth_id : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('booth_id')){
+                $requests->where('booth_id', $request->booth_id);
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('booking_date', '=', $request->date);
+            }
+            $requests->whereIn('status', [0,1]);
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
+            
+            
+            $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            
+            return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours','search','date','booth_id'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+    /*Add a details of Photo/Video tour*/
+    public function AddPhoto()
+    {
+        try {
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();/*Get listing of tour*/
+            $data = null;/*Empty booth data to handle add page*/
+            $images = [];/*Empty Images to handle add page*/
+            $videos = [];/*Empty Videos to handle add page*/
+            return view('admin.add-edit-photo-booth', compact('tours', 'data', 'images', 'videos'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
     }
 
     /*Save Photo Booth*/
@@ -854,6 +906,7 @@ class HomeController extends Controller
                 'price' => 'required',
                 'description' => 'required',
                 'cancellation_policy' => 'required',
+                'delete_days' => 'required',
                 //'image[]' => 'required',
             ]);
 

@@ -70,7 +70,7 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a href="#" class="btn-gr" onclick="exportToCSV(this)"
-                                                            data-id="taxi_booking_requests">Download Data</a>
+                                                            data-id="taxi_booking_requests">Download Excel</a>
                                                     </div>
                                                 </div>
                                             </div>

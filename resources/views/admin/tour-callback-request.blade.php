@@ -47,7 +47,7 @@
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <select class="form-control" name="tour_id" id="tour_id">
-                                                            <option value="">Select Tour</option>
+                                                            <option value="">Select By Tour Name</option>
                                                             @if (!$tours->isEmpty())
                                                                 @foreach ($tours as $tour)
                                                                     <option value="{{ $tour->id }}"
@@ -79,7 +79,7 @@
                                                     <div class="form-group">
                                                         <a id="xport" onclick="exportToCSV(this)"
                                                             data-id="callback-request-table" class="btn-gr">Download
-                                                            report</a>
+                                                            Excel</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -187,7 +187,7 @@
     <script>
         $(document).ready(function() {
             $('#tour_id').select2({
-                placeholder: "Search Tour",
+                placeholder: "Search By Tour Name",
                 allowClear: true // Optional, adds a clear button
             });
         });

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->bigInteger("userid")->nullable();
             $table->string("user_name")->nullable();
             $table->string("status")->nullable();
+            $table->string("transaction_id")->nullable();
             $table->timestamps();
         });
     }

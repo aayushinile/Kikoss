@@ -7,6 +7,8 @@ use App\Models\CallbackRequest;
 use App\Models\Event;
 use App\Models\TourBooking;
 use Illuminate\Http\Request;
+use App\Models\VirtualTour;
+use App\Models\Tour;
 use App\Models\TaxiBookingEvent;
 
 class AjaxController extends Controller
@@ -48,7 +50,7 @@ class AjaxController extends Controller
             $color = '#9C9D9F';
         }elseif($request->datesstatustype == 'Booked Tour'){
             $title = 'Booked Tour';
-            $color = '#4CBA08';
+            $color = '#1d875a';
         }else{
             $title = 'Available';
             $color = '#FFFFFF';
@@ -82,7 +84,7 @@ class AjaxController extends Controller
             $color = '#9C9D9F';
         }elseif($request->datesstatustype == 'Booked Taxi'){
             $title = 'Booked Tour';
-            $color = '#4CBA08';
+            $color = '#1d875a';
         }else{
             $title = 'Available';
             $color = '#FFFFFF';
@@ -104,6 +106,40 @@ class AjaxController extends Controller
                 $user->status = request('status');
                 $user->save();
                 return response()->json(['success' => true, 'message' => 'User status changed successfully']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'something went wrong']);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+    
+    //Restore tour(archive to active(Status:-4 to 1))
+    public function toggleTourStatus()
+    {
+        if (request()->has('tour_id')) {
+            $tour = Tour::find(request('tour_id'));
+            if ($tour) {
+                $tour->status = request('status');
+                $tour->save();
+                return response()->json(['success' => true, 'message' => 'Tour status changed successfully']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'something went wrong']);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+    
+    //Restore Virtual tour(archive to active(Status:-4 to 1))
+    public function toggleVirtualTourStatus()
+    {
+        if (request()->has('tour_id')) {
+            $virtual_tour = VirtualTour::find(request('tour_id'));
+            if ($virtual_tour) {
+                $virtual_tour->status = request('status');
+                $virtual_tour->save();
+                return response()->json(['success' => true, 'message' => 'Virtual Tour status changed successfully']);
             } else {
                 return response()->json(['success' => false, 'message' => 'something went wrong']);
             }

@@ -83,6 +83,7 @@ class PaymentController extends Controller
             $data['status'] = true;
             $data['message'] = 'Link';
             $data['transactionId'] = $transactionId;
+            //$data['response'] = $response;
             $data['data'] = $response->result->links[1]->href;
             return response()->json($data);
         } catch (\Throwable $e) {

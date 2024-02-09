@@ -70,22 +70,34 @@
                 </div>
             </div>
 
-            @if ($PhotoBooths->isEmpty())
-                <tr>
-                    <td colspan="11" class="text-center">
-                        No record found
-                    </td>
-                </tr>
-            @elseif(!$PhotoBooths->isEmpty())
-                @foreach ($PhotoBooths as $val)
-                    <div class="booking-tour-section">
-                        <div id="managevertualtour" class="owl-carousel owl-theme">
+
+            <div class="booking-tour-section">
+                <div id="managevertualtour" class="owl-carousel owl-theme">
+                    @if ($PhotoBooths->isEmpty())
+                        <tr>
+                            <td colspan="11" class="text-center">
+                                No record found
+                            </td>
+                        </tr>
+                    @elseif(!$PhotoBooths->isEmpty())
+                        @foreach ($PhotoBooths as $val)
                             <div class="item">
                                 <div class="kik-request-item-card">
                                     <div class="kik-request-item-card-body">
                                         <div class="request-package-card mb-0">
                                             <div class="request-package-card-media">
-                                                <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                                @php
+                                                    $PhotoBoothMedia = \App\Models\PhotoBoothMedia::where('booth_id', $val->id)
+                                                        ->where('media_type', 'Image')
+                                                        ->first();
+                                                @endphp
+                                                @if ($PhotoBoothMedia)
+                                                    <img
+                                                        src="{{ assets('upload/photo-booth/' . $PhotoBoothMedia->media) }}">
+                                                @else
+                                                    <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                                @endif
+
                                             </div>
                                             <div class="request-package-card-text">
                                                 <h2>{{ $val->TourNameBooth->name }}</h2>
@@ -110,10 +122,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                @endforeach
-            @endif
+                        @endforeach
+                    @endif
+                </div>
+            </div>
 
             <div class="booking-availability-section">
                 <div class="row">
@@ -147,10 +159,10 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <select class="form-control"name="booth_id" id="booth_id">
-                                                                <option>Select Booth Id</option>
+                                                                <option>Select By Photo Booth Name</option>
                                                                 @if (!$PhotoBooths->isEmpty())
                                                                     @foreach ($PhotoBooths as $tour)
                                                                         <option
@@ -162,7 +174,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-2">
                                                         <div class="form-group">
                                                             <input type="date" name="date"
                                                                 value="{{ $date ? $date : '' }}" class="form-control">
@@ -336,7 +348,7 @@
     <script>
         $(document).ready(function() {
             $('#booth_id').select2({
-                placeholder: "Search Photo Booth",
+                placeholder: "Search By Photo Booth Name",
                 allowClear: true // Optional, adds a clear button
             });
         });

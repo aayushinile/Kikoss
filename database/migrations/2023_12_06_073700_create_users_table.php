@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('mobile',255)->nullable();
             $table->string('password',255)->nullable();
             $table->string('status',10)->nullable()->default(1);
+            $table->string('device_token')->nullable();
             $table->integer('type')->default(2)->comment('1:Admin,2:User');
             $table->timestamps();
         });

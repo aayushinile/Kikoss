@@ -24,6 +24,7 @@
             <div class="addVirtualtour-heading">
                 <h3>Upload new tour Photos/Videos</h3>
             </div>
+
             <div class="addVirtualtour-form">
                 <form action="{{ $data ? route('UpdatePhotoBooth') : route('SavePhotoBooth') }}" method="POST"
                     enctype="multipart/form-data" id="add_photobooth">
@@ -257,7 +258,7 @@
                                                                 <div class="uploaded-media">
                                                                     <video controls width="100%" height="110px">
                                                                         <source
-                                                                            src="{{ asset("upload/video-booth/$val->media") }}"
+                                                                            src="{{ asset('upload/video-booth/' . $val->media) }}"
                                                                             type="video/mp4" />
                                                                     </video>
                                                                 </div>
@@ -290,9 +291,11 @@
             </div>
         </div>
     </div>
+
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> --}}
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2.min.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
     <!-------------------- Form Validation -------------------->
     <script>
         $(document).ready(function() {
@@ -349,12 +352,12 @@
                     // Check file size for each uploaded file
                     var isValid = true;
                     var isUploaded = true;
-                    $('.uploadDoc').each(function() {
+                    $('.Image').each(function() {
                         var fileSize = 0;
                         var input = $(this)[0];
                         if (input.files.length > 0) {
                             fileSize = input.files[0].size; // in bytes
-                            if (fileSize > 1024 * 1024) { // 1 MB in bytes
+                            if (fileSize > 1024 * 1024) { // 35 MB in bytes
                                 toastr.error(
                                     'File size must be less than 1 MB for each uploaded file.'
                                 );
@@ -364,17 +367,15 @@
                         } else {
                             isUploaded = false;
                         }
-
-
                     });
 
                     // If all files are valid, proceed with form submission
-                    if (isUploaded == false) {
-                        toastr.error(
-                            'Please select a file before uploading.'
-                        );
-                        return false;
-                    }
+                    // if (isUploaded == false) {
+                    //     toastr.error(
+                    //         'Please select a file before uploading.'
+                    //     );
+                    //     return false;
+                    // }
                     if (isValid) {
                         form.submit();
 
@@ -415,53 +416,42 @@
             }
         });
 
-        // \.,MNBCXZ
-        // document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with the class "add"
-        let elementsWithClass = document.querySelectorAll('.uploadDoc');
 
-        // Add an event listener to each element
-        elementsWithClass.forEach(function(element) {
-            element.addEventListener('change', function(event) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use event delegation to handle change events on dynamically added elements
+            $("#images_container").on('change', '.Image', function(event) {
                 // Your event handling code goes here
-                console.log(event);
                 const file = event.target.files[0];
-
                 const imgURL = URL.createObjectURL(file);
 
-                let label = document.querySelector(`[for="${element.getAttribute("id")}"]`);
-                console.log(label);
-                if (element.classList.contains("video")) {
-                    label.innerHTML = `<div class="uploaded-media-card">
-                                                            <div class="uploaded-media">
-                                                                <video controls width="100%" height="110px">
-                                                                    <source
-                                                                        src="${imgURL}"
-                                                                        type="video/mp4" />
-                                                                </video>
-                                                            </div>
-                                                            <div class="uploaded-action">
-                                                                <a href="#"><i class="las la-trash"></i></a>
-                                                            </div>
-                                                        </div>`;
+                let label = $(event.target).closest('.upload-file').find('label');
+                label.css('backgroundImage', `url("${imgURL}")`);
+                label.css('backgroundPosition', 'center');
+                label.css('backgroundSize', 'cover');
 
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.display = "none";
-                } else {
-                    label.style.backgroundImage = `url("${imgURL}")`;
-                    label.style.backgroundPosition = 'center';
-                    label.style.backgroundSize = 'cover';
-
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.opacity = 0;
-                }
-
+                var op = label.find(".upload-file-item");
+                op.css('opacity', 0);
             });
+            $("#videos_container").on('change', '.video', function(event) {
+                const file = event.target.files[0];
+                const videoURL = URL.createObjectURL(file);
+
+                let label = $(event.target).closest('.upload-file').find('label');
+                label.empty(); // Clear any existing content
+
+                // Create a video element and set its attributes
+                const videoElement = $('<video controls width="100%" height="110px"></video>');
+                videoElement.append(`<source src="${videoURL}" type="video/mp4" />`);
+
+                // Append the video element to the label
+                label.append(videoElement);
+
+                var op = label.find(".upload-file-item");
+                op.css('opacity', 0);
+            });
+
         });
 
-
-
-        // });
 
 
         var imgCount = 1;
@@ -470,24 +460,23 @@
             imgCount += 1;
             $("#images_container").html($("#images_container").html() +
                 `<div class="col-md-3 p-2">
-                    <div class="upload-form-group">
-                        <div class="upload-file">
-                            <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
-                                id="addfile${imgCount}" class="uploadDoc addDoc">
-                            <label for="addfile${imgCount}">
-                                <div class="upload-file-item">
-                                    <div class="upload-media">
-                                        <img id="image_addfile${imgCount}"
-                                            src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                    </div>
-                                    <div class="upload-text">
-                                        <span>Browse & Upload File</span>
-                                    </div>
-                                </div>
-                            </label>
+        <div class="upload-form-group">
+            <div class="upload-file">
+                <input type="file" name="image[]" accept=".jpg,.jpeg,.png" id="addfile${imgCount}"
+                    class="uploadDoc addDoc Image">
+                <label for="addfile${imgCount}">
+                    <div class="upload-file-item">
+                        <div class="upload-media">
+                            <img id="image_addfile${imgCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                        </div>
+                        <div class="upload-text">
+                            <span>Browse & Upload File</span>
                         </div>
                     </div>
-                </div>`
+                </label>
+            </div>
+        </div>
+    </div>`
             );
         }
         var viCount = 1;
@@ -496,26 +485,26 @@
             viCount += 1;
             $("#videos_container").html($("#videos_container").html() +
                 `<div class="col-md-3 p-2">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="video[]" accept=".mp4,.clv,.wav"
-                                                        id="addvideo${viCount}" class="uploadDoc video  addDoc">
-                                                    <label for="addvideo${viCount}">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img id="video_addvideo${viCount}"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
+        <div class="upload-form-group">
+            <div class="upload-file">
+                <input type="file" name="video[]" accept=".mp4,.clv,.wav" id="addvideo${viCount}"
+                    class="uploadDoc video  addDoc">
+                <label for="addvideo${viCount}">
+                    <div class="upload-file-item">
+                        <div class="upload-media">
+                            <img id="video_addvideo${viCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                        </div>
+                        <div class="upload-text">
+                            <span>Browse & Upload File</span>
+                        </div>
+                    </div>
 
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>`
+                </label>
+            </div>
+        </div>
+    </div>`
             );
         }
     </script>
+
 @endsection
