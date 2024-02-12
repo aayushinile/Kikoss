@@ -22,8 +22,8 @@ return new class extends Migration
             $table->text('short_description');
             $table->text('description');
             $table->float('price')->nullable();
-            $table->string('cencellation_policy',500)->nullable();
-            $table->string('status',10)->nullable();
+            $table->text('cencellation_policy')->nullable();
+            $table->string('status',10)->nullable()->comment('0:Pending,1:Approved, 3:Delete, 4:Archive');
             $table->timestamps();
         });
     }

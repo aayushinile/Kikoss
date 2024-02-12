@@ -49,12 +49,11 @@ class PaymentController extends Controller
     // }
     public function pay(Request $request)
     {
-        $amount = '0.01';
+        $amount = $request->amount;
         $successUrl = route('success.payment'); // Replace 'success.payment' with your actual route name for success
         $cancelUrl = route('cancel.payment'); // Replace 'cancel.payment' with your actual route name for cancellation
-        $id = 'Ac6Sapkr7ApbZpnLER0ytdRQ93YqciynMkqRO5ElvG_OIAi4hw8nvzOtReAUjvOn8jlLi1Y4MdUrFqdb';
-        $id_2 = 'EIfNdYHhtJwfAcm2j4_Oft4sXaIFfYGB0dVlmUW6hwEqSLJ_O_nzwW5DuxYZYxvDveJv8VOh-z-sSA2M';
-        $environment = new SandboxEnvironment($id,$id_2);
+
+        $environment = new SandboxEnvironment(env('PAYPAL_CLIENT_ID'), env('PAYPAL_SECRET'));
         $client = new PayPalHttpClient($environment);
 
         $request = new OrdersCreateRequest();
@@ -81,6 +80,7 @@ class PaymentController extends Controller
 
             // Append transaction ID to success URL
             $successUrl .= '?transaction_id=' . $transactionId;
+            //Log::info('Success URL: ' . $successUrl); // Log the success URL
 
             $data['status'] = true;
             $data['message'] = 'Link';
@@ -121,7 +121,6 @@ class PaymentController extends Controller
             dd($e);
         }
     }
-
 
 
 

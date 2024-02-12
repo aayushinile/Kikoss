@@ -8,7 +8,7 @@
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
-        <h4>Tour Free Callback Request</h4>
+        <h4>Free Callback Request</h4>
     </div>
     <div class="body-main-content">
 
@@ -20,7 +20,7 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <div class="mr-auto">
-                                    <h4 class="heading-title">Tour Free Callback Requests</h4>
+                                    <h4 class="heading-title">Free Callback Requests</h4>
                                 </div>
                                 <div class="btn-option-info wd8">
                                     <div class="search-filter">
@@ -46,18 +46,20 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <select class="form-control"name="tour_id">
-                                                            <option value="">Select Tour</option>
+                                                        <select class="form-control" name="tour_id" id="tour_id">
+                                                            <option value="">Select By Tour Name</option>
                                                             @if (!$tours->isEmpty())
                                                                 @foreach ($tours as $tour)
                                                                     <option value="{{ $tour->id }}"
-                                                                        @if ($tour->id == $tour_id) selected='selected' @else @endif>
-                                                                        {{ $tour->name }}</option>
+                                                                        @if ($tour->id == $tour_id) selected='selected' @endif>
+                                                                        {{ $tour->name }}
+                                                                    </option>
                                                                 @endforeach
                                                             @endif
                                                         </select>
                                                     </div>
                                                 </div>
+
 
                                                 <div class="col-md-2">
                                                     <div class="form-group">
@@ -77,7 +79,7 @@
                                                     <div class="form-group">
                                                         <a id="xport" onclick="exportToCSV(this)"
                                                             data-id="callback-request-table" class="btn-gr">Download
-                                                            report</a>
+                                                            Excel</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -98,7 +100,8 @@
                                             <th>Duration</th>
                                             <th>Tour Book Date & Time</th>
                                             <th>Read Status</th>
-                                            <th>Request Message</th>
+                                            {{-- <th>Request Message</th> --}}
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -136,10 +139,14 @@
                                                             </div>
                                                         </div>
                                                     </td>
+                                                    {{-- <td>{{ substr($val->note, 0, 30) }}<a class="infoRequestMessage"
+                                                            data-bs-toggle="modal"
+                                                            href="#infoRequestMessage"onclick='GetData("{{ $val->note }}")'
+                                                            role="button"><i class="las la-info-circle"></i></a></td> --}}
                                                     <td>{{ substr($val->note, 0, 30) }}<a class="infoRequestMessage"
                                                             data-bs-toggle="modal"
                                                             href="#infoRequestMessage"onclick='GetData("{{ $val->note }}")'
-                                                            role="button"><i class="las la-info-circle"></i></a></td>
+                                                            role="button"><i class="las la-eye"></i></a></td>
                                                 </tr>
                                                 <?php $s_no++; ?>
                                             @endforeach
@@ -165,15 +172,28 @@
                     <div class="iot-modal-form">
                         <h3>Request Message</h3>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        <div class="infoRequestMessage-card">
-                            <p id="message">
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2_one.min.css') }}">
+    <!-- Include Select2 JS -->
+    <script src="{{ assets('assets/admin-js/select2_one.min.js') }}" type="text/javascript"></script>
+
+    <!-- Initialize Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id').select2({
+                placeholder: "Search By Tour Name",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+
+
     <!-------------------- Append Free Callback Request -------------------->
     <script>
         function GetData(message) {
@@ -181,6 +201,7 @@
                 message;
         }
     </script>
+
     {{-- Live Search of callback request --}}
     <script>
         $(document).ready(function() {

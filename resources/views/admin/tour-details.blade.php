@@ -34,6 +34,8 @@
         <h4>Manage Tour</h4>
         <div class="page-breadcrumb-action">
             <a href="{{ url('tours') }}" class="wh-btn">Back</a>
+            <a href="#" class="wh-btn"data-bs-toggle="modal" data-bs-target="#archivepopup"
+                onclick='GetDataArchive("{{ $data->id }}","{{ $data->title }}")'>Archive</a>
             <a href="#" class="wh-btn"data-bs-toggle="modal" data-bs-target="#deletepopup"
                 onclick='GetData("{{ $data->id }}","{{ $data->title }}")'>Delete</a>
             <a href="{{ url('edit-tour/' . encrypt_decrypt('encrypt', $data->id)) }}" class="wh-btn">Edit Tour</a>
@@ -89,6 +91,7 @@
             </div>
         </div>
     </div>
+
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -100,7 +103,7 @@
                             <div class="kik-modal-delete-icon">
                                 <img src="{{ assets('assets/admin-images/delete-icon.svg') }}">
                             </div>
-                            <h3>Are You sure you want to delete?</h3>
+                            <h3>Are you sure you want to delete?</h3>
                             <h4 id="Name"></h4>
                             <div class="kik-modal-action">
                                 <form action="{{ route('DeleteTour') }}" method="POST">
@@ -117,12 +120,47 @@
             </div>
         </div>
     </div>
+    <!-- Archive popup -->
+    <div class="modal kik-modal fade" id="archivepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/archive.svg') }}">
+                            </div>
+                            <h3>Are you sure you want to archive?</h3>
+                            <h4 id="NameArchive"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('ArchiveTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="tour_idArchive">
+                                    <button class="yesbtn"type="submit">Yes Confirm Archive</button>
+                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
             document.getElementById("Name").innerText =
                 Name;
             document.getElementById("tour_id").value = IDS;
+        }
+
+        function GetDataArchive(IDS, Name) {
+            document.getElementById("NameArchive").innerText =
+                Name;
+            document.getElementById("tour_idArchive").value = IDS;
         }
     </script>
 @endsection

@@ -4,6 +4,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/public
 .env
 .env.backup
 .env.production
@@ -16,3 +17,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+app_kikos.zip
+kikos.zip

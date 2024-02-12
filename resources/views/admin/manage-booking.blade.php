@@ -140,7 +140,8 @@
                                                             </div>
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <select class="form-control"name="tour_id">
+                                                                    <select class="form-control"name="tour_id"
+                                                                        id="tour_id_pending">
                                                                         <option value="">Select Tour</option>
                                                                         @if (!$tours->isEmpty())
                                                                             @foreach ($tours as $tour)
@@ -214,7 +215,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestPending"
-                                                                            onclick='accept_tour("{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
+                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -267,7 +268,8 @@
                                                             </div>
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <select class="form-control"name="tour_id">
+                                                                    <select class="form-control"name="tour_id"
+                                                                        id="tour_id_accepted">
                                                                         <option value="">Select Tour</option>
                                                                         @if (!$tours->isEmpty())
                                                                             @foreach ($tours as $tour)
@@ -341,7 +343,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestAccepted"
-                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
+                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -394,7 +396,8 @@
                                                             </div>
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <select class="form-control"name="tour_id">
+                                                                    <select class="form-control"name="tour_id"
+                                                                        id="tour_id_rejected">
                                                                         <option value="">Select Tour</option>
                                                                         @if (!$tours->isEmpty())
                                                                             @foreach ($tours as $tour)
@@ -469,7 +472,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestRejected"
-                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'
+                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -525,7 +528,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
-                                <div class="request-id-text">Booking ID:<span id="TourID"></span></div>
+                                <div class="request-id-text">Booking ID:<span id="Booking_id"></span></div>
                                 <div class="request-status-text"><i class="las la-hourglass-start"></i> Pending
                                     for
                                     Approval</div>
@@ -593,7 +596,7 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Transaction ID</h3>
-                                                <h4>76375873874</h4>
+                                                <h4 id="transaction_id"></h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -619,6 +622,7 @@
             </div>
         </div>
     </div>
+
     <!-- View Booking popup of Accepted-->
     <div class="modal kik-modal fade" id="BookingRequestAccepted" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -630,7 +634,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
-                                <div class="request-id-text">Booking ID:<span id="TourID"></span></div>
+                                <div class="request-id-text">Booking ID:<span id="TourIDAccepted"></span></div>
                                 <div class="request-status-text"><i class="las la-hourglass-start"></i>Accepted</div>
                             </div>
                             <div class="kik-request-item-card-body">
@@ -639,7 +643,7 @@
                                         <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
                                     </div>
                                     <div class="request-package-card-text">
-                                        <h2 id="title"></h2>
+                                        <h2 id="titleAccepted"></h2>
                                         <p><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                 viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -673,7 +677,7 @@
                                                     d="M12 17.0625H6C3.2625 17.0625 1.6875 15.4875 1.6875 12.75V6.375C1.6875 3.6375 3.2625 2.0625 6 2.0625H12C14.7375 2.0625 16.3125 3.6375 16.3125 6.375V12.75C16.3125 15.4875 14.7375 17.0625 12 17.0625ZM6 3.1875C3.855 3.1875 2.8125 4.23 2.8125 6.375V12.75C2.8125 14.895 3.855 15.9375 6 15.9375H12C14.145 15.9375 15.1875 14.895 15.1875 12.75V6.375C15.1875 4.23 14.145 3.1875 12 3.1875H6Z"
                                                     fill="#3DA1E3" />
                                             </svg>
-                                            <span id="booking_date">
+                                            <span id="booking_dateAccepted">
                                             </span>
                                         </p>
                                         <div class="duration-time-text">
@@ -686,7 +690,7 @@
                                                     d="M11.7825 12.4476C11.685 12.4476 11.5875 12.4251 11.4975 12.3651L9.17248 10.9776C8.59498 10.6326 8.16748 9.87507 8.16748 9.20757V6.13257C8.16748 5.82507 8.42248 5.57007 8.72998 5.57007C9.03748 5.57007 9.29248 5.82507 9.29248 6.13257V9.20757C9.29248 9.47757 9.51748 9.87507 9.74998 10.0101L12.075 11.3976C12.345 11.5551 12.4275 11.9001 12.27 12.1701C12.1575 12.3501 11.97 12.4476 11.7825 12.4476Z"
                                                     fill="#3DA1E3" />
                                             </svg>
-                                            <span id="duration">
+                                            <span id="durationAccepted">
                                             </span>
                                         </div>
                                     </div>
@@ -696,20 +700,20 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Transaction ID</h3>
-                                                <h4>76375873874</h4>
+                                                <h4 id="transaction_idAccepted"></h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Amount Recieved On</h3>
-                                                <h4>03 Sep, 2023, 09:33:12 am</h4>
+                                                <h4 id="created_dateAccepted"></h4>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="kik-request-item-card-foot">
-                                <div class="request-price-text">Amount Paid:<span id="total_amount"></span></div>
+                                <div class="request-price-text">Amount Paid:<span id="total_amountAccepted"></span></div>
                                 <div class="request-cancellation-btn">
                                     <input type="hidden" value="" name="tour_id" id="tour_id">
                                     <a class="acceptbtn"id="acceptbtn">Accepted</a>
@@ -721,6 +725,7 @@
             </div>
         </div>
     </div>
+
     <!-- View Booking popup of Rejected -->
     <div class="modal kik-modal fade" id="BookingRequestRejected" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -798,7 +803,7 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Transaction ID</h3>
-                                                <h4>76375873874</h4>
+                                                <h4 id="transaction_idRejected"></h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -918,6 +923,18 @@
                     '/get-events',
                 ],
                 eventRender: function(event, element) {
+                    // Check if event has color defined
+                    if (event.color) {
+                        // Get the date of the event
+                        var eventDate = moment(event.start).format('YYYY-MM-DD');
+
+                        // Find the cell corresponding to the event date
+                        var cell = $('.fc-day[data-date="' + eventDate + '"]');
+
+                        // Set the background color of the cell
+                        cell.css('background-color', event.color);
+                    }
+
                     // Empty the content before appending new data
                     element.empty();
 
@@ -925,18 +942,6 @@
                     if (event.description) {
                         // Append the event description
                         element.append("<br/>" + event.description);
-                    }
-                },
-                dayRender: function(date, cell) {
-                    // Check if there are events on this date
-                    var eventsOnThisDate = $('#calendar').fullCalendar('clientEvents', function(event) {
-                        // Check if the start date of the event matches the current date
-                        return event.start.isSame(date, 'day');
-                    });
-
-                    // If there are events, set the background color
-                    if (eventsOnThisDate.length > 0) {
-                        cell.css('background-color', 'red'); // Set your desired background color
                     }
                 },
                 dayClick: function(date, jsEvent, view) {
@@ -963,6 +968,39 @@
         });
     </script>
 
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2_one.min.css') }}">
+    <!-- Include Select2 JS -->
+    <script src="{{ assets('assets/admin-js/select2_one.min.js') }}" type="text/javascript"></script>
+
+    <!-- Initialize Select2 for pending dropdown -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id_pending').select2({
+                placeholder: "Search By Tour Name",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+    <!-- Initialize Select2 for Accepted dropdown -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id_accepted').select2({
+                placeholder: "Search By Tour Name",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+    <!-- Initialize Select2 for Rejected dropdown -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id_rejected').select2({
+                placeholder: "Search By Tour Name",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
@@ -974,7 +1012,7 @@
 
     <!-------------------- Append Accepted-Rejected Popup-Jquery -------------------->
     <script>
-        function accept_tour(tour_id, title, booking_date, duration, total_amount) {
+        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -991,19 +1029,21 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
-            var created_date = booking_date;
-            var booking_date = 'Selected Date: ' + booking_date;
+            // Date formate
+            var created_date = formatDate(booking_date);
+            var booking_date = 'Selected Date: ' + created_date;
 
             document.getElementById("title").innerText =
                 title;
             document.getElementById("tour_id").value = tour_id;
-            document.getElementById("TourID").innerText =
-                tour_id;
+            document.getElementById("Booking_id").innerText =
+                booking_id;
             document.getElementById("created_date").innerText = created_date;
 
             document.getElementById("booking_date").innerText = booking_date;
             document.getElementById(
                 "duration").innerText = duration;
+            document.getElementById("transaction_id").innerText = transaction_id;
             document.getElementById("total_amount").innerText = total_amount;
             var url = document.getElementById("rejectbtn");
             url.href = reject_url;
@@ -1019,7 +1059,8 @@
             // $('.mix-2').append(imageElement);
         }
 
-        function accepted_tour(tour_id, title, booking_date, duration, total_amount) {
+        function accepted_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
+
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -1027,33 +1068,21 @@
             // }
 
             var total_amount = '$' + total_amount;
-            currentURL = window.location.href;
-            // Remove the "manage-booking" part
-            var base_url = currentURL.replace('/manage-booking', '');
-
-            var reject_url = base_url + '/reject-tour-booking/' + tour_id;
-            /*URL for reject booking , append on reject button*/
-            var accept_url = base_url + '/accept-tour-booking/' + tour_id;
-            /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
-            var created_date = booking_date;
-            var booking_date = 'Selected Date: ' + booking_date;
-            document.getElementById("title").innerText =
-                title;
-            document.getElementById("tour_id").value = tour_id;
 
-            document.getElementById("TourID").innerText =
-                tour_id;
+            // Date formate
+            var created_date = formatDate(booking_date);
+            var booking_date = 'Selected Date: ' + created_date;
+            document.getElementById("titleAccepted").innerText = title;
+            // document.getElementById("tour_idAccepted").value = tour_id;
 
-            document.getElementById("created_date").innerText = created_date;
-            document.getElementById("booking_date").innerText = booking_date;
-            document.getElementById(
-                "duration").innerText = duration;
-            document.getElementById("total_amount").innerText = total_amount;
-            var url = document.getElementById("rejectbtn");
-            url.href = reject_url;
-            var url_accept = document.getElementById("acceptbtn");
-            url_accept.href = accept_url;
+            document.getElementById("TourIDAccepted").innerText = booking_id;
+
+            document.getElementById("created_dateAccepted").innerText = created_date;
+            document.getElementById("booking_dateAccepted").innerText = booking_date;
+            document.getElementById("durationAccepted").innerText = duration;
+            document.getElementById("transaction_idAccepted").innerText = transaction_id;
+            document.getElementById("total_amountAccepted").innerText = total_amount;
 
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
@@ -1064,7 +1093,7 @@
             // $('.mix-2').append(imageElement);
         }
 
-        function rejected_tour(tour_id, title, booking_date, duration, total_amount) {
+        function rejected_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
 
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
@@ -1073,31 +1102,17 @@
             // }
 
             var total_amount = '$' + total_amount;
-            currentURL = window.location.href;
-            // Remove the "manage-booking" part
-            var base_url = currentURL.replace('/manage-booking', '');
-
-            var reject_url = base_url + '/reject-tour-booking/' + tour_id;
-            /*URL for reject booking , append on reject button*/
-            var accept_url = base_url + '/accept-tour-booking/' + tour_id;
-            /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
-            var created_date = booking_date;
-            var booking_date = 'Selected Date: ' + booking_date;
-            document.getElementById("titleRejected").innerText =
-                title;
-            document.getElementById("tour_idRejected").value = tour_id;
-            document.getElementById("TourIDRejected").innerText =
-                tour_id;
-
+            // Date formate
+            var created_date = formatDate(booking_date);
+            var booking_date = 'Selected Date: ' + created_date;
+            document.getElementById("titleRejected").innerText = title;
+            document.getElementById("TourIDRejected").innerText = booking_id;
             document.getElementById("created_dateRejected").innerText = created_date;
             document.getElementById("booking_dateRejected").innerText = booking_date;
             document.getElementById("durationRejected").innerText = duration;
+            document.getElementById("transaction_idRejected").innerText = transaction_id;
             document.getElementById("total_amountRejected").innerText = total_amount;
-            var url = document.getElementById("rejectbtn");
-            url.href = reject_url;
-            var url_accept = document.getElementById("acceptbtn");
-            url_accept.href = accept_url;
 
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
@@ -1107,6 +1122,24 @@
             // });
             // $('.mix-2').append(imageElement);
         }
+
+        function formatDate(dateString) {
+            // Create a Date object from the input string
+            var date = new Date(dateString);
+
+            // Options for formatting the date
+            var options = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            };
+
+            // Format the date using the toLocaleDateString method
+            var formattedDate = date.toLocaleDateString('en-US', options);
+
+            return formattedDate;
+        }
     </script>
+
 
 @endsection

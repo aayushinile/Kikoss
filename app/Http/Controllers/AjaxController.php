@@ -8,6 +8,10 @@ use App\Models\Event;
 use App\Models\TourBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\VirtualTour;
+use App\Models\Tour;
+use App\Models\TaxiBookingEvent;
+
 class AjaxController extends Controller
 {
     public function privacy_policy()
@@ -31,12 +35,7 @@ class AjaxController extends Controller
         $events = Event::all();
         return response()->json($events);
     }
-    public function getEventsSet2()
-    {
-        //$eventsSet2 = TourBooking::where('tour_type',1)->where('status',1)->get();
-        return response()->json($eventsSet2);
-    }
-
+    
     public function addEvent(Request $request)
     {
         //dd($request->all());
@@ -53,7 +52,7 @@ class AjaxController extends Controller
             $color = '#9C9D9F';
         }elseif($request->datesstatustype == 'Booked Tour'){
             $title = 'Booked Tour';
-            $color = '#4CBA08';
+            $color = '#1d875a';
         }else{
             $title = 'Available';
             $color = '#FFFFFF';
@@ -61,6 +60,40 @@ class AjaxController extends Controller
         $event = new Event;
         $event->title = $title;
         $event->start = $request->start;
+        $event->color = $color;
+        $event->save();
+
+        return response()->json($event);
+    }
+    
+    public function getEventsSet2()
+    {
+        //$eventsSet2 = TourBooking::where('tour_type',1)->where('status',1)->get();
+        return response()->json($eventsSet2);
+    }
+    
+    public function getTaxiBookingEvent()
+    {
+        $events = TaxiBookingEvent::all();
+        return response()->json($events);
+    }
+    
+    public function addTaxiBookingEvent(Request $request)
+    {
+        if($request->datesstatustype == 'Not Available')
+        {
+            $title = 'Not Available';
+            $color = '#9C9D9F';
+        }elseif($request->datesstatustype == 'Booked Taxi'){
+            $title = 'Booked Tour';
+            $color = '#1d875a';
+        }else{
+            $title = 'Available';
+            $color = '#FFFFFF';
+        }
+        $event = new TaxiBookingEvent;
+        $event->title = $title;
+        $event->date = $request->date;
         $event->color = $color;
         $event->save();
 
@@ -75,6 +108,40 @@ class AjaxController extends Controller
                 $user->status = request('status');
                 $user->save();
                 return response()->json(['success' => true, 'message' => 'User status changed successfully']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'something went wrong']);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+    
+    //Restore tour(archive to active(Status:-4 to 1))
+    public function toggleTourStatus()
+    {
+        if (request()->has('tour_id')) {
+            $tour = Tour::find(request('tour_id'));
+            if ($tour) {
+                $tour->status = request('status');
+                $tour->save();
+                return response()->json(['success' => true, 'message' => 'Tour status changed successfully']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'something went wrong']);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+    
+    //Restore Virtual tour(archive to active(Status:-4 to 1))
+    public function toggleVirtualTourStatus()
+    {
+        if (request()->has('tour_id')) {
+            $virtual_tour = VirtualTour::find(request('tour_id'));
+            if ($virtual_tour) {
+                $virtual_tour->status = request('status');
+                $virtual_tour->save();
+                return response()->json(['success' => true, 'message' => 'Virtual Tour status changed successfully']);
             } else {
                 return response()->json(['success' => false, 'message' => 'something went wrong']);
             }

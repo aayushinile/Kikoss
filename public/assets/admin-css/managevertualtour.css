@@ -196,3 +196,47 @@ button.btn-gr {
     font-weight: bold;
     text-align: center;
 }
+
+.managevertualtour-card-head {
+    padding: 1rem;
+    position: relative;
+}
+
+.managevertualtour-card-head h3 {
+    color: var(--Black, #1F191C);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    padding: 0;
+    margin: 0 0 0 0;
+}
+
+.managevertualtour-card-audio {
+    padding: 1rem;
+}
+
+.managevertualtour-item-audio h3 {
+    color: var(--Black, #1F191C);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    padding: 0;
+    margin: 0 0 5px 0;
+}
+
+.VirtualImage-item {
+    width: 100%;
+    position: relative;
+    height: 230px;
+    overflow: hidden;
+}
+
+.VirtualImage-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

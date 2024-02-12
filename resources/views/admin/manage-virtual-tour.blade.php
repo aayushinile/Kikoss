@@ -77,24 +77,36 @@
                         @foreach ($tours as $val)
                             <div class="item">
                                 <div class="managevertualtour-card">
-                                    <div class="managevertualtour-card-media manage-tour-card-media">
+                                    <div class="managevertualtour-card-head">
+                                        <h3>{{ $val->name ?? '' }}</h3>
+                                    </div>
+                                    <div class="VirtualImage-item">
                                         <img src="{{ assets('upload/virtual-thumbnail/' . $val->thumbnail_file) }}">
                                     </div>
+
                                     <div class="managevertualtour-card-audio">
-                                        <audio width="100%" controls>
-                                            <source src="{{ assets('upload/virtual-audio/' . $val->audio_file) }}"
-                                                type="audio/mpeg">
-                                            Your browser does not support the audio tag.
-                                        </audio>
-                                        <audio width="100%" controls>
-                                            <source src="{{ assets('upload/virtual-audio/' . $val->trial_audio_file) }}"
-                                                type="audio/mpeg">
-                                            Your browser does not support the audio tag.
-                                        </audio>
+                                        <div class="managevertualtour-item-audio">
+                                            <h3> Trial Virtual Audio File</h3>
+                                            <audio width="100%" controls>
+                                                <source src="{{ assets('upload/virtual-audio/' . $val->audio_file) }}"
+                                                    type="audio/mpeg">
+                                                Your browser does not support the audio tag.
+                                            </audio>
+                                        </div>
+                                        <div class="managevertualtour-item-audio">
+                                            <h3> Virtual Audio File</h3>
+
+                                            <audio width="100%" controls>
+                                                <source
+                                                    src="{{ assets('upload/virtual-audio/' . $val->trial_audio_file) }}"
+                                                    type="audio/mpeg">
+                                                Your browser does not support the audio tag.
+                                            </audio>
+                                        </div>
                                     </div>
                                     <div class="managevertualtour-card-content">
                                         <div class="managevertualtour-card-text">
-                                            <h3>{{ $val->name ?? '' }}</h3>
+                                            {{-- <h3>{{ $val->name ?? '' }}</h3> --}}
                                             <p>{{ substr($val->description, 0, 130) ?? '' }}...</p>
                                             <div class="price-text">Price: ${{ $val->price ?? '' }}</div>
                                         </div>
@@ -105,6 +117,9 @@
                                             <a class="edit-btn"
                                                 href="{{ url('edit-virtual-tour/' . encrypt_decrypt('encrypt', $val->id)) }}">Edit
                                                 Tour</a>
+                                            <a class="delete-btn" href=""data-bs-toggle="modal"
+                                                data-bs-target="#Archivepopup"
+                                                onclick='GetDataArchive("{{ $val->id }}","{{ $val->name }}")'>Archive</a>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +163,7 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <select class="form-control"name="tour_id">
+                                                            <select class="form-control"name="tour_id" id="tour_id">
                                                                 <option value="">Select Virtual Tour</option>
                                                                 @if (!$virtual_tours->isEmpty())
                                                                     @foreach ($virtual_tours as $tour)
@@ -255,6 +270,7 @@
             </div>
         </div>
     </div>
+
     <!-- price Info -->
     <div class="modal kik-modal fade" id="infoprice" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -295,6 +311,7 @@
             </div>
         </div>
     </div>
+
     <!-- delete popup -->
     <div class="modal kik-modal fade" id="deletepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -323,12 +340,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Archive popup -->
+    <div class="modal kik-modal fade" id="Archivepopup" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="iot-modal-delete-form">
+                        <div class="kik-modal-delete-card">
+                            <div class="kik-modal-delete-icon">
+                                <img src="{{ assets('assets/admin-images/archive.svg') }}">
+                            </div>
+                            <h3>Are you sure you want to archive?</h3>
+                            <h4 id="NameArchive"></h4>
+                            <div class="kik-modal-action">
+                                <form action="{{ route('ArchiveVirtualTour') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" value="" name="id" id="virtualId">
+                                    <button class="yesbtn"type="submit">Yes Confirm Archive</button>
+                                    <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
+                                        aria-label="Close"onClick="window.location.reload();">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2_one.min.css') }}">
+    <!-- Include Select2 JS -->
+    <script src="{{ assets('assets/admin-js/select2_one.min.js') }}" type="text/javascript"></script>
+
+    <!-- Initialize Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#tour_id').select2({
+                placeholder: "Search By Virtual Tour Name",
+                allowClear: true // Optional, adds a clear button
+            });
+        });
+    </script>
+
     <!-------------------- Append delete Popup Jquery -------------------->
     <script>
         function GetData(IDS, Name) {
             document.getElementById("Name").innerText =
                 Name;
             document.getElementById("photo_booth_id").value = IDS;
+        }
+
+        function GetDataArchive(IDS, Name) {
+            document.getElementById("NameArchive").innerText =
+                Name;
+            document.getElementById("virtualId").value = IDS;
         }
 
         function GetDataPrice(price) {

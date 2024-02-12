@@ -24,6 +24,7 @@
             <div class="addVirtualtour-heading">
                 <h3>Upload new tour Photos/Videos</h3>
             </div>
+
             <div class="addVirtualtour-form">
                 <form action="{{ $data ? route('UpdatePhotoBooth') : route('SavePhotoBooth') }}" method="POST"
                     enctype="multipart/form-data" id="add_photobooth">
@@ -210,89 +211,135 @@
                                 </h4>
                                 <div class="create-review-form-input">
                                     <div class="row" id="images_container">
-                                        @foreach ($images as $val)
+                                        @if ($data)
+                                            @foreach ($images as $val)
+                                                <div class="col-md-3 p-2">
+                                                    <div class="upload-form-group">
+                                                        <div class="upload-file">
+                                                            <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
+                                                                id="addfile1" class="uploadDoc addDoc">
+                                                            <label for="addfile1">
+                                                                <div class="uploaded-media-card">
+                                                                    <div class="uploaded-media">
+                                                                        <img
+                                                                            src="{{ assets('upload/photo-booth/' . $val->media) }}">
+                                                                    </div>
+                                                                    <div class="uploaded-action">
+                                                                        <a
+                                                                            href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                                class="las la-trash"></i></a>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
                                             <div class="col-md-3 p-2">
                                                 <div class="upload-form-group">
                                                     <div class="upload-file">
                                                         <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
-                                                            id="addfile1" class="uploadDoc addDoc">
-                                                        <label for="addfile1">
-                                                            <div class="uploaded-media-card">
-                                                                <div class="uploaded-media">
-                                                                    <img
-                                                                        src="{{ assets('upload/photo-booth/' . $val->media) }}">
+                                                            id="addfile" class="uploadDoc addDoc Image"required>
+                                                        <label for="addfile">
+                                                            <div class="upload-file-item">
+                                                                <div class="upload-media">
+                                                                    <img id="image_addfile"
+                                                                        src="{{ asset('assets/admin-images/upload-icon.svg') }}">
                                                                 </div>
-                                                                <div class="uploaded-action">
-                                                                    <a
-                                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
-                                                                            class="las la-trash"></i></a>
+                                                                <div class="upload-text">
+                                                                    <span>Browse & Upload File</span>
                                                                 </div>
                                                             </div>
                                                         </label>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload Videos <a class="addmorefile" onclick="addVideoBox()"><img
-                                            src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
-                                </h4>
-                                <div class="create-review-form-input">
-                                    <div class="row" id="videos_container">
-                                        @foreach ($videos as $val)
-                                            <div class="col-md-3 p-2">
-                                                <div class="upload-form-group">
-                                                    <div class="upload-file">
-                                                        <input type="file" name="video[]" accept=".mp4,.clv,.wav"
-                                                            id="addvideo1" class="uploadDoc video  addDoc">
-                                                        <label for="addvideo1">
+                            <div class="col-md-12">
+                                <div class="create-review-form-group form-group">
+                                    <h4>Browse & Upload Videos <a class="addmorefile" onclick="addVideoBox()"><img
+                                                src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
+                                    </h4>
+                                    <div class="create-review-form-input">
+                                        <div class="row" id="videos_container">
+                                            @if ($data)
+                                                @foreach ($videos as $val)
+                                                    <div class="col-md-3 p-2">
+                                                        <div class="upload-form-group">
+                                                            <div class="upload-file">
+                                                                <input type="file" name="video[]"
+                                                                    accept=".mp4,.clv,.wav" id="addvideo1"
+                                                                    class="uploadDoc video  addDoc">
+                                                                <label for="addvideo1">
 
-                                                            <div class="uploaded-media-card">
-                                                                <div class="uploaded-media">
-                                                                    <video controls width="100%" height="110px">
-                                                                        <source
-                                                                            src="{{ asset("upload/video-booth/$val->media") }}"
-                                                                            type="video/mp4" />
-                                                                    </video>
-                                                                </div>
-                                                                <div class="uploaded-action">
-                                                                    <a
-                                                                        href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
-                                                                            class="las la-trash"></i></a>
-                                                                </div>
+                                                                    <div class="uploaded-media-card">
+                                                                        <div class="uploaded-media">
+                                                                            <video controls width="100%" height="110px">
+                                                                                <source
+                                                                                    src="{{ asset('upload/video-booth/' . $val->media) }}"
+                                                                                    type="video/mp4" />
+                                                                            </video>
+                                                                        </div>
+                                                                        <div class="uploaded-action">
+                                                                            <a
+                                                                                href="{{ url('delete-booth-video-image/' . encrypt_decrypt('encrypt', $val->id)) }}"><i
+                                                                                    class="las la-trash"></i></a>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </label>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="col-md-3 p-2">
+                                                    <div class="upload-form-group">
+                                                        <div class="upload-file">
+                                                            <input type="file" name="video[]" accept=".mp4,.clv,.wav"
+                                                                id="addvideo1" class="uploadDoc video  addDoc"required>
+                                                            <label for="addvideo1">
+                                                                <div class="upload-file-item">
+                                                                    <div class="upload-media">
+                                                                        <img id="video_addvideo"
+                                                                            src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                    </div>
+                                                                    <div class="upload-text">
+                                                                        <span>Browse & Upload File</span>
+                                                                    </div>
+                                                                </div>
 
-                                                        </label>
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
-
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <a class="cancelbtn"href="{{ url('manage-photo-booth') }}">cancel</a>
-                                <button class="Savebtn"
-                                    type="submit">{{ $data ? 'Update' : 'Save & Create Photo Booth' }}</button>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <a class="cancelbtn"href="{{ url('manage-photo-booth') }}">cancel</a>
+                                    <button class="Savebtn"
+                                        type="submit">{{ $data ? 'Update' : 'Save & Create Photo Booth' }}</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </form>
             </div>
         </div>
     </div>
+
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> --}}
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/select2.min.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
     <!-------------------- Form Validation -------------------->
     <script>
         $(document).ready(function() {
@@ -328,6 +375,13 @@
                     cancellation_policy: {
                         required: true,
                     },
+
+                    image: {
+                        required: true,
+                    },
+                    video: {
+                        required: true,
+                    },
                 },
                 //errorElement: "small",
                 submitHandler: function(form) {
@@ -349,7 +403,7 @@
                     // Check file size for each uploaded file
                     var isValid = true;
                     var isUploaded = true;
-                    $('.uploadDoc').each(function() {
+                    $('.Image').each(function() {
                         var fileSize = 0;
                         var input = $(this)[0];
                         if (input.files.length > 0) {
@@ -364,17 +418,31 @@
                         } else {
                             isUploaded = false;
                         }
-
-
+                    });
+                    $('.video').each(function() {
+                        var fileSize = 0;
+                        var input = $(this)[0];
+                        if (input.files.length > 0) {
+                            fileSize = input.files[0].size; // in bytes
+                            if (fileSize > 51200 * 51200) { // 50 MB in bytes
+                                toastr.error(
+                                    'File size must be less than 50 MB for each uploaded file.'
+                                );
+                                isValid = false;
+                                return false; // Break the loop
+                            }
+                        } else {
+                            isUploaded = false;
+                        }
                     });
 
                     // If all files are valid, proceed with form submission
-                    if (isUploaded == false) {
-                        toastr.error(
-                            'Please select a file before uploading.'
-                        );
-                        return false;
-                    }
+                    // if (isUploaded == false) {
+                    //     toastr.error(
+                    //         'Please select a file before uploading.'
+                    //     );
+                    //     return false;
+                    // }
                     if (isValid) {
                         form.submit();
 
@@ -415,54 +483,41 @@
             }
         });
 
-        // \.,MNBCXZ
-        // document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with the class "add"
-        let elementsWithClass = document.querySelectorAll('.uploadDoc');
 
-        // Add an event listener to each element
-        elementsWithClass.forEach(function(element) {
-            element.addEventListener('change', function(event) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use event delegation to handle change events on dynamically added elements
+            $("#images_container").on('change', '.Image', function(event) {
                 // Your event handling code goes here
-                console.log(event);
                 const file = event.target.files[0];
-
                 const imgURL = URL.createObjectURL(file);
 
-                let label = document.querySelector(`[for="${element.getAttribute("id")}"]`);
-                console.log(label);
-                if (element.classList.contains("video")) {
-                    label.innerHTML = `<div class="uploaded-media-card">
-                                                            <div class="uploaded-media">
-                                                                <video controls width="100%" height="110px">
-                                                                    <source
-                                                                        src="${imgURL}"
-                                                                        type="video/mp4" />
-                                                                </video>
-                                                            </div>
-                                                            <div class="uploaded-action">
-                                                                <a href="#"><i class="las la-trash"></i></a>
-                                                            </div>
-                                                        </div>`;
+                let label = $(event.target).closest('.upload-file').find('label');
+                label.css('backgroundImage', `url("${imgURL}")`);
+                label.css('backgroundPosition', 'center');
+                label.css('backgroundSize', 'cover');
 
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.display = "none";
-                } else {
-                    label.style.backgroundImage = `url("${imgURL}")`;
-                    label.style.backgroundPosition = 'center';
-                    label.style.backgroundSize = 'cover';
-
-                    var op = label.querySelector(".upload-file-item");
-                    op.style.opacity = 0;
-                }
-
+                var op = label.find(".upload-file-item");
+                op.css('opacity', 0);
             });
+            $("#videos_container").on('change', '.video', function(event) {
+                const file = event.target.files[0];
+                const videoURL = URL.createObjectURL(file);
+
+                let label = $(event.target).closest('.upload-file').find('label');
+                label.empty(); // Clear any existing content
+
+                // Create a video element and set its attributes
+                const videoElement = $('<video controls width="100%" height="110px"></video>');
+                videoElement.append(`<source src="${videoURL}" type="video/mp4" />`);
+
+                // Append the video element to the label
+                label.append(videoElement);
+
+                var op = label.find(".upload-file-item");
+                op.css('opacity', 0);
+            });
+
         });
-
-
-
-        // });
-
 
         var imgCount = 1;
 
@@ -472,13 +527,12 @@
                 `<div class="col-md-3 p-2">
                     <div class="upload-form-group">
                         <div class="upload-file">
-                            <input type="file" name="image[]" accept=".jpg,.jpeg,.png"
-                                id="addfile${imgCount}" class="uploadDoc addDoc">
+                            <input type="file" name="image[]" accept=".jpg,.jpeg,.png" id="addfile${imgCount}"
+                                class="uploadDoc addDoc Image">
                             <label for="addfile${imgCount}">
                                 <div class="upload-file-item">
                                     <div class="upload-media">
-                                        <img id="image_addfile${imgCount}"
-                                            src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                        <img id="image_addfile${imgCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
                                     </div>
                                     <div class="upload-text">
                                         <span>Browse & Upload File</span>
@@ -496,26 +550,26 @@
             viCount += 1;
             $("#videos_container").html($("#videos_container").html() +
                 `<div class="col-md-3 p-2">
-                                            <div class="upload-form-group">
-                                                <div class="upload-file">
-                                                    <input type="file" name="video[]" accept=".mp4,.clv,.wav"
-                                                        id="addvideo${viCount}" class="uploadDoc video  addDoc">
-                                                    <label for="addvideo${viCount}">
-                                                        <div class="upload-file-item">
-                                                            <div class="upload-media">
-                                                                <img id="video_addvideo${viCount}"
-                                                                    src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                                            </div>
-                                                            <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
-                                                            </div>
-                                                        </div>
+                    <div class="upload-form-group">
+                        <div class="upload-file">
+                            <input type="file" name="video[]" accept=".mp4,.clv,.wav" id="addvideo${viCount}"
+                                class="uploadDoc video  addDoc">
+                            <label for="addvideo${viCount}">
+                                <div class="upload-file-item">
+                                    <div class="upload-media">
+                                        <img id="video_addvideo${viCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                    </div>
+                                    <div class="upload-text">
+                                        <span>Browse & Upload File</span>
+                                    </div>
+                                </div>
 
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>`
+                            </label>
+                        </div>
+                    </div>
+                </div>`
             );
         }
     </script>
+
 @endsection

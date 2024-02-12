@@ -12,6 +12,10 @@ class TourBooking extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'user_id');
     }
+    function Payments()
+    {
+        return $this->hasOne('App\Models\PaymentDetail', 'booking_id', 'tour_id');
+    }
 
     function Tour()
     {
@@ -27,4 +31,5 @@ class TourBooking extends Model
     {
         return $this->hasOne(PhotoBooth::class, 'id', 'tour_id');
     }
+    
 }

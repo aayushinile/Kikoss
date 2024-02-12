@@ -18,21 +18,12 @@ use App\Models\TourBooking;
 use App\Models\VirtualTour;
 use App\Models\TimeZone;
 use App\Models\TaxiBooking;
-use App\Models\Master;
 use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
-use App\Models\PaymentDetail;
 use Mail;
 use App\Mail\RegisterMail;
 use App\Mail\SendOTPMail;
-use App\Mail\TaxiBookingMail;
-use App\Mail\freeCallBackMail;
-use App\Mail\PhotoBoothBookingadminMail;
-use App\Mail\PhotoBoothBookingUserMail;
-use App\Mail\TaxiBookingAdminMail;
-use App\Mail\TourBookingAdminMail;
-use App\Mail\TourBookingUserMail;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use DateTime;
@@ -60,8 +51,6 @@ class UserController extends Controller
             }
            
             if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-                $data=array('device_token'=>request('device_token'));
-                User::where('id', Auth::user()->id)->update($data);
                 $user = Auth::user();
                 $token = $user->createToken('kikos')->plainTextToken;
                 $success['token'] = $token;
@@ -327,7 +316,6 @@ class UserController extends Controller
     {
         try {
             $tour = Tour::where('id',$request->tour_id)->first();/*Get tour data accoding to id */
-            $tax = Master::where('id','!=',null)->first();
             if(!empty($tour)){
                 $tourImage = array();
                 $temp['id'] = $tour->id;
@@ -344,7 +332,6 @@ class UserController extends Controller
                 $temp['short_description'] = $tour->short_description;
                 $temp['what_to_bring'] = $tour->what_to_bring;
                 $temp['tour_date_time'] = '19 October, 2023 Monday';
-                $temp['tax'] = $tax->tax;
                 $images = TourAttribute::where('tour_id',$tour->id)->get();
                 foreach ($images as $key => $val) {
                     $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
@@ -620,30 +607,6 @@ class UserController extends Controller
             $callback->note = $request->note;
             $callback->status = 0;
             $callback->save();
-            $callback_id = $callback->id;
-            
-            /*Admin Mail and Push Notification*/
-            $admin = User::where('id',1)->first();
-            $mailData = [
-                'name'  => $admin->fullname,
-                'booking_id'  => $callback_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($admin->email)->send(new freeCallBackMail($mailData));
-            $push_message = 'Free Callback Request'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $admin->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Request Send";
@@ -658,30 +621,17 @@ class UserController extends Controller
     {
         try {
             $data=array();
-            //Check Validation accoding to Tour type
-            if($request->tour_type == 1){
-                $validator = Validator::make($request->all() , [
-                    'tour_id' => 'required|integer',
-                    'tour_type' => 'required|string|max:255|min:1',
-                    'booking_date' => 'required',
-                    'no_adults' => 'required',
-                    'no_senior_citizen' => 'required',
-                    'no_childerns' => 'required',
-                    'adults_amount' => 'required',
-                    'senior_amount' => 'required',
-                    'childrens_amount' => 'required',
-                    'tax' => 'required',
-                ]);
-            }else{
-                $validator = Validator::make($request->all() , [
-                    'tour_id' => 'required|integer',
-                    'tour_type' => 'required|string|max:255|min:1',
-                    'booking_date' => 'required',
-                    'amount' => 'required',
-                    'tax' => 'required',
-                ]);
-            }
-            
+            $validator = Validator::make($request->all() , [
+                'tour_id' => 'required|integer',
+                'tour_type' => 'required|string|max:255|min:1',
+                'booking_date' => 'required',
+                'no_adults' => 'required',
+                'no_senior_citizen' => 'required',
+                'no_childerns' => 'required',
+                'adults_amount' => 'required',
+                'senior_amount' => 'required',
+                'childrens_amount' => 'required',
+            ]);
             
             if ($validator->fails())
             {
@@ -706,82 +656,14 @@ class UserController extends Controller
             $booking->senior_amount = $senior_amount;
             $childrens_amount = $request->childrens_amount*$request->no_childerns;
             $booking->childrens_amount = $childrens_amount;
-            $booking->transaction_id = $request->transaction_id;
-            //$tax = 100;
-            $booking->tax = $request->tax;
-            //Checking Tour type
-            if($request->amount){
-                $booking->total_amount = $request->amount + $request->tax;/*Virtual amount */
-            }else{
-                $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $request->tax;/*Tour amount */
-            }
-            
+            $tax = 100;
+            $booking->tax = $tax;
+            $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $tax;
             $booking->status = 0;
             $booking->save();
-            $tour_booking_id = $booking->id;
-            
-            $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $tour_booking_id;
-            $PaymentDetail->transaction_id = $request->transaction_id;
-            $PaymentDetail->payment_provider = 'PayPal';
-            //Checking Tour type
-            if($request->amount){
-                $PaymentDetail->amount = $request->amount + $request->tax;/*Virtual amount */
-            }else{
-                $PaymentDetail->amount = $adults_amount + $senior_amount + $childrens_amount + $request->tax;/*Tour amount */
-            }
-            $PaymentDetail->status = 1;
-            $PaymentDetail->type = $request->tour_type;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
-            $PaymentDetail->save();
-            
-            /*Admin Mail*/
-            $admin = User::where('id',1)->first();
-            $mailData = [
-                'name'  => $admin->fullname,
-                'booking_id'  => $booking_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($admin->email)->send(new TourBookingAdminMail($mailData));
-            $push_message = 'New Tour Booking'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $admin->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
-            /*User Mail*/
-            $mailData = [
-                'name'  => $user->fullname,
-                'booking_id'  => $booking_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($user->email)->send(new TourBookingAdminMail($mailData));
-            $push_message = 'New Tour Booking'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $user->device_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $user->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Boooked successfully";
-            $data['booking_id']=$booking_id;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -798,7 +680,6 @@ class UserController extends Controller
                 'tour_type' => 'required|string|max:255|min:1',
                 'booking_date' => 'required',
                 'amount' => 'required',
-                'tax' => 'required',
             ]);
             
             if ($validator->fails())
@@ -807,81 +688,19 @@ class UserController extends Controller
             }
             $booking_id = random_alphanumeric();
             $user = Auth::user();
-            $image_count = PhotoBoothMedia::where('booth_id',$request->photo_booth_id)->where('media_type','Image')->count();
-            $video_count = PhotoBoothMedia::where('booth_id',$request->photo_booth_id)->where('media_type','video')->count();
             $booking = new BookingPhotoBooth;
             $booking->booking_id = $booking_id;
             $booking->booth_id = $request->photo_booth_id;/*Photo Booth id save in Photo booth ID */
             $booking->userid = $user->id;
-            $booking->image_count = $image_count;
-            $booking->video_count = $video_count;
             $booking->booking_date = $request->booking_date;
-            $tax = $request->tax;
+            $tax = 100;
             $booking->tax = $tax;
             $booking->total_amount = $request->amount + $tax;
             $booking->status = 0;
-            $booking->transaction_id =  $request->transaction_id;
             $booking->save();
-            $photo_booth_booking_id = $booking->id;
-            
-            $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $photo_booth_booking_id;
-            $PaymentDetail->transaction_id = $request->transaction_id;
-            $PaymentDetail->payment_provider = 'PayPal';
-            $PaymentDetail->amount = $request->amount + $tax;/*PhotoBOOTH amount */
-            $PaymentDetail->status = 1;
-            $PaymentDetail->type = 3;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
-            $PaymentDetail->save();
-            
-            
-            /*User Mail and Push Notification*/
-            $mailData = [
-                'name'  => $user->fullname,
-                'booking_id'  => $booking_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($user->email)->send(new PhotoBoothBookingUserMail($mailData));
-            $push_message = 'Photo Booth Booked'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $user->device_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $user->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
-            /*Admin Mail and Push Notification*/
-            $admin = User::where('id',1)->first();
-            $mailData = [
-                'name'  => $admin->fullname,
-                'booking_id'  => $booking_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($admin->email)->send(new PhotoBoothBookingadminMail($mailData));
-            $push_message = 'New Taxi Booking'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $admin->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
             $data['message']="Boooked successfully";
-            $data['booking_id']=$booking_id;
             return response()->json($data);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -958,6 +777,7 @@ class UserController extends Controller
     public function bookingTaxi(Request $request) 
     {
         try {
+            
             //Validation for Taxi booking
             $validator = Validator::make($request->all(), [
                 'booking_date_time' => 'required',
@@ -1015,16 +835,6 @@ class UserController extends Controller
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
             ]);
-            
-            $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $bookingID;
-            $PaymentDetail->transaction_id = $request->transaction_id;
-            $PaymentDetail->payment_provider = 'PayPal';
-            $PaymentDetail->amount = $request->amount;/*TaxiBooking amount */
-            $PaymentDetail->status = 1;
-            $PaymentDetail->type = 4;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
-            $PaymentDetail->save();
-            
             if($bookingID){
                 $data['status'] = true;
                 $data['message'] = 'Booking request send successfully';
@@ -1032,59 +842,6 @@ class UserController extends Controller
                 $data['status'] = false;
                 $data['message'] = 'Something went wrong';
             }
-            
-            /*Without login Send mail to user via emailId */
-            if($request->email_id)
-            {
-                /*User Mail and Push Notification*/
-                $mailData = [
-                    'name'  => $request->fullname,
-                    'booking_id'  => $booking_id,
-                    'pickup_address'  => $request->pickup_location,
-                    'drop_address'  => $request->drop_location,
-                    'date_time'  => $request->booking_date_time,
-                    'driver_details'  => ''
-                ];
-                Mail::to($request->email_id)->send(new TaxiBookingMail($mailData));
-                if($request->user_id){
-                    $user = User::where('id',$request->user_id)->first();
-                    $push_message = 'Taxi Booked'; 
-                    // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-                    $device_token = $user->device_token;
-                    $img='';
-                    $type=''; 
-                    $id='';
-                    $title= $user->fullname;
-                    $id1='';
-                    $sound ='default';
-                    $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-                    $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-                }
-            }
-            
-            /*Admin Mail and Push Notification*/
-            $admin = User::where('id',1)->first();
-            $mailData = [
-                'name'  => $admin->fullname,
-                'booking_id'  => $booking_id,
-                'pickup_address'  => '',
-                'drop_address'  => '',
-                'date_time'  => '',
-                'driver_details'  => ''
-            ];
-            Mail::to($admin->email)->send(new TaxiBookingAdminMail($mailData));
-            $push_message = 'New Taxi Booking'; 
-            // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
-            $img='';
-            $type=''; 
-            $id='';
-            $title= $admin->fullname;
-            $id1='';
-            $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
             
             return response()->json($data);
         } catch (\Exception $e) {
@@ -1107,7 +864,7 @@ class UserController extends Controller
                     $temp['booking_time'] = date('d M, Y - g:i A', strtotime($value->booking_time));
                     $temp['user_id'] = $value->user_id;
                     $temp['user_name'] = $user->fullname;
-                    $temp['user_profile'] = $user->profile ? asset('public/upload/profile/'.$user->profile): '';
+                    $temp['user_profile'] = $user->profile ? asset('public/upload/photo-booth/'.$user->profile): '';
                     $temp['pickup_location'] = $value->pickup_location;
                     $temp['pickup_lat_long'] = $value->pickup_lat_long;
                     $temp['drop_location'] = $value->drop_location;
@@ -1139,7 +896,6 @@ class UserController extends Controller
     {
         try {
             $photos = PhotoBooth::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Photo-Booth
-            $tax = Master::where('id','!=',null)->first();
             if(count($photos) > 0){
                 $response = array();/*Store data an array */
                 foreach ($photos as $key => $value) {
@@ -1157,7 +913,6 @@ class UserController extends Controller
                     $temp['video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
                     $temp['purchase_image_count'] = PhotoBoothMedia::where('media_type','Image')->where('booth_id',$value->id)->count();
                     $temp['purchase_video_count'] = PhotoBoothMedia::where('media_type','Video')->where('booth_id',$value->id)->count();
-                    $temp['tax'] = $tax->tax; 
                     $response[] = $temp;
                 }
             }else{
@@ -1259,7 +1014,7 @@ class UserController extends Controller
                 $all_bookings = TourBooking::where('status',2)->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }else{
                 /*All */
-                $all_bookings = TourBooking::whereIn('status',[0,1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+                $all_bookings = TourBooking::whereIn('status',[1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }
             
             
@@ -1268,7 +1023,7 @@ class UserController extends Controller
                 foreach ($all_bookings as $key => $value) {
                     $temp['id'] = $value->id;
                     $temp['status_id'] = $value->status;
-                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
+                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : ""));
                     $temp['boooking_id'] = $value->booking_id;
                     $tour = Tour::where('id',$value->tour_id)->first();
                     $temp['tour_title'] = $tour->title;
@@ -1283,8 +1038,6 @@ class UserController extends Controller
                     $images = TourAttribute::where('tour_id',$value->id)->first();
                     if($images){
                         $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
-                    }else{
-                        $temp['images'] = '';
                     }
                     
                     $response[] = $temp;
@@ -1308,7 +1061,7 @@ class UserController extends Controller
         try {
             $user = Auth::user();
             $value = TourBooking::where('id',$request->booking_id)->first();//Get datas of tour booking of user
-            $tourImage = array();
+            
             $temp['id'] = $value->id;
             $temp['status_id'] = $value->status;
             $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : ""));
@@ -1318,24 +1071,15 @@ class UserController extends Controller
             $temp['cancellation_policy'] = $tour->cancellation_policy;
             $temp['selectd_date'] = date('d M, Y', strtotime($value->booking_date));
             $temp['duration'] = $tour->duration;/* Tour Time */
-            $temp['what_to_bring'] = $tour->what_to_bring;
-            $temp['short_description'] = $tour->short_description;
-            $temp['description'] = $tour->description;
             $temp['no_of_adults'] = $value->no_adults;
             $temp['no_of_senior'] = $value->no_senior_citizen;
             $temp['no_of_children'] = $value->no_childerns;
             $temp['total_amount'] = $value->total_amount;
-            $temp['same_for_all'] = $tour->same_for_all;/* Tour Price for all person */
-            $temp['age_11_price'] = $tour->age_11_price;/* Tour Price for 11 years+ per person */
-            $temp['age_60_price'] = $tour->age_60_price;/* Tour Price for 60 years+ per person */
-            $temp['under_10_age_price'] = $tour->under_10_age_price;/* Tour Price for under 10 years per person */
             $temp['no_of_person'] = $value->no_adults+$value->no_senior_citizen+$value->no_childerns;
-            $images = TourAttribute::where('tour_id',$value->id)->get();
-            foreach ($images as $key => $val) {
-                $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
+            $images = TourAttribute::where('tour_id',$value->id)->first();
+            if($images){
+                $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
             }
-                
-                $temp['images'] = $tourImage;
             
             $data['status'] = true;
             $data['message'] = 'Book tour listing';
@@ -1393,7 +1137,6 @@ class UserController extends Controller
         try {
             //Photo booth detail accoding to booth id
             $value = PhotoBooth::where('id',$request->id)->first();
-            $tax = Master::where('id','!=',null)->first();
             if(!empty($value)){
                 $tourImage = array();
                 $temp['id'] = $value->id;
@@ -1405,7 +1148,6 @@ class UserController extends Controller
                 $temp['description'] = $value->description;
                 $temp['cancellation_policy'] = $value->cancellation_policy;
                 $temp['uploaded_date'] = date('d M, Y - g:i A', strtotime($value->created_at));
-                $temp['tax'] = $tax->tax; 
                 $images = PhotoBoothMedia::where('booth_id',$value->id)->get();/*Find all images and video accoding to photo booth id */
                 $response = array();
                 foreach ($images as $key => $val) {
@@ -1503,36 +1245,5 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
-    }
-    
-    public function send_notification($serverKey='', $push_message='',$device_token='',$title='')
-    {
-        $msg = array(
-            'body'  => $push_message,
-            'title' => $title,
-            'sound' => 'default',
-        );
-        $load = array(
-            'body'  => $push_message,
-            'title' => $title,
-            'sound' => 'default',
-        );
-        $token = $device_token;
-        $fields = array('to' => $token, 'notification' => $msg, 'data' => $load, "priority" => "high");
-        $serverKey = $serverKey;
-        $headers = [
-            'Authorization:key=' . $serverKey,
-            'Content-Type: application/json',
-        ];
-        #Send Reponse To FireBase Server
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result = curl_exec($ch);
-        curl_close($ch);
     }
 }

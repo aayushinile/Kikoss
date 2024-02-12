@@ -171,4 +171,3 @@ ul.kik-pagination li.disabled a.page-link {color: var(--black);pointer-events: n
 .uploaded-media img{width: 100%; height: 100%; object-fit: cover;}
 .uploaded-action{text-align: center; }
 .uploaded-action a {width: 32px;height: 32px;background: var(--red);text-align: center;line-height: 32px;color: #fff;border-radius: 50px;display: inline-block;position: absolute;right: -7px;top: -8px;}
-

@@ -212,7 +212,7 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a class="btn-gr" id="xport" onclick="exportToCSV(this)"
-                                                            data-id="normal_tours">Download report</a>
+                                                            data-id="normal_tours">Download Excel</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
@@ -279,7 +279,12 @@
                                                     People </td>
                                                 <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
                                                 </td>
-                                                <td> {{ $item->payment_provider }} </td>
+                                                @php
+                                                    $PaymentDetail = \App\Models\PaymentDetail::where('booking_id', $item->id)->first();
+                                                @endphp
+                                                <td>
+                                                    {{ $PaymentDetail->payment_provider }}
+                                                </td>
                                                 <td>
                                                     @if ($item->status == 1)
                                                         <div class="status-text confirmed-status"><i
@@ -292,7 +297,7 @@
                                                         </div>
                                                     @endif
                                                 </td>
-                                                <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
+                                                <td> {{ $item->transaction_id }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -338,7 +343,12 @@
                                                 <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
                                                 </td>
 
-                                                <td> {{ $item->payment_provider }} </td>
+                                                @php
+                                                    $PaymentDetail = \App\Models\PaymentDetail::where('booking_id', $item->id)->first();
+                                                @endphp
+                                                <td>
+                                                    {{ $PaymentDetail->payment_provider }}
+                                                </td>
 
                                                 <td> {{ $item->transaction ? $item->transaction->transaction_id : 'N/A' }}
                                                 </td>

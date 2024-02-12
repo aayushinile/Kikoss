@@ -28,7 +28,7 @@ return new class extends Migration
             $table->text('cancellation_policy')->nullable();
             $table->string('thumbnail',255)->nullable();
             $table->string('what_to_bring',255)->nullable();
-            $table->string('status',45)->nullable()->default(1);
+            $table->string('status',45)->nullable()->default(1)->comment('0:Pending,1:Active,3:Delete,4:Archive');
             $table->timestamps();
         });
     }
