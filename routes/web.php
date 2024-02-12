@@ -45,6 +45,10 @@ Route::post('/update-Tour', [App\Http\Controllers\HomeController::class, 'Update
 Route::match(['get', 'post'],'/tours', [App\Http\Controllers\HomeController::class, 'tours'])->name('Tours');
 Route::get('/user-details/{id}', [App\Http\Controllers\HomeController::class, 'userDetail'])->name('UserDetail');
 Route::match(['get', 'post'],'manage-booking', [App\Http\Controllers\HomeController::class, 'ManageBooking'])->name('ManageBooking');
+
+Route::match(['get', 'post'],'payments', [App\Http\Controllers\HomeController::class, 'PaymentDetails'])->name('PaymentDetails');
+Route::post('/get-date-graph', [App\Http\Controllers\AjaxController::class, 'filterByDate'])->name('filterByDate');
+
 Route::match(['get', 'post'],'/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');

@@ -23,6 +23,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-plugins/apexcharts/apexcharts.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/home.css') }}">
@@ -321,15 +323,14 @@
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="filterDropdown">
                                         <li><a class="dropdown-item" href="#" id="filterDate">Date</a></li>
-                                        <li><a class="dropdown-item" href="#" id="filterMonth">Month</a></li>
                                         <li><a class="dropdown-item" href="#" id="filterYear">Year</a></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" >
                             <div class="tab-content" id="tour-booking" style="display: block;"> 
-                                <canvas id="tour-booking-chart" style="height: 457px;width: 1076px;"></canvas>
+                                <canvas id="tour-booking-chart" style="height: 457px;width: 1076px;display:block"></canvas>
                             </div>
                             <div class="tab-content" id="virtual-tour" style="display: none;"> 
                                 <canvas id="virtual-tour-booking-chart" style="height: 457px;width: 1076px;">
@@ -342,6 +343,23 @@
                             <div class="tab-content" id="taxi-booking" style="display: none;">
                                 <canvas id="taxi-booking-chart" style="height: 457px;width: 1076px;">
                                 </canvas>
+                            </div>
+                        </div>
+                        <div class="card-body" style="display: none">
+                            <div class="tab-content" id="tour-booking-filtered" style="display: block;"> 
+                                <canvas id="tour-booking_day_chart" style="height: 457px;width: 1076px;display:block"></canvas>
+                                <div class="tab-content" id="virtual-tour-filtered" style="display: none;"> 
+                                <canvas id="virtual-tour-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
+                            </div>
+                            <div class="tab-content" id="photo-booth-filtered" style="display: none;">
+                                <canvas id="photo-booth-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
+                            </div>
+                            <div class="tab-content" id="taxi-booking-filtered" style="display: none;">
+                                <canvas id="taxi-booking-chart" style="height: 457px;width: 1076px;">
+                                </canvas>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -507,7 +525,27 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <form>
+    @csrf
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dateFilterModalLabel">Filter By Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="datepicker" class="form-label">Select Date:</label>
+                <input type="text" id="datepicker" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="applyDateFilterBtn">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
     {{-- Code for calendar --}}
     <script>
         $(document).ready(function() {
@@ -671,8 +709,6 @@
             maintainAspectRatio: false
         }
     });
-
-
 
     var ctx = document.getElementById('virtual-tour-booking-chart').getContext('2d');
     var monthData = <?php echo json_encode($virtual_tour_booking->pluck('month')->toArray()); ?>;
@@ -879,4 +915,173 @@
         });
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap Datepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Bootstrap Datepicker JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+    // Initialize Bootstrap Datepicker with options
+    $('#datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+
+    // Handle click event on the "Date" filter option
+    $('#filterDate').click(function(e) {
+        e.preventDefault(); // Prevent default link behavior
+        $('#dateFilterModal').modal('show'); // Show the date filter modal
+    });
+
+    // Handle click event on the "Apply Filter" button inside the modal
+    $('#applyDateFilterBtn').click(function() {
+        var selectedDate = $('#datepicker').val();
+        var csrfToken = '{{ csrf_token() }}';
+        
+        // Send AJAX request to the controller with the selected date
+        $.ajax({
+            url: '/get-date-graph',
+            type: 'POST',
+            data: {
+                _token: csrfToken,
+                date: selectedDate
+            },
+            success: function(response) {
+                // Handle success response
+                console.log(response);
+                
+                // Update filtered graph with the received data
+                updateFilteredGraph(response.success);
+                
+                // Show the filtered graph
+                $('#tour-booking-filtered').parent().show();
+                // Hide the original graph
+                $('#tour-booking').parent().hide();
+            },
+            error: function(xhr, status, error) {
+                // Handle error response
+                console.error(xhr.responseText);
+            }
+        });
+        
+        $('#dateFilterModal').modal('hide'); // Hide the date filter modal
+    });
+});
+
+// Function to update the filtered graph with the received data
+function updateFilteredGraph(data) {
+    var hourData = data.map(item => item.hour);
+    var totalAmountData = data.map(item => item.total_amount);
+    
+    // Generate labels for each hour interval
+    var labels = [];
+    for (var i = 0; i < 24; i++) {
+        labels.push(`${i}:00 - ${(i + 1) % 24}:00`);
+    }
+    
+    // Get the canvas elements
+    var ctxTourBooking = document.getElementById('tour-booking_day_chart').getContext('2d');
+    var ctxVirtualTour = document.getElementById('virtual-tour-booking-chart').getContext('2d');
+
+    // Render the chart instances
+    new Chart(ctxTourBooking, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    new Chart(ctxVirtualTour, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+</script>
+
+
 @endsection

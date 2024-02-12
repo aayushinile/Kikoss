@@ -87,6 +87,7 @@ class HomeController extends Controller
     }
     
 
+    
     public function users(Request $request)
     {
         $requests = User::query();
@@ -605,6 +606,35 @@ class HomeController extends Controller
             $Acceptedtours = TourBooking::where('status', 1)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Accepted
             $Rejectedtours = TourBooking::where('status', 2)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Rejected
             return view('admin.manage-booking', compact('Tourrequests', 'tours','search','tour_id','date','Acceptedtours','Rejectedtours'));
+                
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+
+    public function PaymentDetails(Request $request)
+    {
+        try {
+            $payment_details = DB::table('payment_details')->select(
+                'payment_details.booking_id',
+                'payment_details.transaction_id',
+                'payment_details.payment_provider',
+                'payment_details.amount',
+                'payment_details.created_at',
+                'payment_details.status',
+                'tour_bookings.tour_type',
+                'tour_bookings.user_name',
+                'tours.title',
+            )
+            ->leftJoin('tour_bookings', 'tour_bookings.id', '=', 'payment_details.booking_id')
+            ->leftJoin('tours', 'tour_bookings.id', '=', 'tours.id')
+            ->orderBy('payment_details.id', 'DESC')
+            ->get();
+
+             //dd($payment_details);
+            return view('admin.payment-details', compact('payment_details'));
                 
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

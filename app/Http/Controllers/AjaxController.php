@@ -7,7 +7,7 @@ use App\Models\CallbackRequest;
 use App\Models\Event;
 use App\Models\TourBooking;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class AjaxController extends Controller
 {
     public function privacy_policy()
@@ -27,6 +27,7 @@ class AjaxController extends Controller
     
     public function getEvents()
     {
+        //dd('in');
         $events = Event::all();
         return response()->json($events);
     }
@@ -102,4 +103,32 @@ class AjaxController extends Controller
             return response()->json(['success' => false, 'message' => 'something went wrong']);
         }
     }
+
+    public function filterByDate(Request $request)
+{
+    if ($request->has('date')) {
+        $selectedDate = $request->input('date');
+
+        // Fetch data for the selected date
+        $tour_booking_day = DB::table('tour_bookings')
+            ->select(
+                DB::raw('HOUR(created_at) as hour'),
+                DB::raw('SUM(total_amount) as total_amount')
+            )
+            ->whereDate('booking_date', $selectedDate)
+            ->where('status', '!=', 3)
+            ->where('tour_type', 1)
+            ->groupBy(DB::raw('HOUR(created_at)'))
+            ->get();
+
+        return response()->json(['success' => $tour_booking_day]);
+    }
+
+    return response()->json(['error' => 'Date parameter missing'], 400);
+}
+
+
+
+    
+
 }

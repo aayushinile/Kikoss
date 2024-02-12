@@ -36,6 +36,7 @@ Route::post('/pay', [PaymentController::class,'pay']);
 Route::post('/payV', [PaymentVenmoController::class,'paywithVenmo']);
 Route::get('/payment/success', [PaymentController::class,'success'])->name('success.payment');
 Route::get('/payment/cancel', [PaymentController::class,'cancel'])->name('cancel.payment');
+Route::post('/refund', [PaymentController::class,'refund'])->name('refund.payment');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [UserController::class, 'logout']); //Auth User Logout
     Route::get('profile', [UserController::class, 'userDetails']);
