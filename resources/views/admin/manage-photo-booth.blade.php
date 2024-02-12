@@ -251,6 +251,11 @@
                                                             </div>
                                                         </div>
                                                     </td>
+                                                    @php
+                                                        $PhotoBoothMedia = \App\Models\BookingPhotoBooth::where('booking_id', $val->id)
+                                                            ->where('type', 'Image')
+                                                            ->first();
+                                                    @endphp
                                                     <td>PayPal</td>
                                                     <td>76375873874</td>
                                                     </tr>
