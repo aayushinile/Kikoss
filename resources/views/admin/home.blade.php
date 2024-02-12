@@ -206,7 +206,7 @@
                                                         <div class="action-btn-info">
                                                             <a class="dropdown-item view-btn" data-bs-toggle="modal"
                                                                 href="#BookingRequest"
-                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'><i
+                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'><i
                                                                     class="las la-eye"></i> View</a>
                                                             {{-- <div class="dropdown-menu">
                                                                 <a class="dropdown-item view-btn" href="#"><i
@@ -283,7 +283,7 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gr">Download Excel</a>
+                                                        <a href="#" class="btn-gr">Download report</a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
@@ -349,15 +349,15 @@
                             <div class="tab-content" id="tour-booking-filtered" style="display: block;"> 
                                 <canvas id="tour-booking_day_chart" style="height: 457px;width: 1076px;display:block"></canvas>
                                 <div class="tab-content" id="virtual-tour-filtered" style="display: none;"> 
-                                <canvas id="virtual-tour-booking-chart" style="height: 457px;width: 1076px;">
+                                <canvas id="virtual-tour-booking-day-chart" style="height: 457px;width: 1076px;">
                                 </canvas>
                             </div>
                             <div class="tab-content" id="photo-booth-filtered" style="display: none;">
-                                <canvas id="photo-booth-booking-chart" style="height: 457px;width: 1076px;">
+                                <canvas id="photo-booth-booking-day-chart" style="height: 457px;width: 1076px;">
                                 </canvas>
                             </div>
                             <div class="tab-content" id="taxi-booking-filtered" style="display: none;">
-                                <canvas id="taxi-booking-chart" style="height: 457px;width: 1076px;">
+                                <canvas id="taxi-booking-day-chart" style="height: 457px;width: 1076px;">
                                 </canvas>
                             </div>
                             </div>
@@ -431,7 +431,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
-                                <div class="request-id-text">Booking ID:<span id="Booking_id"></span></div>
+                                <div class="request-id-text">Booking ID:<span id="TourID"></span></div>
                                 <div class="request-status-text"><i class="las la-hourglass-start"></i> Pending
                                     for
                                     Approval</div>
@@ -499,14 +499,13 @@
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Transaction ID</h3>
-                                                <h4 id="transaction_id"></h4>
+                                                <h4>76375873874</h4>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="request-point-item">
                                                 <h3>Amount Recieved On</h3>
-                                                <h4 id="created_date">
-                                                </h4>
+                                                <h4>03 Sep, 2023, 09:33:12 am</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -548,7 +547,7 @@
     </div>
 </div>
     {{-- Code for calendar --}}
-    {{-- <script>
+    <script>
         $(document).ready(function() {
             $('#calendar').fullCalendar({
                 header: {
@@ -604,68 +603,11 @@
                 });
             });
         });
-    </script> --}}
-    <script>
-        $(document).ready(function() {
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
-                editable: true,
-                eventSources: [
-                    '/get-events',
-                ],
-                eventRender: function(event, element) {
-                    // Check if event has color defined
-                    if (event.color) {
-                        // Get the date of the event
-                        var eventDate = moment(event.start).format('YYYY-MM-DD');
-
-                        // Find the cell corresponding to the event date
-                        var cell = $('.fc-day[data-date="' + eventDate + '"]');
-
-                        // Set the background color of the cell
-                        cell.css('background-color', event.color);
-                    }
-
-                    // Empty the content before appending new data
-                    element.empty();
-
-                    // Check if event.description is defined before appending
-                    if (event.description) {
-                        // Append the event description
-                        element.append("<br/>" + event.description);
-                    }
-                },
-                dayClick: function(date, jsEvent, view) {
-                    $('#eventModal').modal('show');
-                    $('#start_date').val(date.format());
-                }
-            });
-
-            $('#eventForm').submit(function(event) {
-                event.preventDefault();
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/add-event',
-                    data: $('#eventForm').serialize(),
-                    success: function(response) {
-                        // Refresh the FullCalendar to display the new event
-                        $('#calendar').fullCalendar('refetchEvents');
-                        $('#eventModal').modal('hide');
-                        location.reload();
-                    }
-                });
-            });
-        });
     </script>
 
     <!-------------------- Append Popup for booking approval using with Jquery -------------------->
     <script>
-        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
+        function accept_tour(tour_id, title, booking_date, duration, total_amount) {
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -673,9 +615,8 @@
             // }
 
             var total_amount = '$' + total_amount;
-            var currentURL = window.location.href;
-            //alert(currentURL);
-            //Remove the "manage-booking" part
+            currentURL = window.location.href;
+            // Remove the "manage-booking" part
             var base_url = currentURL.replace('/home', '');
 
             var reject_url = base_url + '/reject-tour-booking/' + tour_id;
@@ -683,18 +624,15 @@
             var accept_url = base_url + '/accept-tour-booking/' + tour_id;
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
-            // Date formate
-            var created_date = formatDate(booking_date);
-            var booking_date = 'Selected Date: ' + created_date;
-
-            document.getElementById("title").innerText = title;
+            var booking_date = 'Selected Date: ' + booking_date;
+            document.getElementById("title").innerText =
+                title;
             document.getElementById("tour_id").value = tour_id;
-            document.getElementById("Booking_id").innerText = booking_id;
-            document.getElementById("created_date").innerText = created_date;
-
+            document.getElementById("TourID").innerText =
+                tour_id;
             document.getElementById("booking_date").innerText = booking_date;
-            document.getElementById("duration").innerText = duration;
-            document.getElementById("transaction_id").innerText = transaction_id;
+            document.getElementById(
+                "duration").innerText = duration;
             document.getElementById("total_amount").innerText = total_amount;
             var url = document.getElementById("rejectbtn");
             url.href = reject_url;
@@ -708,23 +646,6 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
-        }
-
-        function formatDate(dateString) {
-            // Create a Date object from the input string
-            var date = new Date(dateString);
-
-            // Options for formatting the date
-            var options = {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            };
-
-            // Format the date using the toLocaleDateString method
-            var formattedDate = date.toLocaleDateString('en-US', options);
-
-            return formattedDate;
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1022,39 +943,41 @@
     $('#applyDateFilterBtn').click(function() {
         var selectedDate = $('#datepicker').val();
         var csrfToken = '{{ csrf_token() }}';
-        
+        var activeTabId = document.querySelector('.form-group a.active').getAttribute('href').substring(1);
         // Send AJAX request to the controller with the selected date
         $.ajax({
             url: '/get-date-graph',
             type: 'POST',
             data: {
                 _token: csrfToken,
-                date: selectedDate
+                date: selectedDate,
+                type: activeTabId,
             },
             success: function(response) {
                 // Handle success response
                 console.log(response);
-                
                 // Update filtered graph with the received data
                 updateFilteredGraph(response.success);
-                
-                // Show the filtered graph
-                $('#tour-booking-filtered').parent().show();
-                // Hide the original graph
-                $('#tour-booking').parent().hide();
+
+                // Show the filtered graph for the active tab
+                $('#' + activeTabId + '-filtered').parent().show();
+                console.log(activeTabId);
+                // Hide the original graph for all tabs except the active one
+                $('.tab-content canvas').parent().hide();
+                $('.form-group a').not('.active').each(function() {
+                    var tabId = $(this).attr('href').substring(1);
+                    $('#' + tabId + '-filtered').parent().show();
+                });
             },
             error: function(xhr, status, error) {
                 // Handle error response
                 console.error(xhr.responseText);
             }
         });
-        
+
         $('#dateFilterModal').modal('hide'); // Hide the date filter modal
     });
 });
-
-// Store Chart instances in an object for easy access
-var chartInstances = {};
 
 // Function to update the filtered graph with the received data
 function updateFilteredGraph(data) {
@@ -1067,116 +990,193 @@ function updateFilteredGraph(data) {
         labels.push(`${i}:00 - ${(i + 1) % 24}:00`);
     }
     
-    // Get the canvas elements
-    var ctxTourBooking = document.getElementById('tour-booking_day_chart').getContext('2d');
-    var ctxVirtualTour = document.getElementById('virtual-tour-booking-chart').getContext('2d');
-
-    // Check if Chart instances already exist, if not, create new ones
-    if (!chartInstances['tourBookingDayChart']) {
-        chartInstances['tourBookingDayChart'] = new Chart(ctxTourBooking, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Sales',
-                    data: totalAmountData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    barThickness: 25,
-                    borderWidth: 1,
-                }]
+    // Update the chart with the filtered data
+    var ctx = document.getElementById('tour-booking_day_chart').getContext('2d');
+    var tourBookingDayChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
                 },
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Total Tour Booking',
-                        font: {
-                            size: 18
-                        }
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
                     }
-                },
-                layout: {
-                    padding: {
-                        left: 10,
-                        right: 10,
-                        top: 10,
-                        bottom: 10
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    } else {
-        // Update data for existing chart
-        chartInstances['tourBookingDayChart'].data.labels = labels;
-        chartInstances['tourBookingDayChart'].data.datasets[0].data = totalAmountData;
-        chartInstances['tourBookingDayChart'].update();
-    }
-
-    if (!chartInstances['virtualTourChart']) {
-        chartInstances['virtualTourChart'] = new Chart(ctxVirtualTour, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Sales',
-                    data: totalAmountData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    barThickness: 25,
-                    borderWidth: 1,
-                }]
+                }
             },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    var ctx2 = document.getElementById('virtual-tour-booking-day-chart').getContext('2d');
+    var tourBookingDayChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
                 },
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Total Tour Booking',
-                        font: {
-                            size: 18
-                        }
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
                     }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    var ctx3 = document.getElementById('photo-booth-booking-day-chart').getContext('2d');
+    var tourBookingDayChart = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
                 },
-                layout: {
-                    padding: {
-                        left: 10,
-                        right: 10,
-                        top: 10,
-                        bottom: 10
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
                     }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    var ctx4 = document.getElementById('taxi-booking-day-chart').getContext('2d');
+    var tourBookingDayChart = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: totalAmountData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                barThickness: 25,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
                 },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    } else {
-        // Update data for existing chart
-        chartInstances['virtualTourChart'].data.labels = labels;
-        chartInstances['virtualTourChart'].data.datasets[0].data = totalAmountData;
-        chartInstances['virtualTourChart'].update();
-    }
+                title: {
+                    display: false,
+                    text: 'Total Tour Booking',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
-
 </script>
 
 

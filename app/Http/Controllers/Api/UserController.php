@@ -1266,9 +1266,12 @@ class UserController extends Controller
             if(count($all_bookings) > 0){
                 $response = array();/*Store data an array */
                 foreach ($all_bookings as $key => $value) {
+                    $payment_details = PaymentDetail::where('booking_id', $value->id)->where('type',$value->tour_type)->first();
                     $temp['id'] = $value->id;
                     $temp['status_id'] = $value->status;
+                    $temp['tour_type'] = $value->tour_type;
                     $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
+                    $temp['payment_status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
                     $temp['boooking_id'] = $value->booking_id;
                     $tour = Tour::where('id',$value->tour_id)->first();
                     $temp['tour_title'] = $tour->title;
