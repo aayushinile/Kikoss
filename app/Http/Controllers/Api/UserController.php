@@ -1271,7 +1271,7 @@ class UserController extends Controller
                     $temp['status_id'] = $value->status;
                     $temp['tour_type'] = $value->tour_type;
                     $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
-                    $temp['payment_status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
+                    $temp['payment_status'] = (($payment_details->status == 1) ? "Accepted" : (($payment_details->status == 2) ? "Rejected" : (($payment_details->status == 0) ? "Pending":"")));
                     $temp['boooking_id'] = $value->booking_id;
                     $tour = Tour::where('id',$value->tour_id)->first();
                     $temp['tour_title'] = $tour->title;
