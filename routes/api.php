@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('photo-booth-details', [UserController::class, 'PhotoBoothDetails']);
     Route::post('purchased-photo-booth-listing', [UserController::class, 'PurchasedPhotoBoothListing']);
     Route::post('confirmed-tour', [UserController::class, 'confirmed_tour']);
+    Route::post('virtual-tour-booking', [UserController::class, 'virtual_tour_booking']);
     Route::post('confirmed-tour-detail', [UserController::class, 'confirmed_tour_detail']);
     Route::post('free-callback-request', [UserController::class, 'FreeCallbackRequest']);
     Route::get('Photo-BoothPurchase-Listing', [UserController::class, 'PhotoBoothPurchaseListing']);
