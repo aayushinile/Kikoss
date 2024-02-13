@@ -172,65 +172,124 @@ class AjaxController extends Controller
     }
 
     public function filterByDate(Request $request)
-{
-    if ($request->has('date')) {
-        $selectedDate = $request->input('date');
-        $type = $request->input('type');
-        $data = '';
-        // Fetch data for the selected date
-        if($type == 'tour-booking'){
-            $data = DB::table('tour_bookings')
-            ->select(
-                DB::raw('HOUR(created_at) as hour'),
-                DB::raw('SUM(total_amount) as total_amount')
-            )
-            ->whereDate('booking_date', $selectedDate)
-            ->where('status', '!=', 3)
-            ->where('tour_type', 1)
-            ->groupBy(DB::raw('HOUR(created_at)'))
-            ->get();
-        }elseif($type == 'virtual-tour'){
-            $data = DB::table('tour_bookings')
-            ->select(
-                DB::raw('HOUR(created_at) as hour'),
-                DB::raw('SUM(total_amount) as total_amount')
-            )
-            ->whereDate('booking_date', $selectedDate)
-            ->where('status', '!=', 3)
-            ->where('tour_type', 2)
-            ->groupBy(DB::raw('HOUR(created_at)'))
-            ->get();
-        }elseif($type == 'photo-booth'){
-            $data = DB::table('tour_bookings')
-            ->select(
-                DB::raw('HOUR(created_at) as hour'),
-                DB::raw('SUM(total_amount) as total_amount')
-            )
-            ->whereDate('booking_date', $selectedDate)
-            ->where('status', '!=', 3)
-            ->where('tour_type', 3)
-            ->groupBy(DB::raw('HOUR(created_at)'))
-            ->get();
+    {
+            if ($request->has('date')) {
+                $selectedDate = $request->input('date');
+                $type = $request->input('type');
+                $data = '';
+                // Fetch data for the selected date
+                if($type == 'tour-booking'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('HOUR(created_at) as hour'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedDate)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 1)
+                    ->groupBy(DB::raw('HOUR(created_at)'))
+                    ->get();
+                }elseif($type == 'virtual-tour'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('HOUR(created_at) as hour'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedDate)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 2)
+                    ->groupBy(DB::raw('HOUR(created_at)'))
+                    ->get();
+                }elseif($type == 'photo-booth'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('HOUR(created_at) as hour'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedDate)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 3)
+                    ->groupBy(DB::raw('HOUR(created_at)'))
+                    ->get();
 
-        }else{
-            $data = DB::table('tour_bookings')
-            ->select(
-                DB::raw('HOUR(created_at) as hour'),
-                DB::raw('SUM(total_amount) as total_amount')
-            )
-            ->whereDate('booking_date', $selectedDate)
-            ->where('status', '!=', 3)
-            ->where('tour_type', 4)
-            ->groupBy(DB::raw('HOUR(created_at)'))
-            ->get();
-        }
-        
+                }else{
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('HOUR(created_at) as hour'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedDate)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 4)
+                    ->groupBy(DB::raw('HOUR(created_at)'))
+                    ->get();
+                }
+                return response()->json(['success' => $data]);
+            }
 
-        return response()->json(['success' => $data]);
+        return response()->json(['error' => 'Date parameter missing'], 400);
     }
 
-    return response()->json(['error' => 'Date parameter missing'], 400);
-}
+    public function filterByYear(Request $request)
+    {
+            if ($request->has('year')) {
+                $selectedYear = $request->input('year');
+                $type = $request->input('type');
+                $data = '';
+                // Fetch data for the selected date
+                if($type == 'tour-booking'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('YEAR(booking_date) as year'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedYear)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 1)
+                    ->groupBy(DB::raw('YEAR(booking_date)'))
+                    ->get();
+                }elseif($type == 'virtual-tour'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('YEAR(booking_date) as year'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedYear)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 2)
+                    ->groupBy(DB::raw('YEAR(booking_date)'))
+                    ->get();
+                }elseif($type == 'photo-booth'){
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('YEAR(booking_date) as year'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedYear)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 3)
+                    ->groupBy(DB::raw('YEAR(booking_date)'))
+                    ->get();
+
+                }else{
+                    $data = DB::table('tour_bookings')
+                    ->select(
+                        DB::raw('YEAR(booking_date) as year'),
+                        DB::raw('SUM(total_amount) as total_amount')
+                    )
+                    ->whereDate('booking_date', $selectedYear)
+                    ->where('status', '!=', 3)
+                    ->where('tour_type', 4)
+                    ->groupBy(DB::raw('YEAR(booking_date)'))
+                    ->get();
+                }
+                
+
+                return response()->json(['success' => $data]);
+            }
+
+        return response()->json(['error' => 'Date parameter missing'], 400);
+    }
 
 
 

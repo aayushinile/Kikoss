@@ -59,6 +59,7 @@ Route::match(['get', 'post'],'manage-booking', [App\Http\Controllers\HomeControl
 Route::match(['get', 'post'],'payments', [App\Http\Controllers\HomeController::class, 'PaymentDetails'])->name('PaymentDetails');
 Route::post('/get-date-graph', [App\Http\Controllers\AjaxController::class, 'filterByDate'])->name('filterByDate');
 
+Route::post('/get-year-graph', [App\Http\Controllers\AjaxController::class, 'filterByYear'])->name('filterByYear');
 Route::match(['get', 'post'],'/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
 Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');

@@ -323,7 +323,7 @@
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="filterDropdown">
                                         <li><a class="dropdown-item" href="#" id="filterDate">Date</a></li>
-                                        <li><a class="dropdown-item" href="#" id="filterYear">Year</a></li>
+                                        <li><a class="dropdown-item" href="#" id="filterYearBtn">Year</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -526,26 +526,46 @@
         </div>
     </div>
     <div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-    <form>
-    @csrf
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="dateFilterModalLabel">Filter By Date</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <label for="datepicker" class="form-label">Select Date:</label>
-                <input type="text" id="datepicker" class="form-control">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="applyDateFilterBtn">Apply Filter</button>
+        <div class="modal-dialog">
+            <form>
+            @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-dark" id="dateFilterModalLabel">Filter By Date</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="datepicker" class="form-label text-black">Select Date:</label>
+                        <input type="text" id="datepicker" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="applyDateFilterBtn">Apply Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Year Picker Modal -->
+    <div class="modal fade" id="yearPickerModal" tabindex="-1" aria-labelledby="yearPickerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="yearPickerModalLabel">Select Year</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select" id="yearSelect">
+                        <!-- Year options will be added dynamically -->
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="applyYearFilterBtn">Apply</button>
+                </div>
             </div>
         </div>
-    </form>
     </div>
-</div>
     {{-- Code for calendar --}}
     <script>
         $(document).ready(function() {
@@ -977,207 +997,249 @@
 
         $('#dateFilterModal').modal('hide'); // Hide the date filter modal
     });
+    
+    // Clear datepicker input field when switching tabs
+    $('.form-group a').click(function() {
+        $('#datepicker').val('');
+    });
 });
 
-// Function to update the filtered graph with the received data
-function updateFilteredGraph(data) {
-    var hourData = data.map(item => item.hour);
-    var totalAmountData = data.map(item => item.total_amount);
-    
-    // Generate labels for each hour interval
-    var labels = [];
-    for (var i = 0; i < 24; i++) {
-        labels.push(`${i}:00 - ${(i + 1) % 24}:00`);
+    // Function to update the filtered graph with the received data
+    function updateFilteredGraph(data) {
+        var hourData = data.map(item => item.hour);
+        var totalAmountData = data.map(item => item.total_amount);
+        
+        // Generate labels for each hour interval
+        var labels = [];
+        for (var i = 0; i < 24; i++) {
+            labels.push(`${i}:00 - ${(i + 1) % 24}:00`);
+        }
+        
+        // Destroy existing charts if they exist
+        if (window.tourBookingDayChart) {
+            window.tourBookingDayChart.destroy();
+        }
+        if (window.virtualTourBookingDayChart) {
+            window.virtualTourBookingDayChart.destroy();
+        }
+        if (window.photoBoothBookingDayChart) {
+            window.photoBoothBookingDayChart.destroy();
+        }
+        if (window.taxiBookingDayChart) {
+            window.taxiBookingDayChart.destroy();
+        }
+        
+        // Update the chart with the filtered data
+        var ctx = document.getElementById('tour-booking_day_chart').getContext('2d');
+        window.tourBookingDayChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: totalAmountData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    barThickness: 25,
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Total Tour Booking',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        var ctx2 = document.getElementById('virtual-tour-booking-day-chart').getContext('2d');
+        window.virtualTourBookingDayChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: totalAmountData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    barThickness: 25,
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Total Tour Booking',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        var ctx3 = document.getElementById('photo-booth-booking-day-chart').getContext('2d');
+        window.photoBoothBookingDayChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: totalAmountData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    barThickness: 25,
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Total Tour Booking',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        var ctx4 = document.getElementById('taxi-booking-day-chart').getContext('2d');
+        window.taxiBookingDayChart = new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: totalAmountData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    barThickness: 25,
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Total Tour Booking',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     }
-    
-    // Update the chart with the filtered data
-    var ctx = document.getElementById('tour-booking_day_chart').getContext('2d');
-    var tourBookingDayChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total Sales',
-                data: totalAmountData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                barThickness: 25,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'top',
-                },
-                title: {
-                    display: false,
-                    text: 'Total Tour Booking',
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
 
-
-    var ctx2 = document.getElementById('virtual-tour-booking-day-chart').getContext('2d');
-    var tourBookingDayChart = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total Sales',
-                data: totalAmountData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                barThickness: 25,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'top',
-                },
-                title: {
-                    display: false,
-                    text: 'Total Tour Booking',
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-
-    var ctx3 = document.getElementById('photo-booth-booking-day-chart').getContext('2d');
-    var tourBookingDayChart = new Chart(ctx3, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total Sales',
-                data: totalAmountData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                barThickness: 25,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'top',
-                },
-                title: {
-                    display: false,
-                    text: 'Total Tour Booking',
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-    var ctx4 = document.getElementById('taxi-booking-day-chart').getContext('2d');
-    var tourBookingDayChart = new Chart(ctx4, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total Sales',
-                data: totalAmountData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                barThickness: 25,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'top',
-                },
-                title: {
-                    display: false,
-                    text: 'Total Tour Booking',
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-}
 </script>
+<script>
+    // Populate year select options
+function populateYearSelectOptions() {
+    var currentYear = new Date().getFullYear();
+    var selectOptions = '';
+    for (var year = currentYear; year >= 1970; year--) {
+        selectOptions += '<option value="' + year + '">' + year + '</option>';
+    }
+    $('#yearSelect').html(selectOptions);
+}
 
+// Show year picker modal
+$('#filterYearBtn').click(function() {
+    populateYearSelectOptions(); // Populate year select options
+    $('#yearPickerModal').modal('show');
+});
+
+// Handle apply filter button click
+$('#applyYearFilterBtn').click(function() {
+    var selectedYear = $('#yearSelect').val();
+    console.log('Selected Year:', selectedYear);
+    $('#yearPickerModal').modal('hide');
+});
+
+</script>
 
 @endsection

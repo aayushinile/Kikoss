@@ -1016,14 +1016,14 @@ class UserController extends Controller
                 'created_at' => date("Y-m-d h:i:s")
             ]);
             
-            $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $bookingID;
-            $PaymentDetail->transaction_id = $request->transaction_id;
-            $PaymentDetail->payment_provider = 'PayPal';
-            $PaymentDetail->amount = $request->amount;/*TaxiBooking amount */
-            $PaymentDetail->status = 1;
-            $PaymentDetail->type = 4;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
-            $PaymentDetail->save();
+            // $PaymentDetail = new PaymentDetail;
+            // $PaymentDetail->booking_id = $bookingID;
+            // $PaymentDetail->transaction_id = $request->transaction_id;
+            // $PaymentDetail->payment_provider = 'PayPal';
+            // $PaymentDetail->amount = $request->amount;/*TaxiBooking amount */
+            // $PaymentDetail->status = 1;
+            // $PaymentDetail->type = 4;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
+            // $PaymentDetail->save();
             
             if($bookingID){
                 $data['status'] = true;
@@ -1260,6 +1260,67 @@ class UserController extends Controller
             }else{
                 /*All */
                 $all_bookings = TourBooking::whereIn('status',[0,1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }
+            
+            
+            if(count($all_bookings) > 0){
+                $response = array();/*Store data an array */
+                foreach ($all_bookings as $key => $value) {
+                    $payment_details = PaymentDetail::where('booking_id', $value->id)->where('type',$value->tour_type)->first();
+                    $temp['id'] = $value->id;
+                    $temp['status_id'] = $value->status;
+                    $temp['tour_type'] = $value->tour_type;
+                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
+                    $temp['payment_status'] = (($payment_details->status == 1) ? "Accepted" : (($payment_details->status == 2) ? "Rejected" : (($payment_details->status == 0) ? "Pending":"")));
+                    $temp['boooking_id'] = $value->booking_id;
+                    $tour = Tour::where('id',$value->tour_id)->first();
+                    $temp['tour_title'] = $tour->title;
+                    $temp['cancellation_policy'] = $tour->cancellation_policy;
+                    $temp['selectd_date'] = date('d M, Y', strtotime($value->booking_date));
+                    $temp['duration'] = $tour->duration;/* Tour Time */
+                    $temp['no_of_adults'] = $value->no_adults;
+                    $temp['no_of_senior'] = $value->no_senior_citizen;
+                    $temp['no_of_children'] = $value->no_childerns;
+                    $temp['total_amount'] = $value->total_amount;
+                    $temp['no_of_person'] = $value->no_adults+$value->no_senior_citizen+$value->no_childerns;
+                    $images = TourAttribute::where('tour_id',$value->id)->first();
+                    if($images){
+                        $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    }else{
+                        $temp['images'] = '';
+                    }
+                    
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Book tour listing';
+            $data['data'] = $response;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+
+    public function virtual_tour_booking(Request $request) 
+    {
+        try {
+            $user = Auth::user();
+            if($request->status == 1)
+            {
+                /*Accepted */
+                $all_bookings = TourBooking::where('status',1)->where('user_id',$user->id)->where('tour_type',2)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }elseif($request->status == 2){
+                /*Rejected */
+                $all_bookings = TourBooking::where('status',2)->where('user_id',$user->id)->where('tour_type',2)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            }else{
+                /*All */
+                $all_bookings = TourBooking::whereIn('status',[0,1,2])->where('user_id',$user->id)->where('tour_type',2)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }
             
             
