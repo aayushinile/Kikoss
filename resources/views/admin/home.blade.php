@@ -206,7 +206,7 @@
                                                         <div class="action-btn-info">
                                                             <a class="dropdown-item view-btn" data-bs-toggle="modal"
                                                                 href="#BookingRequest"
-                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}")'><i
+                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'><i
                                                                     class="las la-eye"></i> View</a>
                                                             {{-- <div class="dropdown-menu">
                                                                 <a class="dropdown-item view-btn" href="#"><i
@@ -428,6 +428,9 @@
                 <div class="modal-body">
                     <div class="iot-modal-form">
                         <h3>Tour Booking Request</h3>
+                        @php
+                        $image_path = $val->images['attribute_name'] ?? '';
+                        @endphp
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="kik-request-item-card">
                             <div class="kik-request-item-card-head">
@@ -439,7 +442,7 @@
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
                                     <div class="request-package-card-media">
-                                        <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                        <img src="">
                                     </div>
                                     <div class="request-package-card-text">
                                         <h2 id="title"></h2>
@@ -627,13 +630,7 @@
 
     <!-------------------- Append Popup for booking approval using with Jquery -------------------->
     <script>
-        function accept_tour(tour_id, title, booking_date, duration, total_amount) {
-            // if (image == '') {
-            //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
-            // } else {
-            //     imageUrl = 'https://nileprojects.in/roadman/dev/public/upload/store-logo/' + image;
-            // }
-
+        function accept_tour(tour_id, title, booking_date, duration, total_amount, image_path) {
             var total_amount = '$' + total_amount;
             currentURL = window.location.href;
             // Remove the "manage-booking" part
@@ -641,31 +638,24 @@
 
             var reject_url = base_url + '/reject-tour-booking/' + tour_id;
             /*URL for reject booking , append on reject button*/
-            var accept_url = base_url + '/accept-tour-booking/' + tour_id;
+            var accept_url = base_url + '/accept-tour-booking/' + tour_id + '#BookingAcceptedRequest';
             /*URL for accept booking , append on accept button*/
             var duration = 'Duration: ' + duration + ' Hours';
             var booking_date = 'Selected Date: ' + booking_date;
-            document.getElementById("title").innerText =
-                title;
+            document.getElementById("title").innerText = title;
             document.getElementById("tour_id").value = tour_id;
-            document.getElementById("TourID").innerText =
-                tour_id;
+            document.getElementById("TourID").innerText = tour_id;
             document.getElementById("booking_date").innerText = booking_date;
-            document.getElementById(
-                "duration").innerText = duration;
+            document.getElementById("duration").innerText = duration;
             document.getElementById("total_amount").innerText = total_amount;
             var url = document.getElementById("rejectbtn");
             url.href = reject_url;
             var url_accept = document.getElementById("acceptbtn");
             url_accept.href = accept_url;
 
-            // $('.mix-2 img').remove();
-            // var imageElement = $('<img>').attr({
-            //     'height': '60',
-            //     'width': '60',
-            //     'src': imageUrl
-            // });
-            // $('.mix-2').append(imageElement);
+            // Update the image source
+            var imgElement = document.querySelector(".request-package-card-media img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

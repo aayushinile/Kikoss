@@ -46,7 +46,7 @@ class HomeController extends Controller
     public function index()
     {
         // Showing All datas of app like tourbooking
-        $Tourrequests = TourBooking::with("Tour")->where('status', 0)->orderBy('id', 'DESC')->paginate(10);
+        $Tourrequests = TourBooking::with("Tour","images")->where('status', 0)->orderBy('id', 'DESC')->paginate(10);
         $booked_dates = TourBooking::where('status', 1)->groupBy('booking_date')->pluck('booking_date');
         $tour_booking = DB::table('tour_bookings')
         ->select(DB::raw('MONTH(booking_date) as month'), DB::raw('SUM(total_amount) as total_amount'))
@@ -1349,6 +1349,17 @@ class HomeController extends Controller
         try {
             $data = Master::first();
             return view('admin.add-edit-setting',compact('data'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function AddEditMasterData()
+    {
+        try {
+            $data = Master::first();
+            return view('admin.add-edit-master',compact('data'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

@@ -52,51 +52,50 @@
                                                             </td>
                                                         </tr>
                                                     @elseif(!$payment_details->isEmpty())
-                                                        <?php $s_no = 1; ?> @foreach ($payment_details as $val)
-                                                            <tr>
-                                                                <td>
-                                                                    <div class="sno">{{ $s_no }}</div>
-                                                                </td>
-                                                                <td>
-                                                                {{ $val->title ?? '' }}  
-                                                                </td>
-                                                                <td>
-                                                                {{ $val->user_name ?? '' }}  
-                                                                </td>
-                                                                <td>{{ $val->booking_id ?? '' }}</td>
-                                                                <td>{{ $val->transaction_id ?? '' }}</td>
-                                                                <td>{{ $val->payment_provider ?? '' }}</td>
+                                                        <?php $s_no = 1; ?> 
+                                                        @foreach ($payment_details as $val)
+                                                        @if(!empty($s_no) && !empty($val->title) && !empty($val->user_name) && !empty($val->booking_id) && !empty($val->transaction_id) && !empty($val->payment_provider) && !empty($val->tour_type) && !empty($val->amount) && !empty($val->status) && !empty($val->created_at))
+                                                        <tr>
+                                                            <td>
+                                                                <div class="sno">{{ $s_no }}</div>
+                                                            </td>
+                                                            <td>{{ $val->title }}</td>
+                                                            <td>{{ $val->user_name }}</td>
+                                                            <td>{{ $val->booking_id }}</td>
+                                                            <td>{{ $val->transaction_id }}</td>
+                                                            <td>{{ $val->payment_provider }}</td>
+                                                            <td>
+                                                                @if ($val->tour_type == 1)
+                                                                    Normal Tour
+                                                                @elseif ($val->tour_type == 2)
+                                                                    Virtual Tour
+                                                                @elseif ($val->tour_type == 3)
+                                                                    Photo Booth
+                                                                @elseif ($val->tour_type == 4)
+                                                                    Taxi Booking
+                                                                @else
+                                                                    Null
+                                                                @endif
+                                                            </td>
+                                                            <td>${{ $val->amount }}</td>
+                                                            <td>
+                                                                @if ($val->status == 1)
+                                                                    Accepted
+                                                                @elseif ($val->status == 2)
+                                                                    Rejected
+                                                                @else
+                                                                    Null
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ date('d M, Y H:i:s', strtotime($val->created_at)) }}</td>
+                                                            <td>
+                                                                <div class="action-btn-info">
+                                                                    <a class="btn btn-outline-primary" href="#" data-bs-toggle="modal" data-bs-target="#refundConfirmationModal">Refund</a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
 
-                                                                <td>
-                                                                    @if ($val->tour_type == 1)
-                                                                        Normal Tour
-                                                                    @elseif ($val->tour_type == 2)
-                                                                        Virtual Tour
-                                                                    @elseif ($val->tour_type == 3)
-                                                                        Photo Booth
-                                                                    @elseif ($val->tour_type == 4)
-                                                                        Taxi Booking
-                                                                    @else
-                                                                        Null
-                                                                    @endif
-                                                                </td>
-                                                                <td>${{ $val->amount ?? '-' }}</td>
-                                                                <td>
-                                                                    @if ($val->status == 1)
-                                                                       Accepted
-                                                                    @elseif ($val->status == 2)
-                                                                        Rejected
-                                                                    @else
-                                                                        Null
-                                                                    @endif
-                                                                </td>
-                                                                <td>{{ date('d M, Y H:i:s', strtotime($val->created_at)) ?? '' }}</td>
-                                                                <td>
-                                                                    <div class="action-btn-info">
-                                                                        <a class="btn btn-outline-primary" href="#" data-bs-toggle="modal" data-bs-target="#refundConfirmationModal">Refund</a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                             <?php $s_no++; ?>
                                                         @endforeach
                                                     @endif

@@ -11,6 +11,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    <style>
+        .Accepted-status{
+            color: green;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -96,11 +101,11 @@
                     <div class="col-md-8">
                         <div class="BookingRequesttabs">
                             <ul class="nav nav-tabs">
-                                <li><a class="active" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request
-                                        ({{ count($Tourrequests) }})</a>
+                                <li>
+                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? 'active' : '' }}" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request ({{ count($Tourrequests) }})</a>
                                 </li>
-                                <li><a href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request
-                                        ({{ count($Acceptedtours) }})</a>
+                                <li>
+                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? 'active' : '' }}" href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request ({{ count($Acceptedtours) }})</a>
                                 </li>
                                 <li><a href="#BookingRejectedRequest" data-bs-toggle="tab">Tour Booking Rejected Request
                                         ({{ count($Rejectedtours) }})</a>
@@ -108,7 +113,7 @@
                             </ul>
                         </div>
                         <div class="tasks-content-info tab-content">
-                            <div class="tab-pane active" id="BookingRequest">
+                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? ' active' : '' }}" id="BookingRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
@@ -236,14 +241,11 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane" id="BookingAcceptedRequest">
+                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? ' active' : '' }}" id="BookingAcceptedRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="mr-auto">
-                                                <h4 class="heading-title">Booking Accepted Request</h4>
-                                            </div>
-                                            <div class="btn-option-info wd7">
+                                            <div class="btn-option-info w-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
@@ -334,7 +336,7 @@
                                                                 <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="status-text Pending-status"><i
+                                                                    <div class="status-text Accepted-status"><i
                                                                             class="las la-hourglass-start"></i>Accepted
                                                                     </div>
                                                                 </td>
@@ -912,6 +914,7 @@
     {{-- Code for calendar --}}
     <script>
         $(document).ready(function() {
+           
             $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -1140,6 +1143,19 @@
             return formattedDate;
         }
     </script>
+<script>
+    // Check if the URL hash contains 'BookingAcceptedRequest'
+    if (window.location.hash === '#BookingAcceptedRequest') {
+        // Activate the 'BookingAcceptedRequest' tab and deactivate others
+        $('a[href="#BookingAcceptedRequest"]').addClass('active');
+        $('a[href="#BookingRequest"]').removeClass('active');
 
+        $('#BookingAcceptedRequest').addClass('active');
+        $('#BookingRequest').removeClass('active');
+    }else{
+        $('a[href="#BookingRequest"]').addClass('active');
+        $('#BookingRequest').addClass('active');
+    }
+</script>
 
 @endsection

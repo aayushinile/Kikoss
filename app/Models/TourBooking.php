@@ -32,4 +32,9 @@ class TourBooking extends Model
         return $this->hasOne(PhotoBooth::class, 'id', 'tour_id');
     }
     
+
+    function images()
+    {
+        return $this->hasOne('App\Models\TourAttribute','tour_id', 'id' );
+    }
 }
