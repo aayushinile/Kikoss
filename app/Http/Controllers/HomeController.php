@@ -645,14 +645,15 @@ class HomeController extends Controller
             if($request->filled('date')){
                 $requests->whereDate('booking_date', '=', $request->date);
             }
-            $requests->where('tour_type', 1);//1:Tour, 2:Virtual tour
+            $requests->where('tour_type', 1)->with('images');//1:Tour, 2:Virtual tour
             $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
             $Tourrequests = $requests->paginate(15);
             
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $Acceptedtours = TourBooking::where('status', 1)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Accepted
-            $Rejectedtours = TourBooking::where('status', 2)->where('tour_type', 1)->orderBy('id', 'DESC')->paginate(15);//Rejected
+            $Acceptedtours = TourBooking::where('status', 1)->where('tour_type', 1)->with('images')->orderBy('id', 'DESC')->paginate(15);//Accepted
+            //dd($Acceptedtours);
+            $Rejectedtours = TourBooking::where('status', 2)->where('tour_type', 1)->with('images')->orderBy('id', 'DESC')->paginate(15);//Rejected
             return view('admin.manage-booking', compact('Tourrequests', 'tours','search','tour_id','date','Acceptedtours','Rejectedtours'));
                 
         } catch (\Exception $e) {

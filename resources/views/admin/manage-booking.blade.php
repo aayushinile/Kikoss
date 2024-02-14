@@ -11,11 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
-    <style>
-        .Accepted-status{
-            color: green;
-        }
-    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -101,11 +96,11 @@
                     <div class="col-md-8">
                         <div class="BookingRequesttabs">
                             <ul class="nav nav-tabs">
-                                <li>
-                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? 'active' : '' }}" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request ({{ count($Tourrequests) }})</a>
+                                <li><a class="active" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request
+                                        ({{ count($Tourrequests) }})</a>
                                 </li>
-                                <li>
-                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? 'active' : '' }}" href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request ({{ count($Acceptedtours) }})</a>
+                                <li><a href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request
+                                        ({{ count($Acceptedtours) }})</a>
                                 </li>
                                 <li><a href="#BookingRejectedRequest" data-bs-toggle="tab">Tour Booking Rejected Request
                                         ({{ count($Rejectedtours) }})</a>
@@ -113,7 +108,7 @@
                             </ul>
                         </div>
                         <div class="tasks-content-info tab-content">
-                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? ' active' : '' }}" id="BookingRequest">
+                            <div class="tab-pane active" id="BookingRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
@@ -220,7 +215,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestPending"
-                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
+                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -241,11 +236,14 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? ' active' : '' }}" id="BookingAcceptedRequest">
+                            <div class="tab-pane" id="BookingAcceptedRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="btn-option-info w-100">
+                                            <div class="mr-auto">
+                                                <h4 class="heading-title">Booking Accepted Request</h4>
+                                            </div>
+                                            <div class="btn-option-info wd7">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
@@ -336,7 +334,7 @@
                                                                 <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="status-text Accepted-status"><i
+                                                                    <div class="status-text Pending-status"><i
                                                                             class="las la-hourglass-start"></i>Accepted
                                                                     </div>
                                                                 </td>
@@ -345,7 +343,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestAccepted"
-                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
+                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -474,7 +472,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestRejected"
-                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}")'
+                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -538,7 +536,7 @@
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
                                     <div class="request-package-card-media">
-                                        <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                        <img src="">
                                     </div>
                                     <div class="request-package-card-text">
                                         <h2 id="title"></h2>
@@ -642,7 +640,7 @@
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
                                     <div class="request-package-card-media">
-                                        <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                        <img src="">
                                     </div>
                                     <div class="request-package-card-text">
                                         <h2 id="titleAccepted"></h2>
@@ -745,7 +743,7 @@
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
                                     <div class="request-package-card-media">
-                                        <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                        <img src="">
                                     </div>
                                     <div class="request-package-card-text">
                                         <h2 id="titleRejected"></h2>
@@ -914,7 +912,6 @@
     {{-- Code for calendar --}}
     <script>
         $(document).ready(function() {
-           
             $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -1015,7 +1012,7 @@
 
     <!-------------------- Append Accepted-Rejected Popup-Jquery -------------------->
     <script>
-        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
+        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -1052,6 +1049,8 @@
             url.href = reject_url;
             var url_accept = document.getElementById("acceptbtn");
             url_accept.href = accept_url;
+            var imgElement = document.querySelector("#BookingRequestPending .request-package-card-media img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
 
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
@@ -1060,9 +1059,10 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
+            
         }
 
-        function accepted_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
+        function accepted_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
 
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
@@ -1094,9 +1094,12 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
+            var imgElement = document.querySelector("#BookingRequestAccepted .request-package-card-media img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
+            
         }
 
-        function rejected_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount) {
+        function rejected_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
 
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
@@ -1124,6 +1127,8 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
+            var imgElement = document.querySelector("#BookingRequestRejected .request-package-card-media img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
         }
 
         function formatDate(dateString) {
@@ -1143,19 +1148,6 @@
             return formattedDate;
         }
     </script>
-<script>
-    // Check if the URL hash contains 'BookingAcceptedRequest'
-    if (window.location.hash === '#BookingAcceptedRequest') {
-        // Activate the 'BookingAcceptedRequest' tab and deactivate others
-        $('a[href="#BookingAcceptedRequest"]').addClass('active');
-        $('a[href="#BookingRequest"]').removeClass('active');
 
-        $('#BookingAcceptedRequest').addClass('active');
-        $('#BookingRequest').removeClass('active');
-    }else{
-        $('a[href="#BookingRequest"]').addClass('active');
-        $('#BookingRequest').addClass('active');
-    }
-</script>
 
 @endsection
