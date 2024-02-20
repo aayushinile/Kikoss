@@ -7,6 +7,17 @@
 
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <style>
+        .select2-selection--multiple:before {
+            content: "";
+            position: absolute;
+            right: 7px;
+            top: 42%;
+            border-top: 5px solid #888;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+        }
+    </style>
 @endpush
 @section('content') <div class="page-breadcrumb-title-section">
         <h4>{{ $data ? 'Edit' : 'Add' }} Photo Booth</h4>

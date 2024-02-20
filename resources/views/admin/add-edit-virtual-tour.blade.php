@@ -4,6 +4,34 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managevertualtour.css') }}">
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <style>
+        .image-upload label {
+            width: 100%;
+            border: 1px dashed #3da1e3;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0px 4px 30px rgb(95 94 231 / 7%);
+            background: #fff;
+            color: #3da1e3;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        label {
+            display: inline-block;
+        }
+        .addupload {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+        .body-main-content{
+            overflow-x: hidden;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -87,7 +115,139 @@
                             @enderror
                         </div>
 
+                        <div class="container ">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="Stop-info-card">
+                                        @if(!empty($data->stop_details) && count($data->stop_details) > 0)
+                                        @foreach($data->stop_details as $index => $stopDetail)
+                                        <div class="row stop-detail">
+                                            <input type="hidden" name="stop_id[]" value="{{ $stopDetail->id ?? '' }}" id="sid">
+                                            <input type="hidden" class="remove-input" name="stop_remove[]" value="">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <h4>Stop Name</h4>
+                                                    <input type="text" class="form-control" name="stop[stop_name][]" value="{{ $stopDetail->stop_name }}" placeholder="Enter Name Here…">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <h4>Stop Number</h4>
+                                                    <input type="text" class="form-control" name="stop[stop_num][]" value="{{ $stopDetail->stop_number }}" placeholder="Enter Name Here…">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <h4>Image Upload</h4>
+                                                    @if($stopDetail->stop_image)
+                                                        <label id="imageLabel_{{ $index }}" for="addfiles_{{ $index }}" class="signature-text" style="background-image: url('{{ asset('upload/virtual-stop-images/' . $stopDetail->stop_image) }}'); background-position: center; background-size: cover;">
+                                                            <img src="{{ asset('upload/virtual-stop-images/' . $stopDetail->stop_image) }}" alt="Stop Image" class="img-thumbnail" style="visibility: hidden;">
+                                                        </label>
+                                                    @else
+                                                        <div class="image-upload">
+                                                            <label id="imageLabel_{{ $index }}" for="addfiles_{{ $index }}" class="signature-text">
+                                                                <span><img src="{{ asset('assets/admin-images/upload-icon.svg') }}" height="20"> Upload Image</span>
+                                                            </label>
+                                                        </div>
+                                                    @endif
+                                                    <input type="file" name="stop[stop_image][{{ $index }}]" id="addfiles_{{ $index }}" class="addupload form-control" style="display: none;" onchange="updateImagePreview(event, {{ $index }})">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <h4>Audio Upload</h4>
+                                                    @if($stopDetail->stop_audio)
+                                                        <audio controls>
+                                                            <source src="{{ asset('upload/virtual-stop-audio/' . $stopDetail->stop_audio) }}" type="audio/mpeg">
+                                                            Your browser does not support the audio element.
+                                                        </audio>
+                                                    @else
+                                                        <div class="image-upload">
+                                                            <input type="file" name="stop[stop_audio][{{ $index }}]" id="addfileAudio_{{ $index }}" class="addupload form-control" onchange="updateAudioFile(event, {{ $index }})">
+                                                            <label for="addfileAudio_{{ $index }}">
+                                                                <div class="signature-text"> 
+                                                                    <span><img src="{{ asset('assets/admin-images/upload-icon.svg') }}" height="20"> Upload Audio </span>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group" style="padding:13px;margin-top:16px;">
+                                                    <a class="Remove-stop btn btn-primary rounded-circle" style="width: 25px; height: 25px; padding: 0; line-height: 25px; text-align: center;"><i class="las la-trash" style="font-size: 17px;font: weight 600px;"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                        @else
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="Stop-info-card">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <h4>Stop Name</h4>
+                                                            <input type="text" class="form-control" name="stop[stop_name][]" value="" placeholder="Enter Stop Name Here…">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <h4>Stop Number</h4>
+                                                            <input type="text" class="form-control" name="stop[stop_num][]" value="" placeholder="Enter Stop Number Here…">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <h4>Image Upload </h4>
+                                                            <div class="image-upload">
+                                                                <input type="file" name="stop[stop_image][]" id="addfile" class="addupload form-control" onchange="updateImagePreview2(event)">
+                                                                <label for="addfile" id="imageLabel">
+                                                                    <div class="signature-text"> 
+                                                                        <span><img src="{{ assets('assets/admin-images/upload-icon.svg') }}" height="20"> Upload Image</span>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <h4>Audio Upload</h4>
+                                                            <div class="image-upload">
+                                                                <input type="file" name="" id="addfile" class="addupload">
+                                                                <label for="addfile">
+                                                                    <div class="signature-text"> 
+                                                                        <span><img src="{{ assets('assets/admin-images/upload-icon.svg') }}" height="20"> Upload Audio </span>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group" style="padding:13px;margin-top:16px;">
+                                                            <a class="Removebtn btn btn-primary rounded-circle" style="width: 25px; height: 25px; padding: 0; line-height: 25px; text-align: center;"><i class="las la-trash" style="font-size: 17px;font: weight 600px;"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-end add-button">
+                                <div class="col-md-3 text-right justify-content-end">
+                                    <div class="form-group d-flex">
+                                        <a class="Addbtn btn btn-primary rounded-circle" style="width: 25px; height: 25px; padding: 0; line-height: 25px; text-align: center;">
+                                            <i class="las la-plus" style="font-size: 17px;font: weight 600px;"></i>
+                                        </a>
+                                        <p class="text-primary" style="margin-left: 10px; text-decoration:underline">Add more stops</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -122,6 +282,7 @@
                             @enderror
                         </div>
 
+                        
                         <div class="col-md-3">
                             <div class="create-review-form-group form-group">
                                 <h4>Upload Thumbnail Photos<a class="addmorefile" href="">
@@ -185,6 +346,7 @@
                                                                 </div>
                                                             </div>
                                                         @endif
+                        
 
                                                     </label>
                                                 </div>
@@ -332,6 +494,8 @@
                             @endif
                         </div> --}}
 
+                        
+
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -344,7 +508,7 @@
                                 <a class="cancelbtn"href="{{ url('manage-virtual-tour') }}">
                                     cancel</a>
                                 <button
-                                    class="Savebtn"type="submit">{{ $data ? 'Update' : 'Save & Create Virtual Tour' }}</button>
+                                    class="Savebtn" type="submit">{{ $data ? 'Update' : 'Save & Create Virtual Tour' }}</button>
                             </div>
                         </div>
                     </div>
@@ -536,9 +700,147 @@
 
                     }
 
-
                 }
             })
         });
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    var stopDetailsCount = {{ !empty($data->stop_details) ? count($data->stop_details) : 0 }};
+</script>
+<script>
+    
+    $(document).ready(function() {
+        
+        var uploadIconSrc = "{{ asset('assets/admin-images/upload-icon.svg') }}";
+
+        $(".Addbtn").click(function() {
+        // Calculate the index for the new row
+        var rowIndex = stopDetailsCount + $(".Stop-info-card").length;
+        var newDiv = '<div class="col-md-12">' +
+                    '<div class="Stop-info-card">' +
+                        '<div class="row">' +
+                            '<div class="col-md-3">' +
+                                '<div class="form-group">' +
+                                    '<h4>Stop Name</h4>' +
+                                    '<input type="text" class="form-control" name="stop[stop_name][' + rowIndex + ']" value="" placeholder="Enter Stop Name Here…">' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="col-md-3">' +
+                                '<div class="form-group">' +
+                                    '<h4>Stop Number</h4>' +
+                                    '<input type="text" class="form-control" name="stop[stop_num][' + rowIndex + ']" value="" placeholder="Enter Stop Number Here…">' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                '<div class="form-group">' +
+                                    '<h4>Image Upload</h4>' +
+                                    '<div class="image-upload">' +
+                                        '<label id="imageLabel_' + rowIndex + '" for="addfileImage_' + rowIndex + '" class="signature-text">' +
+                                            '<span><img src="' + uploadIconSrc + '" height="20"> Upload Image</span>' +
+                                        '</label>' +
+                                        '<input type="file" name="stop[stop_image][' + rowIndex + ']" id="addfileImage_' + rowIndex + '" class="addupload form-control" style="display: none;" onchange="updateImagePreview(event, ' + rowIndex + ')">' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                '<div class="form-group">' +
+                                    '<h4>Audio Upload</h4>' +
+                                    '<div class="image-upload">' +
+                                        '<input type="file" name="stop[stop_audio][' + rowIndex + ']" id="addfileAudio_' + rowIndex + '" class="addupload form-control">' +
+                                        '<label for="addfileAudio_' + rowIndex + '">'+
+                                            '<div class="signature-text">'+
+                                                '<span><img src="' + uploadIconSrc + '" height="20"> Upload Audio </span>'+
+                                            '</div>'+
+                                        '</label>'+
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                '<div class="form-group" style="padding:13px;margin-top:16px;">' +
+                                    '<a class="Removebtn btn btn-primary rounded-circle" style="width: 25px; height: 25px; padding: 0; line-height: 25px; text-align: center;"><i class="las la-trash" style="font-size: 17px;font: weight 600px;"></i></a>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                $(".row.add-button").before(newDiv); // Append the new div before the "Add more stops" button
+        });
+
+
+        $(document).on("click", ".Removebtn", function() {
+            $(this).closest('.col-md-12').remove(); // Remove the closest .col-md-12 div when the "Remove" button is clicked
+        });
+    });
+
+
+
+
+    $(document).ready(function() {
+        $('.Remove-stop').click(function() {
+            var row = $(this).closest('.stop-detail');
+            var removeInput = row.find('.remove-input');
+            removeInput.val('1'); // Mark the input field for removal
+            row.hide(); // Optionally hide the row immediately
+        });
+    });
+
+
+    function updateImagePreview(event, index) {
+        const input = event.target;
+        const label = document.getElementById(`imageLabel_${index}`);
+        const file = input.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageURL = e.target.result;
+                const imgElement = label.querySelector('img');
+
+                if (imgElement) {
+                    imgElement.src = imageURL;
+                    imgElement.style.visibility = 'visible'; // Make sure the image is visible
+                } else {
+                    // If there's no img element, create one and append it to the label
+                    const newImgElement = document.createElement('img');
+                    newImgElement.src = imageURL;
+                    label.appendChild(newImgElement);
+                }
+
+                // Optionally, you can hide the background image of the label
+                label.style.backgroundImage = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function updateImagePreview2(event) {
+        const input = event.target;
+        const label = input.nextElementSibling; // Get the label next to the input
+        const file = input.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageURL = e.target.result;
+                const imgElement = label.querySelector('img');
+
+                if (imgElement) {
+                    imgElement.src = imageURL;
+                    imgElement.style.visibility = 'visible'; // Make sure the image is visible
+                } else {
+                    // If there's no img element, create one and append it to the label
+                    const newImgElement = document.createElement('img');
+                    newImgElement.src = imageURL;
+                    label.appendChild(newImgElement);
+                }
+
+                // Optionally, you can hide the background image of the label
+                label.style.backgroundImage = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 @endsection

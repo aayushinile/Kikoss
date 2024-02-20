@@ -15,6 +15,7 @@ use App\Models\PhotoBooth;
 use App\Models\BookingPhotoBooth;
 use App\Models\PhotoBoothMedia;
 use App\Models\Master;
+use App\Models\StopDetails;
 use App\Models\TaxiBooking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -227,7 +228,8 @@ class HomeController extends Controller
             // Decrypt the Virtual TOUR ID using the encrypt_decrypt function
             $id = encrypt_decrypt('decrypt', $id);
             // Showing data accoding to virtual tour id 
-            $data = VirtualTour::where('id', $id)->first();
+            $data = VirtualTour::where('id', $id)->with('stop_details')->first();
+            //dd($data);
             return view('admin.add-edit-virtual-tour', compact('data'));
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
@@ -462,7 +464,6 @@ class HomeController extends Controller
     public function SaveVirtualTour(Request $request)
     {
         try {
-
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
                 'price' => 'required|min:0',
@@ -471,6 +472,12 @@ class HomeController extends Controller
                 'description' => 'required',
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
+                'stop' => 'nullable|array',
+                'stop.stop_name.*' => 'nullable',
+                'stop.stop_num.*' => 'nullable',
+                'stop.stop_image.*' => 'nullable',
+                'stop.stop_aud.*' => 'nullable|mimes:mp3,wav|max:5120',
+                
                 //'audio' => 'required|max:5120',
                 //'trial_audio_file' => 'required|max:5120',
                 //'thumbnail' => 'required|mimes:jpeg,png,jpg,svg|max:2048',
@@ -480,7 +487,8 @@ class HomeController extends Controller
 
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+            $validated = $validator->validated();
+            //dd($validated);
             $Tour = new VirtualTour;
             if ($file = $request->file('audio')) {
                 $destination = public_path('upload/virtual-audio');
@@ -509,6 +517,34 @@ class HomeController extends Controller
             $Tour->cencellation_policy = $request->cancellation_policy;
             $Tour->status = 1;
             $Tour->save();
+            
+            if ($request->has('stop')) {
+                foreach ($request->stop['stop_name'] as $key => $stopName) {
+                    $tourDetail = new StopDetails;
+                    $tourDetail->parent_id = $Tour->id; // Assign parent tour id
+                    $tourDetail->stop_name = $stopName;
+                    $tourDetail->stop_number = $request->stop['stop_num'][$key];
+        
+                    // Upload stop image if exists
+                    if ($request->hasFile('stop.stop_image.'.$key)) {
+                        $stopImage = $request->file('stop.stop_image.'.$key);
+                        $destination = public_path('upload/virtual-stop-images');
+                        $imageName = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $stopImage->extension();
+                        $stopImage->move($destination, $imageName);
+                        $tourDetail->stop_image = $imageName;
+                    }
+                    if ($request->hasFile('stop.stop_aud.'.$key)) {
+                        $stopAudio = $request->file('stop.stop_aud.'.$key);
+                        $destination = public_path('upload/virtual-stop-audio'); 
+                        $name = 'AUDIO_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $stopAudio->extension();
+                        $stopAudio->move($destination, $name);
+                        $tourDetail->stop_audio = $name;
+                    }
+        
+                    // Save the VirtualTourDetail instance
+                    $tourDetail->save();
+                }
+            }
 
             return redirect('manage-virtual-tour')->with('success', 'Virtual Tour Created successfully');
         } catch (\Exception $e) {
@@ -532,13 +568,19 @@ class HomeController extends Controller
                 'cancellation_policy' => 'required',
                 'audio' => 'max:5120',
                 'trial_audio_file' => 'max:5120',
+                'stop' => 'nullable|array',
+                'stop.stop_name.*' => 'nullable',
+                'stop.stop_num.*' => 'nullable',
+                'stop.stop_image.*' => 'nullable',
+                'stop.stop_aud.*' => 'nullable|mimes:mp3,wav|max:5120',
                 //'thumbnail' => 'mimes:jpeg,png,jpg,svg|max:2048',
             ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+            $validated = $validator->validated();
+           //dd($validated);
             $Tour = VirtualTour::find($request->pid);
             if ($file = $request->file('audio')) {
                 try {
@@ -585,6 +627,56 @@ class HomeController extends Controller
             $Tour->short_description = $request->short_description;
             $Tour->cencellation_policy = $request->cancellation_policy;
             $Tour->save();
+
+            if ($request->has('stop')) {
+                //dd($validated);
+                foreach ($request->stop['stop_name'] as $key => $stopName) {
+                    //dd($key);
+                    $stopId = $request->stop_id[$key] ?? null;
+                    
+                    $stopDetail = $stopId ? StopDetails::find($stopId) : new StopDetails;
+                    if($stopId) {
+                        // Update existing stop detail
+                        $stopDetail = StopDetails::find($stopId);
+                    } else {
+                        // Create new stop detail
+                        $stopDetail = new StopDetails;
+                        $stopDetail->parent_id = $Tour->id; // Assign parent tour id
+                    }
+                    $stopDetail->stop_name = $stopName ;
+                    $stopDetail->stop_number = $request->stop['stop_num'][$key];
+    
+                    // Upload stop image if exists
+                    if ($request->hasFile('stop.stop_image.'.$key)) {
+                        $stopImage = $request->file('stop.stop_image.'.$key);
+                        $destination = public_path('upload/virtual-stop-images');
+                        $imageName = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $stopImage->extension();
+                        $stopImage->move($destination, $imageName);
+                        $stopDetail->stop_image = $imageName;
+                    }
+    
+                    // Upload stop audio if exists
+                    if ($request->hasFile('stop.stop_aud.'.$key)) {
+                        $stopAudio = $request->file('stop.stop_aud.'.$key);
+                        $destination = public_path('upload/virtual-stop-audio');
+                        $audioName = 'AUDIO_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $stopAudio->extension();
+                        $stopAudio->move($destination, $audioName);
+                        $stopDetail->stop_audio = $audioName;
+                    }
+                   
+    
+                    $stopDetail->save();
+                }
+            }
+            if ($request->has('stop_remove')) {
+                foreach ($request->stop_remove as $key => $value) {
+                    if ($value == '1') {
+                        // Marked for removal, delete the associated stop detail
+                        $stopDetailId = $request->input('stop_id')[$key]; // Assuming you have a hidden input for stop ID
+                        StopDetails::destroy($stopDetailId);
+                    }
+                }
+            }
             return redirect('manage-virtual-tour')->with('success', 'Virtual Tour Updated successfully');
         } catch (\Exception $e) {
             return errorMsg('Exception => ' . $e->getMessage());
