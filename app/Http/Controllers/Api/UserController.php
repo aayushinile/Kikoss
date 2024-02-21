@@ -670,7 +670,7 @@ class UserController extends Controller
                     'adults_amount' => 'required',
                     'senior_amount' => 'required',
                     'childrens_amount' => 'required',
-                    'tax' => 'required',
+                    'tax' => 'nullable',
                 ]);
             }else{
                 $validator = Validator::make($request->all() , [
@@ -678,7 +678,7 @@ class UserController extends Controller
                     'tour_type' => 'required|string|max:255|min:1',
                     'booking_date' => 'required',
                     'amount' => 'required',
-                    'tax' => 'required',
+                    'tax' => 'nullable',
                 ]);
             }
             
@@ -754,7 +754,7 @@ class UserController extends Controller
             $title= $admin->fullname;
             $id1='';
             $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             /*User Mail*/
@@ -776,7 +776,7 @@ class UserController extends Controller
             $title= $user->fullname;
             $id1='';
             $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
@@ -798,7 +798,7 @@ class UserController extends Controller
                 'tour_type' => 'required|string|max:255|min:1',
                 'booking_date' => 'required',
                 'amount' => 'required',
-                'tax' => 'required',
+                'tax' => 'nullable',
             ]);
             
             if ($validator->fails())
@@ -853,7 +853,7 @@ class UserController extends Controller
             $title= $user->fullname;
             $id1='';
             $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             /*Admin Mail and Push Notification*/
@@ -876,7 +876,7 @@ class UserController extends Controller
             $title= $admin->fullname;
             $id1='';
             $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $data['status']=true;
@@ -1057,7 +1057,7 @@ class UserController extends Controller
                     $title= $user->fullname;
                     $id1='';
                     $sound ='default';
-                    $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+                    $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
                     $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
                 }
             }
@@ -1082,7 +1082,7 @@ class UserController extends Controller
             $title= $admin->fullname;
             $id1='';
             $sound ='default';
-            $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
+            $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             
