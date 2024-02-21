@@ -670,7 +670,7 @@ class UserController extends Controller
                     'adults_amount' => 'required',
                     'senior_amount' => 'required',
                     'childrens_amount' => 'required',
-                    'tax' => 'nullable',
+                    'tax' => 'required',
                 ]);
             }else{
                 $validator = Validator::make($request->all() , [
@@ -678,7 +678,7 @@ class UserController extends Controller
                     'tour_type' => 'required|string|max:255|min:1',
                     'booking_date' => 'required',
                     'amount' => 'required',
-                    'tax' => 'nullable',
+                    'tax' => 'required',
                 ]);
             }
             
@@ -798,7 +798,7 @@ class UserController extends Controller
                 'tour_type' => 'required|string|max:255|min:1',
                 'booking_date' => 'required',
                 'amount' => 'required',
-                'tax' => 'nullable',
+                'tax' => 'required',
             ]);
             
             if ($validator->fails())
