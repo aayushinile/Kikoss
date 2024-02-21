@@ -654,7 +654,7 @@ class UserController extends Controller
     }
     
     /* Booking tour*/
-    public function bookingTour(Request $request) 
+    public function bookingTour(Request $request)
     {
         try {
             $data=array();
@@ -670,7 +670,6 @@ class UserController extends Controller
                     'adults_amount' => 'required',
                     'senior_amount' => 'required',
                     'childrens_amount' => 'required',
-                    'tax' => 'required',
                 ]);
             }else{
                 $validator = Validator::make($request->all() , [
@@ -678,11 +677,8 @@ class UserController extends Controller
                     'tour_type' => 'required|string|max:255|min:1',
                     'booking_date' => 'required',
                     'amount' => 'required',
-                    'tax' => 'required',
                 ]);
             }
-            
-            
             if ($validator->fails())
             {
                 return errorMsg($validator->errors()->first());
@@ -690,6 +686,7 @@ class UserController extends Controller
             $booking_id = random_alphanumeric();
             $transaction_id = random_alphanumeric();
             $user = Auth::user();
+            
             $booking = new TourBooking;
             $booking->booking_id = $booking_id;
             $booking->tour_id = $request->tour_id;
@@ -707,33 +704,30 @@ class UserController extends Controller
             $childrens_amount = $request->childrens_amount*$request->no_childerns;
             $booking->childrens_amount = $childrens_amount;
             $booking->transaction_id = $request->transaction_id;
-            //$tax = 100;
-            $booking->tax = $request->tax;
+            $tax = Master::where('id','!=',null)->first();;
+            $booking->tax = $tax;
             //Checking Tour type
             if($request->amount){
-                $booking->total_amount = $request->amount + $request->tax;/*Virtual amount */
+                $booking->total_amount = $request->amount + $tax;/*Virtual amount */
             }else{
-                $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $request->tax;/*Tour amount */
+                $booking->total_amount = $adults_amount + $senior_amount + $childrens_amount + $tax;/*Tour amount */
             }
-            
             $booking->status = 0;
             $booking->save();
             $tour_booking_id = $booking->id;
-            
             $PaymentDetail = new PaymentDetail;
             $PaymentDetail->booking_id = $tour_booking_id;
             $PaymentDetail->transaction_id = $request->transaction_id;
             $PaymentDetail->payment_provider = 'PayPal';
             //Checking Tour type
             if($request->amount){
-                $PaymentDetail->amount = $request->amount + $request->tax;/*Virtual amount */
+                $PaymentDetail->amount = $request->amount + $tax;/*Virtual amount */
             }else{
-                $PaymentDetail->amount = $adults_amount + $senior_amount + $childrens_amount + $request->tax;/*Tour amount */
+                $PaymentDetail->amount = $adults_amount + $senior_amount + $childrens_amount + $tax;/*Tour amount */
             }
             $PaymentDetail->status = 1;
             $PaymentDetail->type = $request->tour_type;/*1:Normal Tour,2:Virtual Tour, 3:Photo-Booth, 4:Tax-booking */
             $PaymentDetail->save();
-            
             /*Admin Mail*/
             $admin = User::where('id',1)->first();
             $mailData = [
@@ -745,18 +739,17 @@ class UserController extends Controller
                 'driver_details'  => ''
             ];
             Mail::to($admin->email)->send(new TourBookingAdminMail($mailData));
-            $push_message = 'New Tour Booking'; 
+            $push_message = 'New Tour Booking';
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
             $device_token = $admin->firebase_token;
             $img='';
-            $type=''; 
+            $type='';
             $id='';
             $title= $admin->fullname;
             $id1='';
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
             /*User Mail*/
             $mailData = [
                 'name'  => $user->fullname,
@@ -767,18 +760,17 @@ class UserController extends Controller
                 'driver_details'  => ''
             ];
             Mail::to($user->email)->send(new TourBookingAdminMail($mailData));
-            $push_message = 'New Tour Booking'; 
+            $push_message = 'New Tour Booking';
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
             $device_token = $user->device_token;
             $img='';
-            $type=''; 
+            $type='';
             $id='';
             $title= $user->fullname;
             $id1='';
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
             $data['status']=true;
             $data['message']="Boooked successfully";
             $data['booking_id']=$booking_id;
