@@ -56,7 +56,7 @@
                                     </div>
 
                                     <div class="mt-1 forgotpsw-text">
-                                        <a href="{{ route('password.request') }}">I forgot my password</a>
+                                        <a href="{{ route('password.request') }}">Forgot Password</a>
                                     </div>
                                 </form>
                             </div>

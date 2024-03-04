@@ -17,6 +17,7 @@ class TaxiBooking extends Model
         'drop_location',
         'drop_lat_long',
         'mobile',
+        'email',
         'hotel_name',
         'book_taxicol',
         'distance',

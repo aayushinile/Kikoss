@@ -38,6 +38,9 @@ use Carbon\Carbon;
 use DateTime;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
+use App\Models\TaxiBookingEvent;
+use Illuminate\Support\Facades\Http;
+use Eluceo\iCal\Domain\Entity\Calendar;
 
 
 class UserController extends Controller
@@ -70,7 +73,7 @@ class UserController extends Controller
                 $success['email'] = $user->email;
                 $success['mobile'] = ($user->mobile) ?? '';
                 $success['status'] = $user->status;
-                if ($user->status == 0) { /*Checking User is active or in-active 0:unapproved 1:Approved bu admin */
+                if ($user->status == 0) { /*Checking User is active or in-active 0:unapproved 1:Approved by admin */
                     return response()->json(["status" => false, "message" => "your account is deactivated by administrator!"]);
                 }
                 return response()->json(["status" => true, "message" => "Logged in successfully.", "data" => $success]);
@@ -426,10 +429,9 @@ class UserController extends Controller
             }
             $email = $request->email;
             $user = User::where('email',$email)->orderBy('id','DESC')->first();
-            
+            //dd($user);
             if(empty($user))
             {
-                
                 $exist = Otp::where('email',$email)->orderBy('id','DESC')->first();
                 if(!empty($exist))
                 {
@@ -445,7 +447,6 @@ class UserController extends Controller
                         'code'  => 'Your otp is '. $code,
                         'email'  => $email
                     ];
-         
                     Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }else{
@@ -459,13 +460,13 @@ class UserController extends Controller
                     $data['message'] = 'Verification code has been sent';
                     $data['code'] = $code;
                     $data['email'] = $email;
+                    //dd($email,'2');
                     $mailData = 
                     [
                         'body' => 'You are receiving this email because you have registered on our Kikos platform',
                         'code'  => 'Your otp is '. $code,
                         'email'  => $email
                     ];
-         
                     Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }
@@ -704,8 +705,8 @@ class UserController extends Controller
             $childrens_amount = $request->childrens_amount*$request->no_childerns;
             $booking->childrens_amount = $childrens_amount;
             $booking->transaction_id = $request->transaction_id;
-            $tax = Master::where('id','!=',null)->first();;
-            $booking->tax = $tax;
+            $tax = Master::where('id','!=',null)->value('tax');
+            $booking->tax = $tax->tax ?? '0';
             //Checking Tour type
             if($request->amount){
                 $booking->total_amount = $request->amount + $tax;/*Virtual amount */
@@ -884,7 +885,7 @@ class UserController extends Controller
     public function VirtualTourListing() 
     {
         try {
-            $tours = VirtualTour::where('status',1)->orderBy('id','ASC')->get();//Get all datas of Virtual-Tour
+            $tours = VirtualTour::where('status',1)->orderBy('id','DESC')->get();//Get all datas of Virtual-Tour
             if(count($tours) > 0){
                 $response = array();/*Store data an array */
                 foreach ($tours as $key => $value) {
@@ -910,6 +911,166 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
+
+    public function VirtualTourStopsListing() 
+    {
+        try {
+            $tours = VirtualTour::where('status', 1)->with('stop_details')->orderBy('id', 'DESC')->get();
+
+            $response = [];
+            foreach ($tours as $tour) {
+                $origin= [
+                    'name' => $tour->origin, 
+                    'lat'=> $tour->origin_lat, 
+                    'lng'=> $tour->origin_long
+                ];
+               $destination = [ 
+                    'name'=> $tour->destination,  
+                    'lat'=> $tour->dest_lat, 
+                    'lng'=> $tour->dest_long
+                ];
+                $temp = [
+                    'id' => $tour->id,
+                    'minute' => $tour->minute,
+                    'name' => $tour->name,
+                    'price' => $tour->price,
+                    'description' => $tour->description,
+                    'cancellation_policy' => $tour->cancellation_policy,
+                    'audio' => $tour->audio_file,
+                    'thumbnail' => $tour->thumbnail_file,
+                    'origin' => $origin,
+                    'destination' => $destination,
+                    'stop_details' => []
+                ];
+
+                foreach ($tour->stop_details as $stop) {
+                    $temp['stop_details'][] = [
+                        'id' => $stop->id,
+                        'parent_id' => $stop->parent_id,
+                        'stop_name' => $stop->stop_name,
+                        'stop_number' => $stop->stop_number,
+                        'stop_image' => $stop->stop_image,
+                        'stop_audio' => $stop->stop_audio ?? null,
+                        'latitude' => $stop->lat ?? null,
+                        'longitude' => $stop->long ?? null,
+                    ];
+                }
+
+                $response[] = $temp;
+            }
+
+            $data['status'] = true;
+            $data['message'] = 'Virtual tour listing';
+            $data['data'] = $response;
+            // $data['regionData'] = $regionData;
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function VirtualTourStopDetail(Request $request) 
+    {
+        try {
+            //Virtual detail according to virtual tour id
+            $tour = VirtualTour::where('id', $request->id)->with('stop_details')->first();
+            // $stops_data = [
+            //     ['name' => "Leonard's Bakery", 'coordinates' => ['lat' => 21.2921, 'lng' => -157.8417], 'stopNumber' => 1],
+            //     ['name' => "Byodo In - Japanese Temple", 'coordinates' => ['lat' => 21.4368, 'lng' => -157.8344], 'stopNumber' => 2],
+            //     ['name' => "Kualoa Ranch", 'coordinates' => ['lat' => 21.528525, 'lng' => -157.837039], 'stopNumber' => 3],
+            //     ['name' => "Kahana Bay", 'coordinates' => ['lat' => 21.5628, 'lng' => -157.8643], 'stopNumber' => 4],
+            //     ['name' => "Pounder's Beach", 'coordinates' => ['lat' => 21.589276, 'lng' => -157.907976], 'stopNumber' => 5],
+            //     ['name' => "Chinamanan's Hat - Mokoli'i", 'coordinates' => ['lat' => 21.623869, 'lng' => -157.919242], 'stopNumber' => 6],
+            //     ['name' => "Polynesian Cultural Center", 'coordinates' => ['lat' => 21.6349, 'lng' => -157.9226], 'stopNumber' => 7],
+            //     ['name' => "Mastumoto Shave Ice", 'coordinates' => ['lat' => 21.6412, 'lng' => -157.9223], 'stopNumber' => 8],
+            //     ['name' => "Laie Temple", 'coordinates' => ['lat' => 21.6447, 'lng' => -157.9186], 'stopNumber' => 9],
+            //     ['name' => "Ted's Bakery", 'coordinates' => ['lat' => 21.6496, 'lng' => -157.9237], 'stopNumber' => 10],
+            //     ['name' => "Laie Point", 'coordinates' => ['lat' => 21.6517, 'lng' => -157.9082], 'stopNumber' => 11],
+            //     ['name' => "Kahuku Fruit Stand", 'coordinates' => ['lat' => 21.676938, 'lng' => -157.950047], 'stopNumber' => 12],
+            //     ['name' => "Kahuku Shrimp & Food Trucks", 'coordinates' => ['lat' => 21.677091, 'lng' => -157.950312], 'stopNumber' => 13],
+            //     ['name' => "Sunset Beach", 'coordinates' => ['lat' => 21.674306, 'lng' => -158.038180], 'stopNumber' => 14],
+            //     ['name' => "Banzai Pipeline", 'coordinates' => ['lat' => 21.673301, 'lng' => -158.042791], 'stopNumber' => 15],
+            //     ['name' => "Shark's Cove", 'coordinates' => ['lat' => 21.671957, 'lng' => -158.064999], 'stopNumber' => 16],
+            //     ['name' => "Waimea Bay", 'coordinates' => ['lat' => 21.642436, 'lng' => -158.067561], 'stopNumber' => 17],
+            //     ['name' => "Waimea Valley", 'coordinates' => ['lat' => 21.6216, 'lng' => -158.0646], 'stopNumber' => 18],
+            //     ['name' => "Haleiwa Beach", 'coordinates' => ['lat' => 21.5941, 'lng' => -158.1037], 'stopNumber' => 19],
+            //     ['name' => "Tropical Nut Farms", 'coordinates' => ['lat' => 21.5559, 'lng' => -158.0239], 'stopNumber' => 20],
+            //     ['name' => "Dole Plantation", 'coordinates' => ['lat' => 21.5255, 'lng' => -158.0373], 'stopNumber' => 21],
+            // ];
+            $regionData = [];
+            if (!empty($tour)) {
+                $temp['id'] = $tour->id;
+                $temp['minute'] = $tour->minute;
+                $temp['duration'] = $tour->duration ?? '';
+                $temp['name'] = $tour->name;
+                $temp['price'] = $tour->price;
+                $temp['description'] = $tour->description;
+                $temp['short_description'] = $tour->short_description ?? '';
+                $temp['cancellation_policy'] = $tour->cancellation_policy ?? '';
+                $temp['uploaded_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
+                $temp['purchase_user_count'] = '2.1M'; // Placeholder value, replace with actual purchase user count logic
+                $temp['purchase_date'] = date('d M, Y, h:i:s a', strtotime($tour->created_at));
+                $temp['audio'] = asset('public/upload/virtual-audio/' . $tour->audio_file);
+                $temp['trail_audio'] = $tour->profile ? asset('public/upload/virtual-audio/' . $tour->trial_audio_file) : '';
+                $temp['thumbnail'] = asset('public/upload/virtual-thumbnail/' . $tour->thumbnail_file);
+
+                // Process stop details
+                //$stopDetails = [];
+                // foreach ($tour->stop_details as $stop) {
+                //     $stopDetails[] = [
+                //         'stop_name' => $stop->stop_name,
+                //         'stop_number' => $stop->stop_number,
+                //         'stop_image' => $stop->stop_image ? asset('public/upload/virtual-images/'.$stop->stop_image) : null,
+                //         'stop_audio' => $stop->stop_audio ? asset('public/upload/virtual-audio/'.$stop->stop_audio) : null,
+                //         "latitude" => '37.78825',
+                //         "longitude" => '-122.4324' ,
+                //     ];
+                // }
+
+                $origin[] = [
+                    'name' => $tour->origin, 
+                    'lat'=> $tour->origin_lat, 
+                    'lng'=> $tour->origin_long
+                ];
+               $destination[] = [ 
+                    'name'=> $tour->destination,  
+                    'lat'=> $tour->dest_lat, 
+                    'lng'=> $tour->dest_long
+                ];
+
+               $temp['origin'] = $origin;
+               $temp['destination'] = $destination;
+                // $temp['stop_details'] = $stopDetails;
+
+                foreach ($tour->stop_details as $stop) {
+                    $regionData[] = [
+                        'stop_name' => $stop['stop_name'],
+                        'stop_number' => (string)$stop['stop_number'],
+                        'latitude' => $stop['lat'],
+                        'longitude' => $stop['long'],
+                        'stop_audio' =>  $stop->stop_image ? asset('public/upload/virtual-images/'.$stop->stop_image) : null,
+                        'stop_image' =>  $stop->stop_audio ? asset('public/upload/virtual-audio/'.$stop->stop_audio) : null,
+                    ];
+                }
+                $temp['region'] = $regionData;
+               
+            } else {
+                $temp = '';
+            }
+
+            $data['status'] = true;
+            $data['message'] = 'Virtual Tour Detail';
+            $data['data'] = $temp;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
     
     /*Virtual tour Details  */
     public function VirtualTourDetail(Request $request) 
@@ -954,6 +1115,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'booking_date_time' => 'required',
                 'fullname' => 'required|string|max:255',
+                'email_id' => 'nullable|string',
                 'pickup_location' => 'required',
                 'pickup_lat_long'=> 'required',
                 'drop_location'=> 'required',
@@ -996,6 +1158,7 @@ class UserController extends Controller
                 'user_name' => $user_name,
                 'booking_id' => $booking_id,
                 'fullname' => $request->fullname,
+                'email' => $request->email_id,
                 'pickup_location' => $request->pickup_location,
                 'pickup_lat_long' => $request->pickup_lat_long,
                 'drop_location' => $request->drop_location,
@@ -1090,7 +1253,7 @@ class UserController extends Controller
         try {
             $user_id = Auth::user()->id;
             $user = Auth::user();
-            $bookings = TaxiBooking::where('user_id',$user_id)->orderBy('id','ASC')->get();
+            $bookings = TaxiBooking::where('user_id',$user_id)->orderBy('id','DESC')->get();
             if(count($bookings) > 0){
                 $response = array();
                 foreach ($bookings as $key => $value) {
@@ -1253,12 +1416,13 @@ class UserController extends Controller
                 /*All */
                 $all_bookings = TourBooking::whereIn('status',[0,1,2])->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
             }
-            
+            // dd($all_bookings);die;
             
             if(count($all_bookings) > 0){
                 $response = array();/*Store data an array */
                 foreach ($all_bookings as $key => $value) {
                     $payment_details = PaymentDetail::where('booking_id', $value->id)->where('type',$value->tour_type)->first();
+                    //dd($value->id);
                     $temp['id'] = $value->id;
                     $temp['status_id'] = $value->status;
                     $temp['tour_type'] = $value->tour_type;
@@ -1281,7 +1445,6 @@ class UserController extends Controller
                     }else{
                         $temp['images'] = '';
                     }
-                    
                     $response[] = $temp;
                 }
             }else{
@@ -1293,6 +1456,7 @@ class UserController extends Controller
             $data['data'] = $response;
             return response()->json($data);
         } catch (\Exception $e) {
+            dd($e);
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
@@ -1591,4 +1755,593 @@ class UserController extends Controller
         $result = curl_exec($ch);
         curl_close($ch);
     }
+
+
+    public function addTaxiBookingEvent(Request $request)
+    {
+        if($request->datesstatustype == 'Not Available')
+        {
+            $title = 'Not Available';
+            $color = '#9C9D9F';
+        }elseif($request->datesstatustype == 'Booked Taxi'){
+            $title = 'Booked Tour';
+            $color = '#1d875a';
+        }else{
+            $title = 'Available';
+            $color = '#FFFFFF';
+        }
+        $event = new TaxiBookingEvent;
+        $event->title = $title;
+        $event->date = $request->date;
+        $event->color = $color;
+        $event->save();
+
+        return response()->json($event);
+    }
+
+
+    public function TaxiBookingFilter(Request $request)
+    {
+        try {
+            $requests = TaxiBooking::query();
+            $search = $request->search ? $request->search : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('booking_date', '=', $request->date);
+            }
+            $requests->where('status', 0);
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
+            $amount = TaxiBooking::sum('amount');
+            $data['bookings'] = $bookings;
+            $data['amount'] = $amount;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function CallbackRequest(Request $request)
+    {
+        try {
+            
+            $requests = CallbackRequest::query();
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $date = $request->date ? $request->date : '';
+            
+            if($request->filled('search')){
+                $requests->Where('name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('mobile', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('tour_id')){
+                $requests->where('tour_id', $request->tour_id);
+            }
+
+            if($request->filled('date')){
+                $requests->whereDate('preferred_time', '=', $request->date);
+            }
+            $requests->where('status', 0);
+            $requests->orderBy('id', 'DESC');
+            $datas = $requests->paginate(10);
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            return response()->json($datas);
+
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function virtual_confirmed__tour(Request $request) 
+    {
+        try {
+            $user = Auth::user();
+                /*Accepted */
+            $all_bookings = TourBooking::where('status',1)->where('user_id',$user->id)->where('tour_type',2)->orderBy('id','DESC')->get();//Get all datas of tour booking of user
+            // dd($all_bookings);die;
+            
+            if(count($all_bookings) > 0){
+                $response = array();/*Store data an array */
+                foreach ($all_bookings as $key => $value) {
+                    // $payment_details = PaymentDetail::where('transaction_id', $value->transaction_id)->where('type',$value->tour_type)->first();
+                   // dd($payment_details);
+                    $temp['id'] = $value->id;
+                    $temp['status_id'] = $value->status;
+                    $temp['tour_type'] = $value->tour_type;
+                    $temp['status'] = (($value->status == 1) ? "Accepted" : (($value->status == 2) ? "Rejected" : (($value->status == 0) ? "Pending":"")));
+                    // $temp['payment_status'] = (($payment_details->status == 1) ? "Accepted" : (($payment_details->status == 2) ? "Rejected" : (($payment_details->status == 0) ? "Pending":"")));
+                    $temp['boooking_id'] = $value->booking_id;
+                    $tour = Tour::where('id',$value->tour_id)->first();
+                    $temp['tour_title'] = $tour->title;
+                    $temp['cancellation_policy'] = $tour->cancellation_policy;
+                    $temp['selectd_date'] = date('d M, Y', strtotime($value->booking_date));
+                    $temp['duration'] = $tour->duration;/* Tour Time */
+                    $temp['no_of_adults'] = $value->no_adults;
+                    $temp['no_of_senior'] = $value->no_senior_citizen;
+                    $temp['no_of_children'] = $value->no_childerns;
+                    $temp['total_amount'] = $value->total_amount;
+                    $temp['no_of_person'] = $value->no_adults+$value->no_senior_citizen+$value->no_childerns;
+                    $images = TourAttribute::where('tour_id',$value->id)->first();
+                    if($images){
+                        $temp['images'] = asset('public/upload/tour-thumbnail/'.$images->attribute_name);
+                    }else{
+                        $temp['images'] = '';
+                    }
+                    $response[] = $temp;
+                }
+            }else{
+                $response = [];
+            }
+            
+            $data['status'] = true;
+            $data['message'] = 'Book tour listing';
+            $data['data'] = $response;
+            $data['count'] = count($response);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            dd($e);
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+
+    public function PhotoBoothInfo(Request $request)
+    {
+        try {
+            $requests = BookingPhotoBooth::query();
+            $request->validate([
+                'search' => 'nullable|string',
+                'booth_id' => 'nullable|not_in:', // Ensure booth_id is not the default option
+                'date' => 'nullable|date',
+            ]);
+            $search = $request->input('search');
+            $booth_id = $request->input('booth_id');
+            $date = $request->input('date');
+
+            if($search){
+                $requests->Where('user_name', 'LIKE', '%'.$search.'%');
+            }
+            if($booth_id != 'Select By Photo Booth Name'){
+                $requests->where('booth_id', $booth_id);
+            }
+
+            if($date){
+                $requests->whereDate('booking_date', '=', $date);
+            }
+            $requests->whereIn('status', [0,1]);
+            $requests->orderBy('id', 'DESC');
+            $bookings = $requests->paginate(10);
+            
+            $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+
+            // Check if filters are applied
+            $filtersApplied = ($search || $booth_id != 'Select By Photo Booth Name' || $date);
+
+            // Check if any data is returned after filtering
+
+            $data = [
+                'status' => true,
+                'message' => 'Photo Booth Information',
+                'data' => [
+                    'bookings' => $bookings,
+                    'PhotoBooths' => $PhotoBooths,
+                    'filters_applied' => $filtersApplied,
+                ]
+            ];
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function getPurchasedTourCount(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $normal_tour =  TourBooking::where('status',1)->where('user_id',$user->id)->where('tour_type',1)->orderBy('id','DESC')->count();
+            $virtual_tour = TourBooking::where('status',1)->where('user_id',$user->id)->where('tour_type',2)->orderBy('id','DESC')->count();
+            $photo_booth = BookingPhotoBooth::where('userid',$user->id)->orderBy('id','DESC')->count();
+            $taxi_booking =  TaxiBooking::where('user_id', $user->id)->count();
+
+            $data['normal_tour_count'] = $normal_tour;
+            $data['virtual_tour_count'] = $virtual_tour;
+            $data['photo_booth_count'] = $photo_booth;
+            $data['taxi_booking_count'] = $taxi_booking;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+    public function fetchAvailability(Request $request)
+    {
+        // Fetch the iCalendar data from the provided URL
+        $icsUrl = 'https://fareharbor.com/integrations/ics/kikostoursoahu/calendar/?token=098ccc1c-6577-43a3-ba06-f93ec1c2b657';
+        $response = Http::get($icsUrl);
+
+        if ($response->successful()) {
+            // Parse the iCalendar data
+            $icalString = $response->body();
+
+            // Split the iCalendar data into individual events
+            $events = explode("BEGIN:VEVENT", $icalString);
+
+            // Extract availability and tour information
+            $availabilities = [];
+            foreach ($events as $event) {
+                // Extract event details
+                $matches = [];
+                preg_match('/SUMMARY:(.*?)\R/', $event, $summaryMatches);
+                $summary = isset($summaryMatches[1]) ? $summaryMatches[1] : '';
+
+                preg_match('/DTSTART:(.*?)\R/', $event, $startMatches);
+                $startDateTime = isset($startMatches[1]) ? Carbon::parse($startMatches[1]) : null;
+
+                preg_match('/DTEND:(.*?)\R/', $event, $endMatches);
+                $endDateTime = isset($endMatches[1]) ? Carbon::parse($endMatches[1]) : null;
+
+                // Extract booking information from DESCRIPTION field
+                preg_match_all('/BOOKING\s*#(\d+).*?Total:\s*\$([\d.]+).*?Due:\s*\$([\d.]+).*?\n(.*?)\n\s*-*\s*/s', $event, $bookingMatches, PREG_SET_ORDER);
+                $bookings = [];
+                foreach ($bookingMatches as $bookingMatch) {
+                    $bookingId = $bookingMatch[1];
+                    $totalPrice = $bookingMatch[2];
+                    $dueAmount = $bookingMatch[3];
+                    $customerInfo = $bookingMatch[4];
+                    
+                    // Extract customer name and phone number
+                    preg_match('/(?:\n|^)(.*?)\n/', $customerInfo, $customerMatches);
+                    $customer = isset($customerMatches[1]) ? $customerMatches[1] : '';
+
+                    // Extract seats left information from the summary
+                    preg_match('/booking:\s*(\d+)\s*People/', $summary, $seatsMatches);
+                    $seatsLeft = isset($seatsMatches[1]) ? $seatsMatches[1] : 0;
+
+                    // Construct booking array
+                    $booking = [
+                        'booking_id' => $bookingId,
+                        'total_price' => $totalPrice,
+                        'due_amount' => $dueAmount,
+                        'customer' => $customer,
+                        'seats_left' => $seatsLeft,
+                    ];
+
+                    // Add booking to the array
+                    $bookings[] = $booking;
+                }
+
+                // Construct availability array
+                $availability = [
+                    'summary' => $summary,
+                    'start' => $startDateTime ? $startDateTime->format('Y-m-d') : null,
+                    'end' => $endDateTime ? $endDateTime->format('Y-m-d') : null,
+                    'bookings' => $bookings,
+                ];
+
+                // Add availability to the array
+                $availabilities[] = $availability;
+            }
+
+            // Return availability data as JSON response
+            return response()->json($availabilities);
+        } else {
+            // Handle the case where fetching the iCalendar data failed
+            return response()->json(['error' => 'Failed to fetch iCalendar data'], $response->status());
+        }
+    }
+    
+
+    public function addPhotoBooth(Request $request)
+    {
+        try {
+            //dd('in');
+            $validator = Validator::make($request->all(), [
+                'tour_id' => 'required',
+                'title' => 'required|string|max:255|min:6',
+                'price' => 'required|min:0',
+                'description' => 'required',
+                'cancellation_policy' => 'required',
+                'delete_days' => 'required',
+                'users_id.*' => 'required',
+                'image.*' => 'required|image|max:5120', // Max 5MB per image
+                'video.*' => 'required|file|mimes:mp4,mov,avi|max:102400', // Max 100MB per video
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+
+            $imageCount = count($request->file('image'));
+            $videoCount = count($request->file('video'));
+
+            if ($imageCount > 20 || $videoCount > 3) {
+                return response()->json(['error' => 'You can only upload a maximum of 20 images and 3 videos.'], 400);
+            }
+
+            // Save all input data of photobooth
+            $usersId = is_array($request->users_id) ? $request->users_id : explode(',', $request->users_id);
+            $boothID = PhotoBooth::insertGetId([
+                'title' => $request->title,
+                'delete_days' => $request->delete_days,
+                'users_id' => implode(',', $usersId),
+                'price' => $request->price,
+                'tour_id' => $request->tour_id,
+                'description' => $request->description,
+                'cancellation_policy' => $request->cancellation_policy,
+                'status' => 1,
+                'created_at' => now(),
+            ]);
+
+            // Save images
+            if ($request->hasFile('image')) {
+                $imageFiles = $request->file('image');
+                foreach ($imageFiles as $file) {
+                    $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move(public_path('upload/photo-booth'), $name);
+                    PhotoBoothMedia::create([
+                        'booth_id' => $boothID,
+                        'media_type' => 'Image',
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
+            }
+
+            // Save videos
+            if ($request->hasFile('video')) {
+                $videoFiles = $request->file('video');
+                foreach ($videoFiles as $file) {
+                    $name = 'VID_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
+                    $file->move(public_path('upload/video-booth'), $name);
+                    PhotoBoothMedia::create([
+                        'booth_id' => $boothID,
+                        'media_type' => 'video',
+                        'media' => $name,
+                        'status' => 1,
+                    ]);
+                }
+            }
+
+            return response()->json(['success' => true, 'message' => 'Photo Booth created successfully'], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Exception => ' . $e->getMessage()], 500);
+        }
+    }
+
+
+
+    public function updatePhotoBooth(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'photo_booth_id' => 'required',
+                'title' => 'required|string|max:255|min:6',
+                'price' => 'required|min:0',
+                'description' => 'required',
+                'cancellation_policy' => 'required',
+                'delete_days' => 'required',
+                'users_id.*' => 'required',
+                'image.*' => 'image|max:5120', // Max 5MB per image
+                'video.*' => 'file|mimes:mp4,mov,avi|max:102400', // Max 100MB per video
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+    
+            // Find the existing photo booth
+            $photoBooth = PhotoBooth::findOrFail($request->photo_booth_id);
+            $existingImageCount = PhotoBoothMedia::where('booth_id', $request->photo_booth_id)
+                ->where('media_type', 'Image')
+                ->count();
+
+            $existingVideoCount = PhotoBoothMedia::where('booth_id', $request->photo_booth_id)
+                ->where('media_type', 'Video')
+                ->count();
+    
+            // Calculate the total count of images and videos after the update
+            $newImageCount = $existingImageCount + (is_array($request->file('image')) ? count($request->file('image')) : 0);
+            $newVideoCount = $existingVideoCount + (is_array($request->file('video')) ? count($request->file('video')) : 0);
+    
+            // Ensure the total count doesn't exceed the limits
+            if ($newImageCount > 20 || $newVideoCount > 3) {
+                return response()->json(['error' => 'You can only upload a maximum of 20 images and 3 videos.'], 400);
+            }
+            $usersId = is_array($request->users_id) ? $request->users_id : explode(',', $request->users_id);
+            // Update the photo booth details
+            $photoBooth->update([
+                'title' => $request->title,
+                'delete_days' => $request->delete_days,
+                'users_id' => implode(',', $usersId),
+                'price' => $request->price,
+                'tour_id' => $request->tour_id,
+                'description' => $request->description,
+                'cancellation_policy' => $request->cancellation_policy,
+                'status' => 1,
+                'created_at' => now(),
+            ]);
+    
+            // Save new images
+            if ($request->hasFile('image')) {
+                foreach ($request->file('image') as $image) {
+                    $imageName = 'IMG_' . date('YmdHis') . '_' . rand(1000, 9999) . '.' . $image->extension();
+                    $image->move(public_path('upload/photo-booth'), $imageName);
+                    $photoBooth->media()->create([
+                        'media_type' => 'Image',
+                        'media' => $imageName,
+                        'status' => 1,
+                    ]);
+                }
+            }
+    
+            // Save new videos
+            if ($request->hasFile('video')) {
+                foreach ($request->file('video') as $video) {
+                    $videoName = 'VID_' . date('YmdHis') . '_' . rand(1000, 9999) . '.' . $video->extension();
+                    $video->move(public_path('upload/video-booth'), $videoName);
+                    $photoBooth->media()->create([
+                        'media_type' => 'Video',
+                        'media' => $videoName,
+                        'status' => 1,
+                    ]);
+                }
+            }
+    
+            return response()->json(['success' => true, 'message' => 'Photo Booth updated successfully'], 200);
+        } catch (\Exception $e) {
+            dd($e);
+            return response()->json(['error' => 'Exception => ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    public function VirtualTourFilter(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'search' => 'nullable',
+                'date' => 'nullable|date_format:d/m/y',
+                'tour_id' => 'nullable',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $validated = $validator->validated();
+            $search = isset($validated['search']) ? $validated['search'] : '';
+            $tour_id = isset($validated['tour_id']) ? $validated['tour_id'] : '';
+            $date = isset($validated['date']) ? $validated['date'] : '';
+            $dbquery = TourBooking::where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+
+            if($search){
+                $dbquery->where(function($query) use ($search) {
+                    $query->where('user_name', 'LIKE', "%$search%")
+                          ->orWhere('total_amount', 'LIKE', "%$search%");
+                });
+            }
+
+            if($tour_id){
+                $dbquery->where('tour_id', $tour_id);
+            }
+
+            if($date){
+                $date = Carbon::createFromFormat('d/m/y', $date)->toDateString();
+                $dbquery->whereDate('booking_date', $date);
+            }
+            
+            $data =  $dbquery->orderBy('id', 'DESC')->paginate(10);
+            return response()->json([
+                'data' => $data,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function PhotoBoothFilter(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'search' => 'nullable',
+                'date' => 'nullable|date_format:d/m/y',
+                'booth_id' => 'nullable',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $validated = $validator->validated();
+            $search = isset($validated['search']) ? $validated['search'] : '';
+            $booth_id = isset($validated['booth_id']) ? $validated['booth_id'] : '';
+            $date = isset($validated['date']) ? $validated['date'] : '';
+            $dbquery = BookingPhotoBooth::query();/*1:Normal tour booking, 2:Virtual tour bppking*/
+
+            if($search){
+                $dbquery->where(function($query) use ($search) {
+                    $query->where('user_name', 'LIKE', "%$search%")
+                          ->orWhere('total_amount', 'LIKE', "%$search%");
+                });
+            }
+
+            if($booth_id){
+                $dbquery->where('booth_id', $booth_id);
+            }
+
+            if($date){
+                $date = Carbon::createFromFormat('d/m/y', $date)->toDateString();
+                $dbquery->whereDate('booking_date', $date);
+            }
+            
+            $data =  $dbquery->orderBy('id', 'DESC')->paginate(10);
+            return response()->json([
+                'data' => $data,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+
+    public function BookTaxiFilter(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'search' => 'nullable',
+                'date' => 'nullable|date_format:d/m/y',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $validated = $validator->validated();
+            $search = isset($validated['search']) ? $validated['search'] : '';
+            $date = isset($validated['date']) ? $validated['date'] : '';
+            $dbquery = TaxiBooking::query();
+
+            if($search){
+                $dbquery->where(function($query) use ($search) {
+                    $query->where('user_name', 'LIKE', "%$search%")
+                          ->orWhere('booking_id', 'LIKE', "%$search%");
+                });
+            }
+            if($date){
+                $date = Carbon::createFromFormat('d/m/y', $date)->toDateString();
+                $dbquery->whereDate('booking_date', $date);
+            }
+            
+            $data =  $dbquery->orderBy('id', 'DESC')->paginate(10);
+            return response()->json([
+                'data' => $data,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+    
+
 }

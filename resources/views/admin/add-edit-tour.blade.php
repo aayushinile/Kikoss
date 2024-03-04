@@ -2,6 +2,7 @@
 @section('title', 'Kikos - Tour')
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/tour.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ assets('assets/admin-js/jquery-3.7.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ assets('assets/admin-plugins/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 @endpush
@@ -318,7 +319,7 @@
                         <div class="col-md-12">
                             <div class="create-review-form-group form-group">
                                 <h4>Browse & Upload Tour Photos <a class="addmorefile" onclick="addImageBox()">
-                                        <img src="{{ asset('assets/admin-images/add-file.svg') }}">
+                                        <img src="{{ asset('public/assets/admin-images/add-file.svg') }}">
                                     </a>
                                 </h4>
                                 <div class="create-review-form-input">
@@ -355,7 +356,7 @@
                                                             <div class="upload-file-item">
                                                                 <div class="upload-media">
                                                                     <img id="image_addfile1"
-                                                                        src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                        src="{{ asset('public/assets/admin-images/upload-icon.svg') }}">
                                                                 </div>
                                                                 <div class="upload-text">
                                                                     <span>Browse & Upload File</span>
@@ -419,6 +420,7 @@
 @endsection
 @push('js')
     <!-------------------- Append delete Popup Jquery -------------------->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script>
         function GetData(IDS, Name) {
             document.getElementById("Name").innerText =
@@ -511,33 +513,53 @@
     <script>
         var imgCount = 1;
 
-        function addImageBox() {
-            imgCount += 1;
-
-            // Create a new div element and set its innerHTML
-            var newImageBox = document.createElement('div');
-            newImageBox.className = 'col-md-3';
-            newImageBox.innerHTML = `<div class="upload-form-group">
-                        <div class="upload-file">
-                            <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
-                                id="addfile${imgCount}" class="uploadDoc addDoc">
-                            <label for="addfile${imgCount}">
-                                <div class="upload-file-item">
-                                    <div class="upload-media">
-                                        <img id="image_addfile${imgCount}"
-                                            src="{{ asset('assets/admin-images/upload-icon.svg') }}">
-                                    </div>
-                                    <div class="upload-text">
-                                        <span>Browse & Upload File</span>
-                                    </div>
+function addImageBox() {
+    imgCount += 1;
+    console.log(imgCount);
+    if (imgCount < 20) {
+        var newImageBox = document.createElement('div');
+        newImageBox.className = 'col-md-3';
+        newImageBox.innerHTML = `<div class="upload-form-group">
+                    <div class="upload-file">
+                        <input type="file" name="thumbnail[]" accept=".jpg,.jpeg,.png"
+                            id="addfile${imgCount}" class="uploadDoc addDoc" onchange="checkImageSize(event)">
+                        <label for="addfile${imgCount}">
+                            <div class="upload-file-item">
+                                <div class="upload-media">
+                                    <img id="image_addfile${imgCount}"
+                                        src="{{ asset('assets/admin-images/upload-icon.svg') }}">
                                 </div>
-                            </label>
-                        </div>
-                    </div>`;
+                                <div class="upload-text">
+                                    <span>Browse & Upload File</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>`;
 
-            // Append the new div element to the #images_container
-            $("#images_container").append(newImageBox);
-        }
+        // Append the new div element to the #images_container
+        $("#images_container").append(newImageBox);
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Cannot add more than 20 images!',
+        });
+    }
+    // Create a new div element and set its innerHTML
+}
+
+function checkImageSize(event) {
+    var file = event.target.files[0];
+    if (file.size > 2 * 1024 * 1024) { // 2MB in bytes
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'The selected image exceeds the maximum allowed size of 2MB!',
+        });
+        event.target.value = ''; // Clear the file input to allow selecting a new file
+    }
+}
     </script>
 
     {{-- form validation --}}

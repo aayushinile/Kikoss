@@ -49,7 +49,7 @@ class PaymentController extends Controller
     // }
     public function pay(Request $request)
     {
-        $amount = '1';
+        $amount = $request->amount;
         $successUrl = route('success.payment'); // Replace 'success.payment' with your actual route name for success
         $cancelUrl = route('cancel.payment'); // Replace 'cancel.payment' with your actual route name for cancellation
 
@@ -100,15 +100,22 @@ class PaymentController extends Controller
         // PayPal API credentials
         $clientId = 'Ac6Sapkr7ApbZpnLER0ytdRQ93YqciynMkqRO5ElvG_OIAi4hw8nvzOtReAUjvOn8jlLi1Y4MdUrFqdb';
         $secret = 'EIfNdYHhtJwfAcm2j4_Oft4sXaIFfYGB0dVlmUW6hwEqSLJ_O_nzwW5DuxYZYxvDveJv8VOh-z-sSA2M';
+        $transactionId = '4CD16313GA452650M';
 
         try {
 
             $environment = new SandboxEnvironment($clientId, $secret);
             $client = new PayPalHttpClient($environment);
+            $captureRequest = new OrdersCaptureRequest($transactionId);
+            $captureRequest->prefer('return=representation');
+            $captureResponse = $client->execute($captureRequest);
+            $captureId = $captureResponse->result->purchase_units[0]->payments->captures[0]->id;
 
             $data['status'] = true;
             $data['message'] = 'Payment successful!';
+            $data['captureId'] = $captureId;
             $data['response'] = $request->all();
+
             return response()->json($data);
         } catch (\Throwable $e) {
             dd($e);

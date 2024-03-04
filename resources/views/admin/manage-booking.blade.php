@@ -343,7 +343,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestAccepted"
-                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
+                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}",)'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 
@@ -472,7 +472,7 @@
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestRejected"
-                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
+                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}")'
                                                                             role="button"><i class="las la-eye"></i>
                                                                             View</a>
 

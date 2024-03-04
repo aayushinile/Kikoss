@@ -263,7 +263,7 @@ class HomeController extends Controller
     public function ArchiveVirtualTour(Request $request)
     {
         $data = VirtualTour::where('id', $request->id)->update(['status' => 4]);/*0:Pending,1:Approved, 3:Delete, 4:Archive*/
-        return redirect()->back()->with('success', 'Virtual Tour deleted successfully');
+        return redirect()->back()->with('success', 'Virtual Tour Archived Successfully');
     }
 
     public function tours(Request $request)
@@ -472,8 +472,16 @@ class HomeController extends Controller
                 'description' => 'required',
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
+                'start_location' => 'nullable|string',
+                'start_location_lat' => 'nullable|string',
+                'start_location_long'  => 'nullable|string',
+                'end_location' => 'nullable|string',
+                'end_location_lat' => 'nullable|string',
+                'end_location_long'  => 'nullable|string',
                 'stop' => 'nullable|array',
                 'stop.stop_name.*' => 'nullable',
+                'stop.lat.*' => 'nullable',
+                'stop.long.*' => 'nullable',
                 'stop.stop_num.*' => 'nullable',
                 'stop.stop_image.*' => 'nullable',
                 'stop.stop_aud.*' => 'nullable|mimes:mp3,wav|max:5120',
@@ -516,6 +524,12 @@ class HomeController extends Controller
             $Tour->short_description = $request->short_description;
             $Tour->cencellation_policy = $request->cancellation_policy;
             $Tour->status = 1;
+            $Tour->origin = $request->start_location;
+            $Tour->origin_lat = $request->start_location_lat;
+            $Tour->origin_long = $request->start_location_long;
+            $Tour->destination = $request->end_location;
+            $Tour->dest_lat = $request->end_location_lat;
+            $Tour->dest_long = $request->end_location_long;
             $Tour->save();
             
             if ($request->has('stop')) {
@@ -524,6 +538,8 @@ class HomeController extends Controller
                     $tourDetail->parent_id = $Tour->id; // Assign parent tour id
                     $tourDetail->stop_name = $stopName;
                     $tourDetail->stop_number = $request->stop['stop_num'][$key];
+                    $tourDetail->lat = $request->stop['lat'][$key];
+                    $tourDetail->long = $request->stop['long'][$key];
         
                     // Upload stop image if exists
                     if ($request->hasFile('stop.stop_image.'.$key)) {
@@ -556,7 +572,8 @@ class HomeController extends Controller
     public function UpdateVirtualTour(Request $request)
     {
         try {
-
+            $data = $request->all();
+            //dd($data);
             //Validation of virtual tour
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
@@ -567,9 +584,17 @@ class HomeController extends Controller
                 'short_description' => 'required',
                 'cancellation_policy' => 'required',
                 'audio' => 'max:5120',
+                'start_location' => 'nullable|string',
+                'start_location_lat' => 'nullable|string',
+                'start_location_long'  => 'nullable|string',
+                'end_location' => 'nullable|string',
+                'end_location_lat' => 'nullable|string',
+                'end_location_long'  => 'nullable|string',
                 'trial_audio_file' => 'max:5120',
                 'stop' => 'nullable|array',
                 'stop.stop_name.*' => 'nullable',
+                'stop.lat.*' => 'nullable',
+                'stop.long.*' => 'nullable',
                 'stop.stop_num.*' => 'nullable',
                 'stop.stop_image.*' => 'nullable',
                 'stop.stop_aud.*' => 'nullable|mimes:mp3,wav|max:5120',
@@ -626,6 +651,12 @@ class HomeController extends Controller
             $Tour->description = $request->description;
             $Tour->short_description = $request->short_description;
             $Tour->cencellation_policy = $request->cancellation_policy;
+            $Tour->origin = $request->start_location;
+            $Tour->origin_lat = $request->start_location_lat;
+            $Tour->origin_long = $request->start_location_long;
+            $Tour->destination = $request->end_location;
+            $Tour->dest_lat = $request->end_location_lat;
+            $Tour->dest_long = $request->end_location_long;
             $Tour->save();
 
             if ($request->has('stop')) {
@@ -645,6 +676,8 @@ class HomeController extends Controller
                     }
                     $stopDetail->stop_name = $stopName ;
                     $stopDetail->stop_number = $request->stop['stop_num'][$key];
+                    $stopDetail->lat = $request->stop['lat'][$key];
+                    $stopDetail->long = $request->stop['long'][$key];
     
                     // Upload stop image if exists
                     if ($request->hasFile('stop.stop_image.'.$key)) {
@@ -936,21 +969,25 @@ class HomeController extends Controller
     {
         try {
             $requests = BookingPhotoBooth::query();
-            $search = $request->search ? $request->search : '';
-            $booth_id = $request->booth_id ? $request->booth_id : '';
-            $date = $request->date ? $request->date : '';
-            
-            if($request->filled('search')){
-                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
-                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+            $request->validate([
+                'search' => 'nullable|string',
+                'booth_id' => 'nullable|not_in:', // Ensure booth_id is not the default option
+                'date' => 'nullable|date',
+            ]);
+            $search = $request->input('search');
+            $booth_id = $request->input('booth_id');
+            $date = $request->input('date');
+            //dd($search);
+            if($search){
+                $requests->Where('user_name', 'LIKE', '%'.$search.'%');
+                //$requests->orWhere('total_amount', 'LIKE', '%'.$search.'%');
+            }
+            if($booth_id != 'Select By Photo Booth Name'){
+                $requests->where('booth_id', $booth_id);
             }
 
-            if($request->filled('booth_id')){
-                $requests->where('booth_id', $request->booth_id);
-            }
-
-            if($request->filled('date')){
-                $requests->whereDate('booking_date', '=', $request->date);
+            if($date){
+                $requests->whereDate('booking_date', '=', $date);
             }
             $requests->whereIn('status', [0,1]);
             $requests->orderBy('id', 'DESC');
