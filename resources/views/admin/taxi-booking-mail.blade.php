@@ -47,11 +47,11 @@
                             <tbody>
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px;"><b>Dear
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px;"><b>Dear
                                                 {{ $mailData['name'] }},</b></p>
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                             Your Taxi Booking Confirmation with Kikos</p>
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                             We hope this message finds you well and ready for a smooth and convenient
                                             ride with Kikos Tours Oahu. We're thrilled to inform you that your taxi
                                             booking
@@ -60,24 +60,24 @@
                                 </tr>
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px; text-align: justify;">
                                             Here are the details of your upcoming ride:</p>
                                         <ul style="padding:0 0 0 20px; margin: 0; list-style-position:outside ;">
                                             <li
-                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                                 Booking Reference Number: {{ $mailData['booking_id'] }}</li>
                                             <li
-                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                                 Pickup Location: {{ $mailData['pickup_address'] }}</li>
                                             <li
-                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                                 Drop-off Location: {{ $mailData['drop_address'] }}</li>
 
                                             <li
-                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                                 Date and Time: {{ $mailData['date_time'] }}</li>
                                             <li
-                                                style="color:#1F191C;font-size:13px;line-height: 20px;text-align: justify;">
+                                                style="color:#1F191C;font-size:16px;line-height: 20px;text-align: justify;">
                                                 Driver Details: {{ $mailData['driver_details'] }}</li>
                                         </ul>
                                     </td>
@@ -85,15 +85,17 @@
 
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px; text-align: justify;">
                                             Your comfort and safety are our top priorities, and we assure you that our
                                             experienced driver will ensure a pleasant journey for you.</p>
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px; text-align: justify;">
                                             If you have any specific requirements or need to make changes to your
                                             booking, please reach out to our customer support team at
-                                            klinekristi@hotmail.com/(808)206-2205 as soon as possible.</p>
-                                        <p style="color:#1F191C;font-size:13px;line-height: 20px; text-align: justify;">
-                                            We appreciate your trust in [App Name] for your transportation needs. As
+                                            <a style="color: #0563C1;text-decoration:underline"
+                                            href="mailto:klinekristi@hotmail.com">klinekristi@hotmail.com</a>
+                                            or call us at (808)206-2205 as soon as possible.</p>
+                                        <p style="color:#1F191C;font-size:16px;line-height: 20px; text-align: justify;">
+                                            We appreciate your trust in Kikos Tours Oahu for your transportation needs. As
                                             always, our goal is to provide you with a reliable and convenient service.
                                         </p>
                                     </td>
@@ -102,19 +104,19 @@
                                 <tr>
                                     <td valign="top" style="vertical-align: top;">
                                         <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
-                                            Thank you for choosing [App Name]! We look forward to serving you.</p>
+                                            style="color:#1F191C;font-size:16px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
+                                            Thank you for choosing Kikos Tours Oahu! We look forward to serving you.</p>
                                         <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
+                                            style="color:#1F191C;font-size:16px;line-height: 20px; font-weight: bold; margin:0; padding:0;  text-align: justify;">
                                             Safe travels!</p>
                                         <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
+                                            style="color:#1F191C;font-size:16px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
                                             Kikos Tours Oahu</p>
                                         <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
+                                            style="color:#1F191C;font-size:16px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
                                             klinekristi@hotmail.com</p>
                                         <p
-                                            style="color:#1F191C;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
+                                            style="color:#1F191C;font-size:16px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
                                             (808)206-2205</p>
                                     </td>
                                 </tr>
@@ -135,7 +137,7 @@
                                     <td
                                         style="font-family:tahoma, geneva, sans-serif;color:#29054a;font-size:12px; padding:10px; padding: 10px;">
                                         <div class=""
-                                            style="color:#fff;font-size:13px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
+                                            style="color:#fff;font-size:16px;line-height: 20px; font-weight: 400; margin:0; padding:0;  text-align: justify;">
                                             Copyright © 2024 Kikos Tours Oahu - All Rights Reserved.</div>
                                     </td>
                                     <td

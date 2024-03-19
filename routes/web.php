@@ -102,3 +102,4 @@ Route::get('/add-edit-master',[App\Http\Controllers\HomeController::class, 'AddE
 Route::get('/add-edit-setting',[App\Http\Controllers\HomeController::class, 'AddEditSettingData'])->name('AddEditSettingData');
 Route::post('/update-setting',[App\Http\Controllers\HomeController::class, 'UpdateSettings'])->name('UpdateSettings');
 Route::get('/DownloadWithWatermark',[App\Http\Controllers\HomeController::class, 'DownloadWithWatermark'])->name('DownloadWithWatermark');
+Route::get('place-suggestions', [App\Http\Controllers\HomeController::class, 'fetchPlaceSuggestions'])->name('place-suggestions');

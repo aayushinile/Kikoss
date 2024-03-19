@@ -11,6 +11,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    <style>
+        .Accepted-status{
+            color: green;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -96,35 +101,32 @@
                     <div class="col-md-8">
                         <div class="BookingRequesttabs">
                             <ul class="nav nav-tabs">
-                                <li><a class="active" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request
-                                        ({{ count($Tourrequests) }})</a>
+                                <li>
+                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? 'active' : '' }}" href="#BookingRequest" data-bs-toggle="tab">Tour Booking Request ({{ count($Tourrequests) }})</a>
                                 </li>
-                                <li><a href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request
-                                        ({{ count($Acceptedtours) }})</a>
+                                <li>
+                                <a class="{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? 'active' : '' }}" href="#BookingAcceptedRequest" data-bs-toggle="tab">Tour Booking Accepted Request ({{ count($Acceptedtours) }})</a>
                                 </li>
-                                <li><a href="#BookingRejectedRequest" data-bs-toggle="tab">Tour Booking Rejected Request
+                                <li><a class="{{ request()->has('tab') && request()->input('tab') === 'BookingRejectedRequest' ? 'active' : '' }}"  href="#BookingRejectedRequest" data-bs-toggle="tab">Tour Booking Rejected Request
                                         ({{ count($Rejectedtours) }})</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="tasks-content-info tab-content">
-                            <div class="tab-pane active" id="BookingRequest">
+                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingRequest' ? ' active' : '' }}" id="BookingRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="mr-auto">
-                                                <h4 class="heading-title">Tour Booking Requests</h4>
-                                            </div>
-                                            <div class="btn-option-info wd7">
+                                            <div class="btn-option-info wd-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
+                                                        
                                                         @csrf
-                                                        <div class="row g-1">
+                                                        <input type="hidden" value="BookingRequest" name="bookings">
+                                                        <div class="row">
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
-                                                                    <a href="{{ url('manage-booking') }}" class="btn-gr"><i
-                                                                            class="fa fa-refresh"
-                                                                            aria-hidden="true"></i></a>
+                                                                <a href="#" id="refresh-btn-booking-request" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
@@ -181,6 +183,7 @@
                                                         <th>Sr No.</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
+                                                        <th>Booking Id</th>
                                                         <th>Duration</th>
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
@@ -202,6 +205,7 @@
                                                                 </td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
                                                                 <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
@@ -211,13 +215,16 @@
                                                                         Approval</div>
                                                                 </td>
                                                                 <td>
+                                                                    @php
+                                                                    $image = $val->images['attribute_name'] ?? '';
+                                                                    @endphp
                                                                     <div class="action-btn-info">
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestPending"
-                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{ $val->images['attribute_name'] }}")'
+                                                                            onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
                                                                             role="button"><i class="las la-eye"></i>
-                                                                            View</a>
+                                                                            </a>
 
                                                                     </div>
                                                                 </td>
@@ -236,23 +243,18 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane" id="BookingAcceptedRequest">
+                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingAcceptedRequest' ? ' active' : '' }}" id="BookingAcceptedRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="mr-auto">
-                                                <h4 class="heading-title">Booking Accepted Request</h4>
-                                            </div>
-                                            <div class="btn-option-info wd7">
+                                            <div class="btn-option-info w-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
                                                         <div class="row g-1">
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
-                                                                    <a href="{{ url('manage-booking') }}"
-                                                                        class="btn-gr"><i class="fa fa-refresh"
-                                                                            aria-hidden="true"></i></a>
+                                                                <a href="#" id="refresh-btn-booking-accepted" class="btn-gr" onclick="handleRefreshButtonClick('#BookingAcceptedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
@@ -309,6 +311,7 @@
                                                         <th>Sr No.</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
+                                                        <th>Booking Id</th>
                                                         <th>Duration</th>
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
@@ -330,22 +333,25 @@
                                                                 </td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
                                                                 <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="status-text Pending-status"><i
-                                                                            class="las la-hourglass-start"></i>Accepted
+                                                                    <div class="status-text Accepted-status"><b>Accepted</b>
                                                                     </div>
                                                                 </td>
+                                                                @php
+                                                                 $image = $val->images['attribute_name'] ?? '';
+                                                                    @endphp
                                                                 <td>
+                                                                    
                                                                     <div class="action-btn-info">
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestAccepted"
-                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}",)'
-                                                                            role="button"><i class="las la-eye"></i>
-                                                                            View</a>
+                                                                            onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
+                                                                            role="button"><i class="las la-eye"></i></a>
 
                                                                     </div>
                                                                 </td>
@@ -364,23 +370,18 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane" id="BookingRejectedRequest">
+                            <div class="tab-pane{{ request()->has('tab') && request()->input('tab') === 'BookingRejectedRequest' ? ' active' : '' }}" id="BookingRejectedRequest">
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="mr-auto">
-                                                <h4 class="heading-title">Booking Rejected Request</h4>
-                                            </div>
-                                            <div class="btn-option-info wd7">
+                                            <div class="btn-option-info wd-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
-                                                        <div class="row g-1">
+                                                        <div class="row">
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
-                                                                    <a href="{{ url('manage-booking') }}"
-                                                                        class="btn-gr"><i class="fa fa-refresh"
-                                                                            aria-hidden="true"></i></a>
+                                                                <a href="#" id="refresh-btn-booking-rejected" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRejectedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
@@ -438,6 +439,7 @@
                                                         <th>Sr No.</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
+                                                        <th>Booking Id</th>
                                                         <th>Duration</th>
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
@@ -459,22 +461,25 @@
                                                                 </td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
                                                                 <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="status-text Pending-status"><i
-                                                                            class="las la-hourglass-start"></i>Rejected
+                                                                    <div class="status-text Pending-status"><b>Rejected</b>
                                                                     </div>
                                                                 </td>
+                                                                @php
+                                                                $image = $val->images['attribute_name'] ?? '';
+                                                                @endphp
                                                                 <td>
                                                                     <div class="action-btn-info">
                                                                         <a class="dropdown-item view-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestRejected"
-                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}")'
+                                                                            onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
                                                                             role="button"><i class="las la-eye"></i>
-                                                                            View</a>
+                                                                            </a>
 
                                                                     </div>
                                                                 </td>
@@ -639,7 +644,7 @@
                             </div>
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
-                                    <div class="request-package-card-media">
+                                    <div class="request-package-card-media accepted">
                                         <img src="">
                                     </div>
                                     <div class="request-package-card-text">
@@ -742,7 +747,7 @@
                             </div>
                             <div class="kik-request-item-card-body">
                                 <div class="request-package-card">
-                                    <div class="request-package-card-media">
+                                    <div class="request-package-card-media rejected">
                                         <img src="">
                                     </div>
                                     <div class="request-package-card-text">
@@ -912,9 +917,10 @@
     {{-- Code for calendar --}}
     <script>
         $(document).ready(function() {
+           
             $('#calendar').fullCalendar({
                 header: {
-                    left: 'prev,next today',
+                    left: 'prev,next',
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
@@ -949,6 +955,12 @@
                     $('#start_date').val(date.format());
                 }
             });
+            $('.fc-header-toolbar .fc-button').filter(function() {
+                return $(this).text().trim().length > 0; // Only buttons with text
+            }).each(function() {
+                 var text = $(this).text();
+                $(this).text(text.charAt(0).toUpperCase() + text.slice(1));
+             });
 
             $('#eventForm').submit(function(event) {
                 event.preventDefault();
@@ -1012,7 +1024,7 @@
 
     <!-------------------- Append Accepted-Rejected Popup-Jquery -------------------->
     <script>
-        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
+        function accept_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount,image) {
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
             // } else {
@@ -1049,8 +1061,8 @@
             url.href = reject_url;
             var url_accept = document.getElementById("acceptbtn");
             url_accept.href = accept_url;
-            var imgElement = document.querySelector("#BookingRequestPending .request-package-card-media img");
-            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
+            var imgElement = document.querySelector(".request-package-card-media img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image;
 
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
@@ -1059,10 +1071,9 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
-            
         }
 
-        function accepted_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
+        function accepted_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image) {
 
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
@@ -1086,7 +1097,8 @@
             document.getElementById("durationAccepted").innerText = duration;
             document.getElementById("transaction_idAccepted").innerText = transaction_id;
             document.getElementById("total_amountAccepted").innerText = total_amount;
-
+            var imgElement = document.querySelector(".request-package-card-media.accepted img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image;
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
             //     'height': '60',
@@ -1094,12 +1106,9 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
-            var imgElement = document.querySelector("#BookingRequestAccepted .request-package-card-media img");
-            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
-            
         }
 
-        function rejected_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image_path) {
+        function rejected_tour(tour_id, booking_id, title, booking_date, duration, transaction_id, total_amount, image) {
 
             // if (image == '') {
             //     imageUrl = 'https://nileprojects.in/roadman/dev/public/assets/admin-images/no-image.png';
@@ -1117,8 +1126,10 @@
             document.getElementById("created_dateRejected").innerText = created_date;
             document.getElementById("booking_dateRejected").innerText = booking_date;
             document.getElementById("durationRejected").innerText = duration;
-            document.getElementById("transaction_idRejected").innerText = transaction_id;
+            document.getElementById("transaction_idRejected").innerText = transaction_id ?? '';
             document.getElementById("total_amountRejected").innerText = total_amount;
+            var imgElement = document.querySelector(".request-package-card-media.rejected img");
+            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image;
 
             // $('.mix-2 img').remove();
             // var imageElement = $('<img>').attr({
@@ -1127,8 +1138,6 @@
             //     'src': imageUrl
             // });
             // $('.mix-2').append(imageElement);
-            var imgElement = document.querySelector("#BookingRequestRejected .request-package-card-media img");
-            imgElement.src = "{{ assets('upload/tour-thumbnail') }}" +'/' + image_path;
         }
 
         function formatDate(dateString) {
@@ -1150,4 +1159,46 @@
     </script>
 
 
+<script>
+    // Function to handle refresh button click
+    function handleRefreshButtonClick(tabId) {
+        // Store the active tab ID in session storage
+        sessionStorage.setItem('activeTabId', tabId);
+        window.location.reload();
+    }
+
+    // When the page loads
+    window.addEventListener('load', function() {
+        // Retrieve the active tab ID from session storage
+        var activeTabId = sessionStorage.getItem('activeTabId');
+        
+        // If an active tab is stored
+        if (activeTabId) {
+            // Activate the corresponding tab
+            document.querySelector('.nav-tabs a[href="' + activeTabId + '"]').click();
+        }
+    });
+</script>
+<script>
+    window.onload = function() {
+        // Get the hash from the URL
+        var hash = window.location.hash;
+
+        // Remove active class from all tabs
+        $('.nav-tabs a').removeClass('active');
+        $('.tab-pane').removeClass('active');
+
+        // Add active class to the corresponding tab based on the hash
+        if (hash === '#BookingAcceptedRequest') {
+            $('a[href="#BookingAcceptedRequest"]').addClass('active');
+            $('#BookingAcceptedRequest').addClass('active');
+        } else if (hash === '#BookingRejectedRequest') {
+            $('a[href="#BookingRejectedRequest"]').addClass('active');
+            $('#BookingRejectedRequest').addClass('active');
+        } else {
+            $('a[href="#BookingRequest"]').addClass('active');
+            $('#BookingRequest').addClass('active');
+        }
+    };
+</script>
 @endsection

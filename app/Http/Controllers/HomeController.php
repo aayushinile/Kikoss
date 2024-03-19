@@ -25,6 +25,7 @@ use ZipArchive;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use GuzzleHttp\Client;
 
 
 class HomeController extends Controller
@@ -256,7 +257,7 @@ class HomeController extends Controller
     public function DeleteVirtualTour(Request $request)
     {
         $data = VirtualTour::where('id', $request->id)->update(['status' => 3]);/*0:Pending,1:Approved, 3:Delete,4:Archive*/
-        return redirect()->back()->with('success', 'Virtual tour archive successfully');
+        return redirect()->back()->with('success', 'Virtual tour deleted successfully');
     }
     
     //Delete Virtual Tour
@@ -533,7 +534,9 @@ class HomeController extends Controller
             $Tour->save();
             
             if ($request->has('stop')) {
+                //dd($request->all());
                 foreach ($request->stop['stop_name'] as $key => $stopName) {
+                    if($stopName != null){
                     $tourDetail = new StopDetails;
                     $tourDetail->parent_id = $Tour->id; // Assign parent tour id
                     $tourDetail->stop_name = $stopName;
@@ -561,6 +564,7 @@ class HomeController extends Controller
                     $tourDetail->save();
                 }
             }
+            }
 
             return redirect('manage-virtual-tour')->with('success', 'Virtual Tour Created successfully');
         } catch (\Exception $e) {
@@ -573,7 +577,7 @@ class HomeController extends Controller
     {
         try {
             $data = $request->all();
-            //dd($data);
+           // dd($data);
             //Validation of virtual tour
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|min:1',
@@ -663,6 +667,8 @@ class HomeController extends Controller
                 //dd($validated);
                 foreach ($request->stop['stop_name'] as $key => $stopName) {
                     //dd($key);
+                    if($stopName != null){
+                    //dd($validated);
                     $stopId = $request->stop_id[$key] ?? null;
                     
                     $stopDetail = $stopId ? StopDetails::find($stopId) : new StopDetails;
@@ -700,6 +706,7 @@ class HomeController extends Controller
     
                     $stopDetail->save();
                 }
+            }
             }
             if ($request->has('stop_remove')) {
                 foreach ($request->stop_remove as $key => $value) {
@@ -754,14 +761,22 @@ class HomeController extends Controller
     public function ManageBooking(Request $request)
     {
         try {
+            $data = $request->all();
+            
             $requests = TourBooking::query();
             $search = $request->search ? $request->search : '';
             $tour_id = $request->tour_id ? $request->tour_id : '';
             $date = $request->date ? $request->date : '';
-            
-            if($request->filled('search')){
-                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+            $bookings = $data['bookings'] ?? '';
+            if ($search) {
+                //dd($bookings);
+                $requests->where(function($query) use ($search) {
+                    $query->where('user_name', 'LIKE', "%$search%");
+                });
+                //dd($requests->get());
             }
+            
+            
 
             if($request->filled('tour_id')){
                 $requests->where('tour_id', $request->tour_id);
@@ -829,7 +844,6 @@ class HomeController extends Controller
     public function CallbackRequest(Request $request)
     {
         try {
-            
             $requests = CallbackRequest::query();
             $search = $request->search ? $request->search : '';
             $tour_id = $request->tour_id ? $request->tour_id : '';
@@ -849,6 +863,7 @@ class HomeController extends Controller
             }
             $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
+            $requests->with('TourName');
             $datas = $requests->paginate(10);
             
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
@@ -861,8 +876,9 @@ class HomeController extends Controller
     public function ViewTransactionHistory()
     {
         try {
-            $datas = Tour::where('status', 1)->orderBy('id', 'DESC')->paginate(10);
-            return view('admin.view-transaction-history', compact('datas'));
+            $datas = TourBooking::where('status', 1)->with('Tour')->orderBy('id', 'DESC')->paginate(10);
+            $count = TourBooking::where('status', 1)->with('Tour')->orderBy('id', 'DESC')->count();
+            return view('admin.view-transaction-history', compact('datas','count'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -914,8 +930,9 @@ class HomeController extends Controller
             $requests->orderBy('id', 'DESC');
             $bookings = $requests->paginate(10);
             $amount = TaxiBooking::sum('amount');
+            $count = TaxiBooking::count();
             
-            return view('admin.taxi-booking-request', compact('bookings','search','date','amount'));
+            return view('admin.taxi-booking-request', compact('bookings','search','date','amount','count'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -969,32 +986,45 @@ class HomeController extends Controller
     {
         try {
             $requests = BookingPhotoBooth::query();
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'search' => 'nullable|string',
                 'booth_id' => 'nullable|not_in:', // Ensure booth_id is not the default option
                 'date' => 'nullable|date',
             ]);
-            $search = $request->input('search');
-            $booth_id = $request->input('booth_id');
-            $date = $request->input('date');
-            //dd($search);
-            if($search){
-                $requests->Where('user_name', 'LIKE', '%'.$search.'%');
-                //$requests->orWhere('total_amount', 'LIKE', '%'.$search.'%');
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
             }
-            if($booth_id != 'Select By Photo Booth Name'){
+            $validated = $validator->validated();
+
+            $search = isset($validated['search']) ? $validated['search'] : null;
+            $booth_id = isset($validated['booth_id']) ? $validated['booth_id'] : null;
+            $date = isset($validated['date']) ? $validated['date'] : null;
+             //dd($requests->get());
+             //dd($search);
+             if ($search!=null) {
+                $requests->leftJoin('users', 'users.id', '=', 'photo_booth_booking.userid')
+                        ->leftJoin('photo_booths', 'photo_booths.id', '=', 'photo_booth_booking.booth_id')
+                        ->where(function ($query) use ($search) {
+                            $query->where('users.fullname', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booth_booking.total_amount', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booths.title', 'LIKE', '%' . $search . '%');
+                        });
+            }
+            
+            if($booth_id != null && $booth_id != 'Select By Photo Booth Name'){
                 $requests->where('booth_id', $booth_id);
             }
-
-            if($date){
+           // dd($booth_id,$search);
+            if($date != null){
                 $requests->whereDate('booking_date', '=', $date);
             }
-            $requests->whereIn('status', [0,1]);
-            $requests->orderBy('id', 'DESC');
+            $requests->whereIn('photo_booth_booking.status', [0,1]);
+            $requests->orderBy('photo_booth_booking.id', 'DESC');
             $bookings = $requests->paginate(10);
-            
+           // dd($bookings);
             
             $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+            // dd($PhotoBooths);
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             
             return view('admin.manage-photo-booth', compact('PhotoBooths', 'bookings', 'tours','search','date','booth_id'));
@@ -1521,4 +1551,42 @@ class HomeController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
+    public function fetchPlaceSuggestions(Request $request)
+    {
+        // Get the search query from the request
+        $query = $request->input('query');
+        $accessToken = 'pk.eyJ1IjoidXNlcnMxIiwiYSI6ImNsdGgxdnpsajAwYWcya25yamlvMHBkcGEifQ.qUy8qSuM_7LYMSgWQk215w';
+
+        // Construct the API URL with the query and access token
+        $url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" . urlencode($query) . ".json?access_token=" . $accessToken;
+
+        // Create a Guzzle HTTP client
+        $client = new \GuzzleHttp\Client();
+
+        try {
+            // Send a GET request to the API endpoint
+            $response = $client->get($url);
+
+            // Decode the JSON response
+            $data = json_decode($response->getBody(), true);
+
+            // Process the response data (list of suggestions)
+            $suggestions = collect($data['features'])->map(function ($feature) {
+                // Extract the place name, longitude, and latitude
+                return [
+                    'place_name' => $feature['place_name'],
+                    'longitude' => $feature['center'][0],
+                    'latitude' => $feature['center'][1]
+                ];
+            });
+
+            // Return the suggestions as JSON response
+            return response()->json(['suggestions' => $suggestions]);
+        } catch (\Exception $e) {
+            // Handle any errors (e.g., API request failed)
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

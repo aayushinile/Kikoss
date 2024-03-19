@@ -36,7 +36,7 @@
                                                 <div class="col-md-3">
                                                     <div class="search-form-group">
                                                         <div class="TotalRequestoverview">Total Request Received:
-                                                            <span>{{ count($bookings) }}</span>
+                                                            <span>{{ $count }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -261,7 +261,7 @@
         $(document).ready(function() {
             $('#calendar').fullCalendar({
                 header: {
-                    left: 'prev,next today',
+                    left: 'prev,next',
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
@@ -296,6 +296,12 @@
                     $('#start_date').val(date.format());
                 }
             });
+            $('.fc-header-toolbar .fc-button').filter(function() {
+                return $(this).text().trim().length > 0; // Only buttons with text
+            }).each(function() {
+                 var text = $(this).text();
+                $(this).text(text.charAt(0).toUpperCase() + text.slice(1));
+             });
 
             $('#eventForm').submit(function(event) {
                 event.preventDefault();

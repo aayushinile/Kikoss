@@ -28,7 +28,7 @@
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <div class="TotalRequestoverview">Total Request Received:
-                                                        <span>5689</span>
+                                                        <span>{{$count ?? ''}}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -83,75 +83,45 @@
                                             <th>Amount Paid</th>
                                             <th>Tour Book Date</th>
                                             <th>Person</th>
-                                            <th>Amount Recieved On</th>
+                                            <th>Booking Id</th>
                                             <th>Payment Made Via</th>
                                             <th>Status</th>
                                             <th>Transaction ID</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    @if ($datas->isEmpty())
+                                    <tr>
+                                        <td colspan="11" class="text-center">
+                                            No record found
+                                        </td>
+                                    </tr>
+                                    @else
+                                    <?php $s_no = 1; ?>
+                                    @foreach ($datas as $val)
                                         <tr>
                                             <td>
-                                                <div class="sno">1</div>
+                                                <div class="sno">{{ $s_no }}</div>
                                             </td>
-                                            <td>John</td>
-                                            <td>North Shore</td>
-                                            <td>8 Hours</td>
-                                            <td>16/02/2023</td>
-                                            <td>$559.00</td>
-                                            <td> 4 People </td>
-                                            <td> 03 Sep, 2023, 09:33:12 am </td>
+                                            <td>{{$val->user_name ?? ''}}</td>
+                                            <td>{{$val->Tour['title'] ?? 'Null'}}</td>
+                                            <td>{{$val->Tour['duration'] ?? ''}} Hours</td>
+                                            <td>${{$val->total_amount ?? ''}}</td>
+                                            <td>{{$val->booking_date ?? ''}}</td>
+                                            <td> {{$val->Tour['total_people'] ?? 0}} </td>
+                                            <td>{{$val->booking_id ?? ''}}</td>
                                             <td> PayPal </td>
-                                            <td>
-                                                <div class="status-text confirmed-status"><i
-                                                        class="las la-check-circle"></i> Confirmed</div>
-                                            </td>
-                                            <td> 76375873874 </td>
+                                            <td> {{$val->status ?? ''}}</td>
+                                            <td>{{$val->transaction_id ?? ''}}</td>
                                         </tr>
-
-                                        <tr>
-                                            <td>
-                                                <div class="sno">2</div>
-                                            </td>
-                                            <td>John</td>
-                                            <td>North Shore</td>
-                                            <td>8 Hours</td>
-                                            <td>16/02/2023</td>
-                                            <td>$559.00</td>
-                                            <td> 4 People </td>
-                                            <td> 03 Sep, 2023, 09:33:12 am </td>
-                                            <td> PayPal </td>
-                                            <td>
-                                                <div class="status-text rejected-status"><i class="las la-times-circle"></i>
-                                                    Rejected (Refund Initiated)</div>
-                                            </td>
-                                            <td> 76375873874 </td>
-                                        </tr>
+                                        <?php $s_no++; ?>
+                                        @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
                             <div class="kik-table-pagination">
-                                <ul class="kik-pagination">
-                                    <li class="disabled" id="example_previous">
-                                        <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
-                                            class="page-link">Previous</a>
-                                    </li>
-                                    <li class="active">
-                                        <a href="#" class="page-link">1</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="2" tabindex="0"
-                                            class="page-link">2</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="#" aria-controls="example" data-dt-idx="3" tabindex="0"
-                                            class="page-link">3</a>
-                                    </li>
-                                    <li class="next" id="example_next">
-                                        <a href="#" aria-controls="example" data-dt-idx="7" tabindex="0"
-                                            class="page-link">Next</a>
-                                    </li>
-                                </ul>
+                            {{ $datas->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>

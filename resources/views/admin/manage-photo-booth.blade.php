@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{ assets('assets/admin-css/managphoto.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="{{ assets('assets/admin-plugins/OwlCarousel/owl.carousel.min.js') }}" type="text/javascript"></script>
+
     <script src="{{ assets('assets/admin-plugins/fancybox/jquery.fancybox.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -200,6 +201,7 @@
                                                 <th>Sr No.</th>
                                                 <th>Name</th>
                                                 <th>Tour Name</th>
+                                                <th>Booking Id</th>
                                                 <th>Amount Paid</th>
                                                 <th>Amount Recieved On</th>
                                                 <th>Media Purchase</th>
@@ -222,6 +224,7 @@
                                                     </td>
                                                     <td>{{ $val->Users->fullname ?? '' }}</td>
                                                     <td>{{ $val->booth->title ?? '' }}</td>
+                                                    <td>{{ $val->booking_id ?? '' }}</td>
                                                     <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
                                                             data-bs-toggle="modal" href="#infoprice" role="button"
                                                             onclick='GetDataPrice("{{ $val->total_amount }}","{{ $val->amount }}","{{ $val->tax_percent }}","{{ $val->tax }}")'><i
@@ -235,29 +238,22 @@
                                                                 {{ $val->image_count }}
                                                                 Photos
                                                             </div>
+                                                            
                                                             <div class="videos-text"><img
                                                                     src="{{ assets('assets/admin-images/video-play.svg') }}">
                                                                 {{ $val->video_count }}
                                                                 Videos</div>
-                                                            <div class="videos-action">
-                                                                <div class="video-gallery-list" style="display:none;">
-                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
-                                                                        data-fancybox="images" class="viewbtn"></a>
-                                                                    <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
-                                                                        data-fancybox="images" class="viewbtn"></a>
-                                                                </div>
-                                                                <a href="{{ assets('assets/admin-images/IMG_9838.jpg') }}"
-                                                                    data-fancybox="images" class="viewbtn">View</a>
-                                                            </div>
+                                                                <div class="videos-action">
+    @foreach ($val->images as $image)
+        <a href="{{ assets('upload/photo-booth/' . $image->media) }}" data-fancybox="gallery{{ $val->id }}" class="viewbtn" style="display: none;"></a>
+    @endforeach
+    <a href="#" class="viewbtn" onclick="showGallery('{{ $val->id }}')">View</a>
+</div>
                                                         </div>
                                                     </td>
-                                                    @php
-                                                        $PhotoBoothMedia = \App\Models\BookingPhotoBooth::where('booking_id', $val->id)
-                                                            ->where('type', 'Image')
-                                                            ->first();
-                                                    @endphp
+                                                    
                                                     <td>PayPal</td>
-                                                    <td>76375873874</td>
+                                                    <td>{{$val->transaction_id ?? ''}}</td>
                                                     </tr>
                                                     <?php $s_no++; ?>
                                                 @endforeach
@@ -380,5 +376,11 @@
             document.getElementById("amount").innerText = amount;
         }
     </script>
+  <script>
+    function showGallery(valId) {
+        // Trigger Fancybox for the images associated with the given valId
+        $("[data-fancybox='gallery" + valId + "']").eq(0).trigger('click');
+    }
+</script>
 
 @endsection

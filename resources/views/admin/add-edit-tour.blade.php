@@ -32,7 +32,7 @@
                         <input type="hidden" name="pid" value="{{ $data->id ?? '' }}">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <h4>Tour Title</h4>
+                                <h4>Tour Name</h4>
                                 <input type="text" class="form-control" name="title"
                                     placeholder="Enter Tour Title Here…" value="{{ $data ? $data->title : old('title') }}">
                             </div>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <h4>Tour Name</h4>
+                                <h4>Tour Title</h4>
                                 <input type="text" class="form-control" name="name"
                                     placeholder="Enter Tour Name Here…" value="{{ $data ? $data->name : old('name') }}">
                             </div>

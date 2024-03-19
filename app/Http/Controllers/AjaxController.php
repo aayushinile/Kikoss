@@ -52,7 +52,7 @@ class AjaxController extends Controller
             $color = '#9C9D9F';
         }elseif($request->datesstatustype == 'Booked Tour'){
             $title = 'Booked Tour';
-            $color = '#4cba08';
+            $color = '#ff0000';
         }else{
             $title = 'Available';
             $color = '#FFFFFF';
@@ -86,7 +86,7 @@ class AjaxController extends Controller
             $color = '#9C9D9F';
         }elseif($request->datesstatustype == 'Booked Taxi'){
             $title = 'Booked Tour';
-            $color = '#1d875a';
+            $color = '#ff0000';
         }else{
             $title = 'Available';
             $color = '#FFFFFF';

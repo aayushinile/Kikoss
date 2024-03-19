@@ -119,9 +119,9 @@
                                                         <div class="sno">{{ $s_no }}</div>
                                                     </td>
                                                     <td>{{ $val->name }}</td>
-                                                    <td>{{ $val->TourName->name }}</td>
+                                                    <td>{{ $val->TourName->name ?? '' }}</td>
                                                     <td>+1 {{ $val->mobile }}</td>
-                                                    <td>{{ $val->TourName->duration }} Hours</td>
+                                                    <td>{{ $val->TourName->duration ?? '' }} Hours</td>
                                                     <td>{{ date('d M, Y, h:i:s a', strtotime($val->preferred_time)) }}
                                                     </td>
                                                     <td>
@@ -143,6 +143,7 @@
                                                             data-bs-toggle="modal"
                                                             href="#infoRequestMessage"onclick='GetData("{{ $val->note }}")'
                                                             role="button"><i class="las la-info-circle"></i></a></td> --}}
+                                                            
                                                     <td>{{ substr($val->note, 0, 30) }}<a class="infoRequestMessage"
                                                             data-bs-toggle="modal"
                                                             href="#infoRequestMessage"onclick='GetData("{{ $val->note }}")'
@@ -171,6 +172,7 @@
                 <div class="modal-body">
                     <div class="iot-modal-form">
                         <h3>Request Message</h3>
+                        <p id="message" class="text-dark" style="font-size:17px;"></p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>

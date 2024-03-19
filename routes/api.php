@@ -67,4 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('virtual-tour-filter', [UserController::class, 'VirtualTourFilter']);
     Route::get('photo-booth-filter', [UserController::class, 'PhotoBoothFilter']);
     Route::get('book-taxi-filter', [UserController::class, 'BookTaxiFilter']);
+    Route::get('place-suggestions', [UserController::class, 'fetchPlaceSuggestions']);
+    Route::get('get-notifications', [UserController::class, 'getNotification']);
+    Route::post('clear-notifications', [UserController::class, 'ClearNotification']);
 });

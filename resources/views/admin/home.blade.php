@@ -166,6 +166,7 @@
                                         <tr class="table-hd">
                                             <th>Name</th>
                                             <th>Tour Name</th>
+                                            <th>Booking Id</th>
                                             <th>Duration</th>
                                             <th>Tour Book Date</th>
                                             <th>Status</th>
@@ -190,11 +191,15 @@
                                                         {{ $val->Tour->title ?? '' }}
                                                     </td>
                                                     <td>
+                                                        {{ $val->booking_id ?? '' }}
+                                                    </td>
+                                                    <td>
                                                         {{ $val->Tour->duration ?? '' }} Hours
                                                     </td>
                                                     <td>
-                                                        {{ date('d M, Y, h:i:s a', strtotime($val->booking_date)) ?? '' }}
+                                                        {{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
                                                     </td>
+
                                                     <td>
                                                         Pending for Approval
                                                     </td>
@@ -623,7 +628,7 @@
             //Remove the "manage-booking" part
             var base_url = currentURL.replace('/home', '');
 
-            var reject_url = base_url + '/reject-tour-booking/' + tour_id;
+            var reject_url = base_url + '/reject-tour-booking/' + tour_id + '#BookingRejectedRequest';
             /*URL for reject booking , append on reject button*/
             var accept_url = base_url + '/accept-tour-booking/' + tour_id + '#BookingAcceptedRequest';
             /*URL for accept booking , append on accept button*/

@@ -16,6 +16,7 @@ use App\Models\TourAttribute;
 use App\Models\CallbackRequest;
 use App\Models\TourBooking;
 use App\Models\VirtualTour;
+use App\Models\Notification;
 use App\Models\TimeZone;
 use App\Models\TaxiBooking;
 use App\Models\Master;
@@ -41,6 +42,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\TaxiBookingEvent;
 use Illuminate\Support\Facades\Http;
 use Eluceo\iCal\Domain\Entity\Calendar;
+use GuzzleHttp\Client;
 
 
 class UserController extends Controller
@@ -347,7 +349,8 @@ class UserController extends Controller
                 $temp['short_description'] = $tour->short_description;
                 $temp['what_to_bring'] = $tour->what_to_bring;
                 $temp['tour_date_time'] = '19 October, 2023 Monday';
-                $temp['tax'] = $tax->tax;
+                $temp['tax'] = $tax->tax ?? '';
+                $temp['seat_available'] = 5;
                 $images = TourAttribute::where('tour_id',$tour->id)->get();
                 foreach ($images as $key => $val) {
                     $tourImage[] = asset('public/upload/tour-thumbnail/'.$val->attribute_name);
@@ -392,6 +395,13 @@ class UserController extends Controller
                     $data['message'] = 'Verification code has been sent';
                     $data['code'] = $code;
                     $data['email'] = $user->email;
+                    $mailData = 
+                    [
+                        'body' => 'You are receiving this email because you have registered on our Kikos platform',
+                        'code'  => 'Your otp is '. $code,
+                        'email'  => $email
+                    ];
+                    Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }else{
                     $OTP = new Otp;
@@ -403,6 +413,13 @@ class UserController extends Controller
                     $data['message'] = 'Verification code has been sent';
                     $data['code'] = $code;
                     $data['email'] = $user->email;
+                    $mailData = 
+                    [
+                        'body' => 'You are receiving this email because you have registered on our Kikos platform',
+                        'code'  => 'Your otp is '. $code,
+                        'email'  => $email
+                    ];
+                    Mail::to($email)->send(new SendOTPMail($mailData));
                     return response()->json($data);
                 }
             }else{
@@ -472,7 +489,7 @@ class UserController extends Controller
                 }
             }else{
                 $data['status'] = false;
-                $data['message'] = 'Email is allready register.';
+                $data['message'] = 'Email is already registered.';
                 return response()->json($data);
             }
         } catch (\Exception $e) {
@@ -645,6 +662,13 @@ class UserController extends Controller
             $sound ='default';
             $serverKey= 'AAAASwFiVeM:APA91bHxRaPbKYx4krs489Y1sjMV6uau2wff1xrwa36JoyJOGdwJPGtdbk6XER6qn2XLZhgom8KdyUNVdhQZOfXZUyJLWdKnov9VcHSlRBM0NTMBT1ZeI498SoJCNt1sN36Rx2IkTNBi';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+            $notification = new Notification;
+            $notification->booking_type = 'Callback Request';
+            $notification->booking_id = $callback_id;
+            $notification->notification = $push_message;
+            $notification->status = 0;
+            $notification->user_id = $admin->id;
+            $notification->save();
             
             $data['status']=true;
             $data['message']="Request Send";
@@ -751,6 +775,14 @@ class UserController extends Controller
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+
+            $notification = new Notification;
+            $notification->booking_type = 'Tour Booking';
+            $notification->booking_id =  $booking->id;
+            $notification->notification = $push_message;
+            $notification->user_id = $admin->id;
+            $notification->status = 0;
+            $notification->save();
             /*User Mail*/
             $mailData = [
                 'name'  => $user->fullname,
@@ -772,6 +804,14 @@ class UserController extends Controller
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+            $notification = new Notification;
+            $notification->booking_type = 'Tour Booking';
+            $notification->booking_id =  $booking->id;
+            $notification->notification = $push_message;
+            $notification->user_id = $user->id;
+            $notification->status = 0;
+            $notification->save();
+
             $data['status']=true;
             $data['message']="Boooked successfully";
             $data['booking_id']=$booking_id;
@@ -791,7 +831,7 @@ class UserController extends Controller
                 'tour_type' => 'required|string|max:255|min:1',
                 'booking_date' => 'required',
                 'amount' => 'required',
-                'tax' => 'required',
+                'tax' => 'nullable',
             ]);
             
             if ($validator->fails())
@@ -848,7 +888,14 @@ class UserController extends Controller
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
+
+            $notification = new Notification;
+            $notification->booking_type = 'PhotoBooth Booking';
+            $notification->booking_id =  $booking->id;
+            $notification->notification = $push_message;
+            $notification->status = 0;
+            $notification->user_id = $user->id;
+            $notification->save();
             /*Admin Mail and Push Notification*/
             $admin = User::where('id',1)->first();
             $mailData = [
@@ -872,6 +919,14 @@ class UserController extends Controller
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
+            $notification = new Notification;
+            $notification->booking_type = 'Taxi Booking';
+            $notification->booking_id =  $booking->id;
+            $notification->notification = $push_message;
+            $notification->status = 0;
+            $notification->user_id = $admin->id;
+            $notification->save();
+
             $data['status']=true;
             $data['message']="Boooked successfully";
             $data['booking_id']=$booking_id;
@@ -1170,7 +1225,6 @@ class UserController extends Controller
                 'status' => 0,
                 'created_at' => date("Y-m-d h:i:s")
             ]);
-            
             // $PaymentDetail = new PaymentDetail;
             // $PaymentDetail->booking_id = $bookingID;
             // $PaymentDetail->transaction_id = $request->transaction_id;
@@ -1200,7 +1254,7 @@ class UserController extends Controller
                     'date_time'  => $request->booking_date_time,
                     'driver_details'  => ''
                 ];
-                Mail::to($request->email_id)->send(new TaxiBookingMail($mailData));
+                //Mail::to($request->email_id)->send(new TaxiBookingMail($mailData));
                 if($request->user_id){
                     $user = User::where('id',$request->user_id)->first();
                     $push_message = 'Taxi Booked'; 
@@ -1214,6 +1268,15 @@ class UserController extends Controller
                     $sound ='default';
                     $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
                     $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+
+
+                    $notification = new Notification;
+                    $notification->booking_type = 'Taxi Booked';
+                    $notification->booking_id =  $bookingID;
+                    $notification->notification = $push_message;
+                    $notification->user_id = $user->id;
+                    $notification->status = 0;
+                    $notification->save();
                 }
             }
             
@@ -1239,7 +1302,13 @@ class UserController extends Controller
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
             $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
-            
+            $notification = new Notification;
+            $notification->booking_type = 'New Taxi Booking';
+            $notification->booking_id =  $bookingID;
+            $notification->notification = $push_message;
+            $notification->user_id = $admin->id;
+            $notification->status = 0;
+            $notification->save();
             
             return response()->json($data);
         } catch (\Exception $e) {
@@ -2342,6 +2411,85 @@ class UserController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
+
+
+    public function fetchPlaceSuggestions(Request $request)
+    {
+        // Get the search query from the request
+        $query = $request->input('query');
+        $accessToken = 'pk.eyJ1IjoidXNlcnMxIiwiYSI6ImNsdGgxdnpsajAwYWcya25yamlvMHBkcGEifQ.qUy8qSuM_7LYMSgWQk215w';
+
+        // Construct the API URL with the query and access token
+        $url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" . urlencode($query) . ".json?access_token=" . $accessToken;
+
+        // Create a Guzzle HTTP client
+        $client = new \GuzzleHttp\Client();
+
+        try {
+            // Send a GET request to the API endpoint
+            $response = $client->get($url);
+
+            // Decode the JSON response
+            $data = json_decode($response->getBody(), true);
+
+            // Process the response data (list of suggestions)
+            $suggestions = collect($data['features'])->map(function ($feature) {
+                // Extract the place name, longitude, and latitude
+                return [
+                    'place_name' => $feature['place_name'],
+                    'longitude' => $feature['center'][0],
+                    'latitude' => $feature['center'][1]
+                ];
+            });
+
+            // Return the suggestions as JSON response
+            return response()->json(['suggestions' => $suggestions]);
+        } catch (\Exception $e) {
+            // Handle any errors (e.g., API request failed)
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function getNotification(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $notifications = Notification::where('user_id',$user->id)->where('status',0)->get();
+
+            $success['notifications'] = $notifications;
+            return response()->json(["status" => true, "message" => "Notifications", "data" => $success]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+
+    public function ClearNotification(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'clear' => 'nullable|boolean'
+            ]);
     
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $validated = $validator->validated();
+            $user = Auth::user();
+            $notifications = Notification::where('user_id',$user->id)->where('status',0)->get();
+            if($validated['clear'] == 1){
+                foreach($notifications as $val){
+                    $val->update(['status'=> 1]);
+                }
+                
+            }
+            return response()->json(["status" => true, "message" => "Notifications Cleared Successfully"]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 
 }

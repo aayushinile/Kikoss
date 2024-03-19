@@ -17,4 +17,9 @@ class BookingPhotoBooth extends Model
     {
         return $this->hasOne(PhotoBooth::class, 'id', 'booth_id');
     }
+
+    function images()
+    {
+        return $this->hasMany('App\Models\PhotoBoothMedia', 'booth_id', 'booth_id');
+    }
 }
