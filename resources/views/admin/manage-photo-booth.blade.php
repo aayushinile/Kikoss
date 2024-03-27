@@ -32,16 +32,31 @@
             })
         });
     </script>
+    <style>
+        .daterangepicker.show-calendar .drp-buttons {
+            display: none !important;
+        }
+        /* Custom CSS to adjust date colors in the calendar */
+        .daterangepicker td.available:hover, .daterangepicker td.available.active {
+            background-color: #337ab7; /* Adjust the background color of hovered and active dates */
+            color: #fff; /* Adjust the text color of hovered and active dates */
+        }
+
+        .daterangepicker td.available {
+            background-color: #fff; /* Adjust the background color of available dates */
+            color: #000; /* Adjust the text color of available dates */
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>Manage Photo Booth</h4>
         <div class="page-breadcrumb-action wd4">
-            <div class="row g-2">
-                <div class="col-md-6">
+            <div class="row g-2" style="float: right;">
+                <!-- <div class="col-md-6">
                     <a href="{{ url('photo-transaction-history') }}" class="wh-btn">View Transaction History</a>
-                </div>
-                <div class="col-md-6">
+                </div> -->
+                <div class="col-md-12" >
                     <a href="{{ url('add-photo-booth') }}" class="wh-btn">Upload new tour Photos/Videos</a>
                 </div>
             </div>
@@ -134,33 +149,25 @@
                         <div class="kikcard">
                             <div class="card-header">
                                 <div class="d-flex align-items-center">
-                                    <div class="mr-auto">
-                                        <h4 class="heading-title">Photo Booth Booking</h4>
-                                    </div>
-                                    <div class="btn-option-info wd7">
+                                    <div class="btn-option-info w-100">
                                         <div class="search-filter">
                                             <form action="{{ route('ManagePhotoBooth') }}" method="POST">
                                                 @csrf
                                                 <div class="row g-1">
-                                                    <div class="col-md-1">
-                                                        <div class="form-group">
-                                                            <a href="{{ url('manage-photo-booth') }}" class="btn-gr"><i
-                                                                    class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
+                                                    
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <div class="search-form-group">
                                                                 <input type="text" name="search"
                                                                     value="{{ $search ? $search : '' }}"
                                                                     class="form-control"
-                                                                    placeholder="Search User name, Amount & virtual tour name..">
+                                                                    placeholder="Search User name, Amount ,virtual tour name & Booking Id..">
                                                                 <span class="search-icon"><img
                                                                         src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <select class="form-control"name="booth_id" id="booth_id">
                                                                 <option>Select By Photo Booth Name</option>
@@ -177,14 +184,25 @@
 
                                                     <div class="col-md-2">
                                                         <div class="form-group">
-                                                            <input type="date" name="date"
-                                                                value="{{ $date ? $date : '' }}" class="form-control">
+                                                        <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-1">
                                                         <div class="form-group">
+                                                            <a href="{{ url('manage-photo-booth') }}" class="btn-gr"><i
+                                                                    class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-1">
+                                                        <div class="form-group">
                                                             <button type="submit" class="btn-gr"><i class="fa fa-search"
                                                                     aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                        <a href="#" class="btn-gr">Download Excel</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -229,7 +247,7 @@
                                                             data-bs-toggle="modal" href="#infoprice" role="button"
                                                             onclick='GetDataPrice("{{ $val->total_amount }}","{{ $val->amount }}","{{ $val->tax_percent }}","{{ $val->tax }}")'><i
                                                                 class="las la-info-circle"></i></a></td>
-                                                    <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                    <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                     </td>
                                                     <td>
                                                         <div class="media-card">
@@ -381,6 +399,24 @@
         // Trigger Fancybox for the images associated with the given valId
         $("[data-fancybox='gallery" + valId + "']").eq(0).trigger('click');
     }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+    $(function() {
+        // Bind the initialization of date range picker to focus event of the input field
+        $('input[name="daterange"]').on('focus', function() {
+            $(this).daterangepicker({
+                showSelector: false,
+                opens: 'left'
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                // Update the visible input field with the selected date range
+                $('input[name="dateranges"]').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+        });
+    });
 </script>
 
 @endsection

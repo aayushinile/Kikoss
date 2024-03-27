@@ -11,10 +11,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    
+
     <style>
         .Accepted-status{
             color: green;
         }
+        .daterangepicker.show-calendar .drp-buttons {
+            display: none !important;
+        }
+        /* Custom CSS to adjust date colors in the calendar */
+        .daterangepicker td.available:hover, .daterangepicker td.available.active {
+            background-color: #337ab7; /* Adjust the background color of hovered and active dates */
+            color: #fff; /* Adjust the text color of hovered and active dates */
+        }
+
+        .daterangepicker td.available {
+            background-color: #fff; /* Adjust the background color of available dates */
+            color: #000; /* Adjust the text color of available dates */
+        }
+        .wd-100{width: 100%}
+
     </style>
 @endpush
 @section('content')
@@ -117,24 +134,20 @@
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="btn-option-info wd-100">
+                                            <div class="btn-option-info-1 wd-100">
                                                 <div class="search-filter">
-                                                    <form action="{{ route('ManageBooking') }}" method="POST">
+                                                    <form action="{{ route('ManageBooking') }}" method="POST" id="booking-form">
                                                         
                                                         @csrf
                                                         <input type="hidden" value="BookingRequest" name="bookings">
-                                                        <div class="row">
-                                                            <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                <a href="#" id="refresh-btn-booking-request" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
+                                                        <div class="row g-1">
+                                                           
+                                                            <div class="col-md-3">
                                                                 <div class="form-group">
                                                                     <div class="search-form-group">
                                                                         <input type="text" name="search"
                                                                             value="{{ $search ? $search : '' }}"class="form-control"
-                                                                            placeholder="Search User Name">
+                                                                            placeholder="Search User Name or Booking ID">
                                                                         <span class="search-icon"><img
                                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                                     </div>
@@ -158,15 +171,27 @@
 
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <input type="date" name="date"
-                                                                        value="{{ $date ? $date : '' }}"class="form-control">
+                                                                    <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date">
                                                                 </div>
                                                             </div>
+
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
                                                                     <button type="submit" class="btn-gr"><i
                                                                             class="fa fa-search"
                                                                             aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <a href="#" id="refresh-btn-booking-request" class="btn-gr"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <a href="#" id="refresh-btn-booking-request" class="btn-gr">
+                                                                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -207,7 +232,7 @@
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
                                                                     <div class="status-text Pending-status"><i
@@ -247,22 +272,18 @@
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="btn-option-info w-100">
+                                            <div class="btn-option-info-1 w-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
                                                         <div class="row g-1">
-                                                            <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                <a href="#" id="refresh-btn-booking-accepted" class="btn-gr" onclick="handleRefreshButtonClick('#BookingAcceptedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
+                                                            
+                                                            <div class="col-md-3">
                                                                 <div class="form-group">
                                                                     <div class="search-form-group">
                                                                         <input type="text" name="search"
                                                                             value="{{ $search ? $search : '' }}"class="form-control"
-                                                                            placeholder="Search User Name">
+                                                                            placeholder="Search User Name or Booking Id">
                                                                         <span class="search-icon"><img
                                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                                     </div>
@@ -286,8 +307,7 @@
 
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <input type="date" name="date"
-                                                                        value="{{ $date ? $date : '' }}"class="form-control">
+                                                                <input type="text" name="daterange" value="" class="form-control" autocomplete="off" id="datepicker" placeholder="Select Date">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-1">
@@ -295,6 +315,18 @@
                                                                     <button type="submit" class="btn-gr"><i
                                                                             class="fa fa-search"
                                                                             aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                     <a href="#" id="refresh-btn-booking-accepted" class="btn-gr" onclick="handleRefreshButtonClick('#BookingAcceptedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <a href="#" id="refresh-btn-booking-request" class="btn-gr">
+                                                                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -335,7 +367,7 @@
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
                                                                     <div class="status-text Accepted-status"><b>Accepted</b>
@@ -374,22 +406,17 @@
                                 <div class="kikcard">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
-                                            <div class="btn-option-info wd-100">
+                                            <div class="btn-option-info-1 wd-100">
                                                 <div class="search-filter">
                                                     <form action="{{ route('ManageBooking') }}" method="POST">
                                                         @csrf
-                                                        <div class="row">
-                                                            <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                <a href="#" id="refresh-btn-booking-rejected" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRejectedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
+                                                        <div class="row g-1">
+                                                            <div class="col-md-3">
                                                                 <div class="form-group">
                                                                     <div class="search-form-group">
                                                                         <input type="text" name="search"
                                                                             value="{{ $search ? $search : '' }}"class="form-control"
-                                                                            placeholder="Search User Name">
+                                                                            placeholder="Search User Name or booking Id">
                                                                         <span class="search-icon"><img
                                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                                     </div>
@@ -413,8 +440,7 @@
 
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
-                                                                    <input type="date" name="date"
-                                                                        value="{{ $date ? $date : '' }}"class="form-control">
+                                                                <input type="text" name="daterange" value="" class="form-control" autocomplete="off" id="datepicker" placeholder="Select Date">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-1">
@@ -424,6 +450,19 @@
                                                                             aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
+                                                             <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                <a href="#" id="refresh-btn-booking-rejected" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRejectedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <a href="#" id="" class="btn-gr">
+                                                                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </form>
                                                 </div>
@@ -463,10 +502,10 @@
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
                                                                 <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Tour->duration ?? '' }} Hours</td>
-                                                                <td>{{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                                <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="status-text Pending-status"><b>Rejected</b>
+                                                                    <div class="status-text Pending-status" style="color: red;"><b>Rejected</b>
                                                                     </div>
                                                                 </td>
                                                                 @php
@@ -915,6 +954,7 @@
     </div>
 
     {{-- Code for calendar --}}
+   
     <script>
         $(document).ready(function() {
            
@@ -1159,26 +1199,7 @@
     </script>
 
 
-<script>
-    // Function to handle refresh button click
-    function handleRefreshButtonClick(tabId) {
-        // Store the active tab ID in session storage
-        sessionStorage.setItem('activeTabId', tabId);
-        window.location.reload();
-    }
 
-    // When the page loads
-    window.addEventListener('load', function() {
-        // Retrieve the active tab ID from session storage
-        var activeTabId = sessionStorage.getItem('activeTabId');
-        
-        // If an active tab is stored
-        if (activeTabId) {
-            // Activate the corresponding tab
-            document.querySelector('.nav-tabs a[href="' + activeTabId + '"]').click();
-        }
-    });
-</script>
 <script>
     window.onload = function() {
         // Get the hash from the URL
@@ -1201,4 +1222,25 @@
         }
     };
 </script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+    $(function() {
+        // Bind the initialization of date range picker to focus event of the input field
+        $('input[name="daterange"]').on('focus', function() {
+            $(this).daterangepicker({
+                showSelector: false,
+                opens: 'left'
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                // Update the visible input field with the selected date range
+                $('input[name="daterange"]').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+        });
+    });
+</script>
+
+
+
 @endsection

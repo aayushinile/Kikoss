@@ -741,7 +741,7 @@ class UserController extends Controller
             $booking->save();
             $tour_booking_id = $booking->id;
             $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $tour_booking_id;
+            $PaymentDetail->booking_id = $booking_id;
             $PaymentDetail->transaction_id = $request->transaction_id;
             $PaymentDetail->payment_provider = 'PayPal';
             //Checking Tour type
@@ -766,7 +766,7 @@ class UserController extends Controller
             Mail::to($admin->email)->send(new TourBookingAdminMail($mailData));
             $push_message = 'New Tour Booking';
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
+            $device_token = $admin->device_token;
             $img='';
             $type='';
             $id='';
@@ -830,8 +830,7 @@ class UserController extends Controller
                 'photo_booth_id' => 'required|integer',
                 'tour_type' => 'required|string|max:255|min:1',
                 'booking_date' => 'required',
-                'amount' => 'required',
-                'tax' => 'nullable',
+                'amount' => 'required'
             ]);
             
             if ($validator->fails())
@@ -849,7 +848,7 @@ class UserController extends Controller
             $booking->image_count = $image_count;
             $booking->video_count = $video_count;
             $booking->booking_date = $request->booking_date;
-            $tax = $request->tax;
+            $tax = Master::where('id','!=',null)->value('tax');
             $booking->tax = $tax;
             $booking->total_amount = $request->amount + $tax;
             $booking->status = 0;
@@ -858,7 +857,7 @@ class UserController extends Controller
             $photo_booth_booking_id = $booking->id;
             
             $PaymentDetail = new PaymentDetail;
-            $PaymentDetail->booking_id = $photo_booth_booking_id;
+            $PaymentDetail->booking_id = $booking_id;
             $PaymentDetail->transaction_id = $request->transaction_id;
             $PaymentDetail->payment_provider = 'PayPal';
             $PaymentDetail->amount = $request->amount + $tax;/*PhotoBOOTH amount */
@@ -876,7 +875,7 @@ class UserController extends Controller
                 'date_time'  => '',
                 'driver_details'  => ''
             ];
-            Mail::to($user->email)->send(new PhotoBoothBookingUserMail($mailData));
+           // Mail::to($user->email)->send(new PhotoBoothBookingUserMail($mailData));
             $push_message = 'Photo Booth Booked'; 
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
             $device_token = $user->device_token;
@@ -887,7 +886,7 @@ class UserController extends Controller
             $id1='';
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+           // $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
 
             $notification = new Notification;
             $notification->booking_type = 'PhotoBooth Booking';
@@ -906,10 +905,10 @@ class UserController extends Controller
                 'date_time'  => '',
                 'driver_details'  => ''
             ];
-            Mail::to($admin->email)->send(new PhotoBoothBookingadminMail($mailData));
+           // Mail::to($admin->email)->send(new PhotoBoothBookingadminMail($mailData));
             $push_message = 'New Taxi Booking'; 
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
+            $device_token = $admin->device_token;
             $img='';
             $type=''; 
             $id='';
@@ -917,7 +916,7 @@ class UserController extends Controller
             $id1='';
             $sound ='default';
             $serverKey= 'AAAA_Djj7e4:APA91bESbcbXUuWZA-VVyuxyRJA9npCPpwU5I9uv7iwbnK73bHn0WyCYIfIe-KHMcE1STSK3kiq0_eYxF4F3ob7L4BZyVPRCNx7Mfq2CaUiXk_UKirgzr_ZrT650upTpW3SjMuz-EJ7l';
-            $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
+           // $check=$this->send_notification($serverKey,$push_message,$device_token,$title);
             
             $notification = new Notification;
             $notification->booking_type = 'Taxi Booking';
@@ -1293,7 +1292,7 @@ class UserController extends Controller
             Mail::to($admin->email)->send(new TaxiBookingAdminMail($mailData));
             $push_message = 'New Taxi Booking'; 
             // $device_token = 'e552do-MSJm4gjhgjhgbhjPiUlVPj1_:APA91bFGhdwdAHMtLV_9SYGqKjBMzWyMTR_Y5KE5SSWP2kqsXcX6Rx-wl_k2RvQJAm-sKO1BvTXicAjjChkLj1k_ZgpKlWY7-wMsT_2guKpLtWz_2wpOpZ9ibl51j7ZdK3HXD737h6KJ';
-            $device_token = $admin->firebase_token;
+            $device_token = $admin->device_token;
             $img='';
             $type=''; 
             $id='';

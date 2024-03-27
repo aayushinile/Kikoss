@@ -35,6 +35,6 @@ class TourBooking extends Model
 
     function images()
     {
-        return $this->hasOne('App\Models\TourAttribute','tour_id', 'id' );
+        return $this->belongsTo('App\Models\TourAttribute','tour_id', 'id' );
     }
 }

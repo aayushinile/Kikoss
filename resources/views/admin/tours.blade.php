@@ -56,7 +56,12 @@
                                         @php
                                             $FirstImage = \App\Models\TourAttribute::where('tour_id', $val->id)->first();
                                         @endphp
-                                        <img src="{{ assets('/upload/tour-thumbnail/' . $FirstImage->attribute_name) }}">
+                                        @if ($FirstImage)
+                                            <img src="{{ asset('upload/tour-thumbnail/' . $FirstImage->attribute_name) }}">
+                                        @else
+                                            <img src="{{ assets('upload/tour-thumbnail/IMG_20231215_143939_9613.jpg') }}">
+                                        @endif
+                                        
                                         <div class="managetour-seat-info">
                                             <span class="totalseat-text">
                                                 <img src="{{ assets('assets/admin-images/seat1.svg') }}"> Total Seat -

@@ -15,7 +15,7 @@
     $currentURL = Route::currentRouteName();
     ?>
     <div class="page-body-wrapper">
-        <div class="sidebar-wrapper sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-wrapper sidebar-offcanvas" id="sidebar" style="overflow-y: scroll;">
             <div class="sidebar-logo">
                 <a class="brand-logo" href="{{ url('home') }}">
                     <img class="" src="{{ assets('assets/admin-images/logo.svg') }}" alt="">
@@ -73,15 +73,85 @@
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'Payments' || $currentURL == 'Payments-details') active @endif">
-                            <a class="nav-link" href="{{ url('payments') }}">
+                        <li class="nav-item @if ($currentURL == 'Tours' || $currentURL == 'AddTour' || $currentURL == 'EditTour' || $currentURL == 'TourDetails') active @endif">
+                            <a class="nav-link" href="{{ url('tours') }}">
                                 <span class="menu-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card">
-                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <path d="M8 2V5" stroke="white" stroke-width="2" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M16 2V5" stroke="white" stroke-width="2" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M3.5 9.09H20.5" stroke="white" stroke-width="2"
+                                            stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M13.37 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5V13"
+                                            stroke="white" stroke-width="2" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M11.9955 13.7H12.0045" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M8.29431 13.7H8.30329" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M8.29431 16.7H8.30329" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M14.3908 20.5775C13.8058 20.0925 13.4058 19.4075 13.2258 18.6075L13.0208 17.6775C12.9208 17.2225 13.1908 16.7075 13.6258 16.5325L14.3358 16.2475L17.0908 15.1425C17.5708 14.9525 18.1008 14.9525 18.5808 15.1425L21.3358 16.2475L22.0458 16.5325C22.4808 16.7075 22.7508 17.2225 22.6508 17.6775L22.4458 18.6075C22.0908 20.2075 20.8358 21.3475 19.0258 21.3475H16.6458"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path d="M17.8358 21.3477V15.3477" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </span>
-                                <span class="menu-title">Payments</span>
+                                <span class="menu-title">Manage Tour</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item @if (
+                            $currentURL == 'ManageVirtualTour' ||
+                                $currentURL == 'AddVirtualTour' ||
+                                $currentURL == 'VirtualTransactionHistory' ||
+                                $currentURL == 'EditVirtualTour') active @endif">
+                            <a class="nav-link" href="{{ url('manage-virtual-tour') }}">
+                                <span class="menu-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M5.46 18.49V15.57C5.46 14.6 6.22 13.73 7.3 13.73C8.27 13.73 9.14 14.49 9.14 15.57V18.38C9.14 20.33 7.52 21.95 5.57 21.95C3.62 21.95 2 20.32 2 18.38V12.22C1.89 6.6 6.33 2.05 11.95 2.05C17.57 2.05 22 6.6 22 12.11V18.27C22 20.22 20.38 21.84 18.43 21.84C16.48 21.84 14.86 20.22 14.86 18.27V15.46C14.86 14.49 15.62 13.62 16.7 13.62C17.67 13.62 18.54 14.38 18.54 15.46V18.49"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="menu-title">Manage Virtual Tour</span>
+                            </a>
+                        </li>
+
+                        
+                        
+
+                        <li class="nav-item @if (
+                            $currentURL == 'ManagePhotoBooth' ||
+                                $currentURL == 'PhotoTransactionHistory' ||
+                                $currentURL == 'EditPhotoBooth' ||
+                                $currentURL == 'AddPhoto') active @endif">
+                            <a class="nav-link" href="{{ url('manage-photo-booth') }}">
+                                <span class="menu-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
+                                            stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path
+                                            d="M9 10C10.1046 10 11 9.10457 11 8C11 6.89543 10.1046 6 9 6C7.89543 6 7 6.89543 7 8C7 9.10457 7.89543 10 9 10Z"
+                                            stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path
+                                            d="M2.67 18.95L7.6 15.64C8.39 15.11 9.53 15.17 10.24 15.78L10.57 16.07C11.35 16.74 12.61 16.74 13.39 16.07L17.55 12.5C18.33 11.83 19.59 11.83 20.37 12.5L22 13.9"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="menu-title">Manage Photo Booth</span>
                             </a>
                         </li>
 
@@ -117,49 +187,16 @@
                                 <span class="menu-title">Manage Booking</span>
                             </a>
                         </li>
-                        <li class="nav-item @if (
-                            $currentURL == 'ManageVirtualTour' ||
-                                $currentURL == 'AddVirtualTour' ||
-                                $currentURL == 'VirtualTransactionHistory' ||
-                                $currentURL == 'EditVirtualTour') active @endif">
-                            <a class="nav-link" href="{{ url('manage-virtual-tour') }}">
-                                <span class="menu-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M5.46 18.49V15.57C5.46 14.6 6.22 13.73 7.3 13.73C8.27 13.73 9.14 14.49 9.14 15.57V18.38C9.14 20.33 7.52 21.95 5.57 21.95C3.62 21.95 2 20.32 2 18.38V12.22C1.89 6.6 6.33 2.05 11.95 2.05C17.57 2.05 22 6.6 22 12.11V18.27C22 20.22 20.38 21.84 18.43 21.84C16.48 21.84 14.86 20.22 14.86 18.27V15.46C14.86 14.49 15.62 13.62 16.7 13.62C17.67 13.62 18.54 14.38 18.54 15.46V18.49"
-                                            stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span class="menu-title">Manage Virtual Tour</span>
-                            </a>
-                        </li>
 
-                        <li class="nav-item @if (
-                            $currentURL == 'ManagePhotoBooth' ||
-                                $currentURL == 'PhotoTransactionHistory' ||
-                                $currentURL == 'EditPhotoBooth' ||
-                                $currentURL == 'AddPhoto') active @endif">
-                            <a class="nav-link" href="{{ url('manage-photo-booth') }}">
+                        <li class="nav-item @if ($currentURL == 'Payments' || $currentURL == 'Payments-details') active @endif">
+                            <a class="nav-link" href="{{ url('payments') }}">
                                 <span class="menu-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
-                                            stroke="white" stroke-width="1.5" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M9 10C10.1046 10 11 9.10457 11 8C11 6.89543 10.1046 6 9 6C7.89543 6 7 6.89543 7 8C7 9.10457 7.89543 10 9 10Z"
-                                            stroke="white" stroke-width="1.5" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M2.67 18.95L7.6 15.64C8.39 15.11 9.53 15.17 10.24 15.78L10.57 16.07C11.35 16.74 12.61 16.74 13.39 16.07L17.55 12.5C18.33 11.83 19.59 11.83 20.37 12.5L22 13.9"
-                                            stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                        <line x1="1" y1="10" x2="23" y2="10"></line>
                                     </svg>
                                 </span>
-                                <span class="menu-title">Manage Photo Booth</span>
+                                <span class="menu-title">Payments</span>
                             </a>
                         </li>
 
@@ -194,38 +231,7 @@
                             </a>
                         </li>
 
-                        <li class="nav-item @if ($currentURL == 'Tours' || $currentURL == 'AddTour' || $currentURL == 'EditTour' || $currentURL == 'TourDetails') active @endif">
-                            <a class="nav-link" href="{{ url('tours') }}">
-                                <span class="menu-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path d="M8 2V5" stroke="white" stroke-width="2" stroke-miterlimit="10"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M16 2V5" stroke="white" stroke-width="2" stroke-miterlimit="10"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M3.5 9.09H20.5" stroke="white" stroke-width="2"
-                                            stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path
-                                            d="M13.37 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5V13"
-                                            stroke="white" stroke-width="2" stroke-miterlimit="10"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M11.9955 13.7H12.0045" stroke="white" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M8.29431 13.7H8.30329" stroke="white" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M8.29431 16.7H8.30329" stroke="white" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                        <path
-                                            d="M14.3908 20.5775C13.8058 20.0925 13.4058 19.4075 13.2258 18.6075L13.0208 17.6775C12.9208 17.2225 13.1908 16.7075 13.6258 16.5325L14.3358 16.2475L17.0908 15.1425C17.5708 14.9525 18.1008 14.9525 18.5808 15.1425L21.3358 16.2475L22.0458 16.5325C22.4808 16.7075 22.7508 17.2225 22.6508 17.6775L22.4458 18.6075C22.0908 20.2075 20.8358 21.3475 19.0258 21.3475H16.6458"
-                                            stroke="white" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M17.8358 21.3477V15.3477" stroke="white" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span class="menu-title">Manage Tour</span>
-                            </a>
-                        </li>
+                        
 
                         <li class="nav-item @if ($currentURL == 'CallbackRequest') active @endif">
                             <a class="nav-link" href="{{ url('tour-callback-request') }}">
@@ -257,8 +263,10 @@
                                 <span class="menu-title">Free Callback Requests</span>
                             </a>
                         </li>
+                        
+                        
 
-                        <li class="nav-item @if ($currentURL == 'AddEditMasterData') active @endif">
+                        <!-- <li class="nav-item @if ($currentURL == 'AddEditMasterData') active @endif">
                             <a class="nav-link" href="{{ url('add-edit-master') }}">
                             <span class="menu-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -275,7 +283,7 @@
                                 </span>
                                 <span class="menu-title">Manage Master Data</span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item @if ($currentURL == 'TourArchive') active @endif">
                             <a class="nav-link" href="{{ url('tour-archive') }}">
                                 <span class="menu-icon">
@@ -458,7 +466,7 @@
                                     </form>Yes
                                 </button>
                                 <button class="Cancelbtn" type="button"data-bs-dismiss="modal"
-                                    aria-label="Close"onClick="window.location.reload();">No</button>
+                                    aria-label="Close" onClick="window.location.reload();">No</button>
                             </div>
                         </div>
                     </div>

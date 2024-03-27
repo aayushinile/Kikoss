@@ -13,12 +13,12 @@
             <form action="{{ route('Users') }}" method="POST">
                 @csrf
                 <div class="row g-1">
-                    <div class="col-md-11">
+                    <div class="col-md-7">
                         <div class="form-group">
                             <div class="search-form-group">
                                 <input type="text" name="search" class="form-control"
                                     value="{{ $search ? $search : '' }}"
-                                    placeholder="Search by Name, Email, Contact Number">
+                                    placeholder="Search by Name, Email">
                                 <span class="search-icon"><img
                                         src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                             </div>
@@ -26,10 +26,23 @@
                         </div>
                     </div>
                     <div class="col-md-1">
+                    <div class="form-group">
+                                <a href="{{ url('/users') }}" class="btn-gr"><i
+                                        class="fa fa-refresh" aria-hidden="true"></i></a>
+                            </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <button type="submit" class="btn-gr"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            
                         </div>
                     </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <a href="{{ route('Users', ['download' => 1, 'search' => $search]) }}" class="btn-gr" name="download"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                    
                 </div>
             </form>
         </div>
@@ -87,7 +100,7 @@
                                                         </label>
                                                     </td>
                                                     <td>
-                                                        {{ date('d M, Y, h:i:s a', strtotime($val->created_at)) }}
+                                                        {{ date('M d, Y', strtotime($val->created_at)) }}
                                                     </td>
                                                     <td>
                                                         <div class="action-btn-info">

@@ -11,6 +11,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    <style>
+        .daterangepicker.show-calendar .drp-buttons {
+            display: none !important;
+        }
+        /* Custom CSS to adjust date colors in the calendar */
+        .daterangepicker td.available:hover, .daterangepicker td.available.active {
+            background-color: #337ab7; /* Adjust the background color of hovered and active dates */
+            color: #fff; /* Adjust the text color of hovered and active dates */
+        }
+
+        .daterangepicker td.available {
+            background-color: #fff; /* Adjust the background color of available dates */
+            color: #000; /* Adjust the text color of available dates */
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -27,26 +42,22 @@
                                 {{-- <div class="mr-auto">
                                     <h4 class="heading-title">Booking Requests</h4>
                                 </div> --}}
-                                <div class="btn-option-info wd10">
+                                <div class="btn-option-info w-100">
                                     <div class="search-filter">
                                         <form action="{{ route('TaxiBookingRequest') }}" method="POST">
                                             @csrf
                                             <div class="row g-1">
-
-                                                <div class="col-md-3">
-                                                    <div class="search-form-group">
-                                                        <div class="TotalRequestoverview">Total Request Received:
-                                                            <span>{{ $count }}</span>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="search-form-group">
+                                                            <div class="TotalRequestoverview">Total Request Received:
+                                                                <span>{{ $count }}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <div class="form-group">
-                                                        <a href="{{ url('taxi-booking-request') }}" class="btn-gr"><i
-                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
+                                                
+                                                <div class="col-md-5">
                                                     <div class="search-form-group">
                                                         <input type="text" name="search" class="form-control"
                                                             value="{{ $search ? $search : '' }}"
@@ -55,10 +66,9 @@
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <input type="date" name="date"
-                                                            value="{{ $date ? $date : '' }}" class="form-control">
+                                                        <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date Range">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-1">
@@ -67,10 +77,15 @@
                                                                 aria-hidden="true"></i></button>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <div class="form-group">
-                                                        <a href="#" class="btn-gr" onclick="exportToCSV(this)"
-                                                            data-id="taxi_booking_requests">Download Excel</a>
+                                                        <a href="{{ url('taxi-booking-request') }}" class="btn-gr"><i
+                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                       <a href="{{ route('TaxiBookingRequest', ['download' => 1, 'search' => $search,'daterange' => $date]) }}" class="btn-gr"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -107,7 +122,7 @@
                                                 <td>{{ $item->fullname }}</td>
                                                 <td>{{ $item->mobile }}</td>
                                                 <td>{{ $item->booking_id ?? 'N/A' }}</td>
-                                                <td>{{ date('d M, Y', strtotime($item->booking_time)) }}
+                                                <td>{{ date('M d, Y', strtotime($item->booking_time)) }}
 
                                                 <td>{{ $item->pickup_location }}</td>
                                                 <td>{{ $item->drop_location }}</td>
@@ -160,7 +175,7 @@
                             <h3>Manage Dates</h3>
                             <div class="form-group">
                                 <h4>Selected Date</h4>
-                                <input type="date" name="date" min="{{ date('Y-m-d') }}" class="form-control"
+                                <input type="date" name="date" min="{{ date('m-d-Y') }}" class="form-control"
                                     required>
                             </div>
                             <div class="form-group">
@@ -363,4 +378,23 @@
             return csv.join('\n');
         }
     </script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+    $(function() {
+        // Bind the initialization of date range picker to focus event of the input field
+        $('input[name="daterange"]').on('focus', function() {
+            $(this).daterangepicker({
+                showSelector: false,
+                opens: 'left'
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                // Update the visible input field with the selected date range
+                $('input[name="daterange"]').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+        });
+    });
+</script>
 @endsection

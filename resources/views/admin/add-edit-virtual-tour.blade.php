@@ -317,7 +317,7 @@
                                                                     src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
+                                                                <span>Upload File</span>
                                                             </div>
                                                         </div>
                                                     </label>
@@ -330,7 +330,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload Trial Virtual Audio File<a class="addmorefile" href="">
+                                <h4>Upload Trial Virtual Audio File<a class="addmorefile" href="">
                                     </a></h4>
                                 <div class="create-review-form-input">
                                     <div class="row">
@@ -345,7 +345,8 @@
                                                                 <source
                                                                     src="{{ assets('upload/virtual-audio/' . $data->trial_audio_file) }}"
                                                                     type="audio/mpeg"> Your
-                                                                browser does
+                                                                
+                                                                    r does
                                                                 not support the audio
                                                                 element.
                                                             </audio>
@@ -356,7 +357,7 @@
                                                                         src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                                 </div>
                                                                 <div class="upload-text">
-                                                                    <span>Browse & Upload File</span>
+                                                                    <span>Upload File</span>
                                                                 </div>
                                                             </div>
                                                         @endif
@@ -372,7 +373,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload Virtual Audio File<a class="addmorefile" href="">
+                                <h4>Upload Virtual Audio File<a class="addmorefile" href="">
                                     </a></h4>
                                 <div class="create-review-form-input">
                                     <div class="row">
@@ -398,7 +399,7 @@
                                                                         src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                                 </div>
                                                                 <div class="upload-text">
-                                                                    <span>Browse & Upload File</span>
+                                                                    <span>Upload File</span>
                                                                 </div>
                                                             </div>
                                                         @endif
@@ -413,7 +414,7 @@
                         </div>
                         {{-- <div class="col-md-3">
                             <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload Virtual Audio File<a class="addmorefile" href="">
+                                <h4>Upload Virtual Audio File<a class="addmorefile" href="">
 
                                     </a></h4>
                                 <div class="create-review-form-input">
@@ -430,7 +431,7 @@
                                                                     src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                             </div>
                                                             <div class="upload-text">
-                                                                <span>Browse & Upload File</span>
+                                                                <span>Upload File</span>
                                                             </div>
                                                         </div>
                                                     </label>
@@ -445,7 +446,7 @@
 
                         {{-- <div class="col-md-6">
                             <div class="form-group">
-                                <h4>Browse & Upload Trial Virtual Audio File</h4>
+                                <h4>Upload Trial Virtual Audio File</h4>
                                 <input type="file" class="file-form-control" name="trial_audio_file" accept=".mp3">
                             </div>
                             @error('trial_audio_file')
@@ -467,7 +468,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <h4>Browse & Upload Virtual Audio File</h4>
+                                <h4>Upload Virtual Audio File</h4>
                                 <input type="file" class="file-form-control" name="audio" accept=".mp3">
                             </div>
                             @error('audio')
@@ -627,7 +628,7 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <input type="number" class="form-control" name="stop[stop_num][]" value="" placeholder="Enter Stop Number Here…" min="1">
+                                                            <input type="number" class="form-control" name="stop[stop_num][]" value="1" placeholder="Enter Stop Number Here…" min="1" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-2">
@@ -958,9 +959,11 @@
     $(document).ready(function() {
         
         var uploadIconSrc = "{{ asset('public/assets/admin-images/upload-icon.svg') }}";
+        var stopCount = $(".Stop-info-card").length;
         $(".Addbtn").click(function() {
         // Calculate the index for the new row
         var rowIndex = stopDetailsCount + $(".Stop-info-card").length;
+        var stopNum = stopDetailsCount + stopCount;
         var newDiv = '<div class="col-md-12">' +
             '<div class="Stop-info-card1">' +
             '<div class="row">' +
@@ -977,7 +980,7 @@
             '</div>' +
             '<div class="col-md-3">' +
             '<div class="form-group">' +
-            '<input type="number" class="form-control" name="stop[stop_num][]" value="" placeholder="Enter Stop Number Here…" min="1">' +
+            '<input type="number" class="form-control" name="stop[stop_num][]" value="'+stopNum+'" placeholder="Enter Stop Number Here…" min="1" readonly>' +
             '</div>' +
             '</div>' +
             '<div class="col-md-2">' +
@@ -1012,11 +1015,18 @@
             '</div>';
 
         $(".row.add-button").before(newDiv); // Append the new div before the "Add more stops" button
+        stopCount++;
     });
 
 
-    $(document).on("click", ".Removebtn", function() {
-            $(this).closest('.col-md-12').remove(); // Remove the closest .col-md-12 div when the "Remove" button is clicked
+        $(document).on("click", ".Removebtn", function() {
+            $(this).closest('.col-md-12').remove();
+            $(".Stop-info-card1").each(function(index) {
+                    $(this).find('input[name="stop[stop_num][]"]').val(stopNum - 1);
+                });
+
+                stopNum = stopDetailsCount + stopCount;
+                stopCount--;
         });
     });
 
@@ -1301,125 +1311,131 @@
 
 <?php if (!empty($data->stop_details)) { ?>
     <script>
-        $('#mapModal').on('shown.bs.modal', function () {
-            try {
-                var data = <?php echo json_encode($data); ?>;
-                mapboxgl.accessToken = 'pk.eyJ1IjoidXNlcnMxIiwiYSI6ImNsdGgxdnpsajAwYWcya25yamlvMHBkcGEifQ.qUy8qSuM_7LYMSgWQk215w';
-                var center = calculateCenter(data.stop_details);
-                var map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/mapbox/streets-v11',
-                    center: center,
-                    zoom: 8.77
-                });
+    $('#mapModal').on('shown.bs.modal', function () {
+        try {
+            var data = <?php echo json_encode($data); ?>;
+            mapboxgl.accessToken = 'pk.eyJ1IjoidXNlcnMxIiwiYSI6ImNsdGgxdnpsajAwYWcya25yamlvMHBkcGEifQ.qUy8qSuM_7LYMSgWQk215w';
+            var center = calculateCenter(data.stop_details);
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: center,
+                zoom: 8.77
+            });
 
-                map.on('load', function () {
-                    // Add origin marker
-                    addMarker({
-                        coordinates: {lat: <?php echo $data->origin_lat; ?>, lng: <?php echo $data->origin_long; ?>},
-                        color: '#43d60d'
-                    }, 'origin');
+            map.on('load', function () {
+                // Add origin marker
+                addMarker({
+                    coordinates: {lat: <?php echo isset($data->origin_lat) ? $data->origin_lat : 0; ?>, lng: <?php echo isset($data->origin_long) ? $data->origin_long : 0; ?>},
+                    color: '#43d60d'
+                }, 'origin');
 
-                    // Add destination marker
+                // Add destination marker if provided
+                <?php if (isset($data->dest_lat) && isset($data->dest_long)) : ?>
                     addMarker({
                         coordinates: {lat: <?php echo $data->dest_lat; ?>, lng: <?php echo $data->dest_long; ?>},
                         color: 'orange'
                     }, 'destination');
+                <?php endif; ?>
 
-                    // Iterate through stop details and add markers
-                    data.stop_details.forEach(function (stop, index) {
-                        addMarker({
-                            coordinates: {lat: parseFloat(stop.lat), lng: parseFloat(stop.long)},
-                            stop_number: index + 1,
-                            stop_name: stop.stop_name // Adding stop name to the marker data
-                        }, 'stop');
-                    });
-
-                    // Draw lines between stops
-                    for (var i = 0; i < data.stop_details.length - 1; i++) {
-                        var from = { coordinates: { lat: parseFloat(data.stop_details[i].lat), lng: parseFloat(data.stop_details[i].long) } };
-                        var to = { coordinates: { lat: parseFloat(data.stop_details[i + 1].lat), lng: parseFloat(data.stop_details[i + 1].long) } };
-                        drawLine(from, to);
-                    }
-
-                    // Connect the last stop to the origin
-                    var lastStop = data.stop_details[data.stop_details.length - 1];
-                    var lastStopCoordinates = { coordinates: { lat: parseFloat(lastStop.lat), lng: parseFloat(lastStop.long) } };
-                    var originCoordinates = { coordinates: { lat: <?php echo $data->origin_lat; ?>, lng: <?php echo $data->origin_long; ?> } };
-                    drawLine(lastStopCoordinates, originCoordinates);
+                // Iterate through stop details and add markers
+                data.stop_details.forEach(function (stop, index) {
+                    addMarker({
+                        coordinates: {lat: parseFloat(stop.lat), lng: parseFloat(stop.long)},
+                        stop_number: index + 1,
+                        stop_name: stop.stop_name // Adding stop name to the marker data
+                    }, 'stop');
                 });
 
-                function addMarker(point, type) {
-                    var el = document.createElement('div');
-                    el.className = 'marker ' + type;
-                    if (type === 'stop') {
-                        el.textContent = point.stop_number;
-                    }
-                    el.style.backgroundColor = point.color; // Set marker color
-                    
-                    // Create a popup for stop markers
-                    if (type === 'stop') {
-                        var popup = new mapboxgl.Popup({ offset: 25, className: 'popup-style' }).setText(point.stop_name);
-                        new mapboxgl.Marker(el)
-                            .setLngLat([point.coordinates.lng, point.coordinates.lat])
-                            .setPopup(popup) // Add popup to the marker
-                            .addTo(map);
-                    } else {
-                        new mapboxgl.Marker(el)
-                            .setLngLat([point.coordinates.lng, point.coordinates.lat])
-                            .addTo(map);
-                    }
+                // Draw lines between stops
+                for (var i = 0; i < data.stop_details.length - 1; i++) {
+                    var from = { coordinates: { lat: parseFloat(data.stop_details[i].lat), lng: parseFloat(data.stop_details[i].long) } };
+                    var to = { coordinates: { lat: parseFloat(data.stop_details[i + 1].lat), lng: parseFloat(data.stop_details[i + 1].long) } };
+                    drawLine(from, to);
                 }
 
-                function drawLine(from, to) {
-                    var geojson = {
-                        type: 'Feature',
-                        properties: {},
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: [ [from.coordinates.lng, from.coordinates.lat], [to.coordinates.lng, to.coordinates.lat] ]
-                        }
-                    };
-                    map.addLayer({
-                        id: 'line-' + from.coordinates.lat + '-' + from.coordinates.lng + '-' + to.coordinates.lat + '-' + to.coordinates.lng,
-                        type: 'line',
-                        source: {
-                            type: 'geojson',
-                            data: geojson
-                        },
-                        layout: {
-                            'line-cap': 'round',
-                            'line-join': 'round'
-                        },
-                        paint: {
-                            'line-color': '#051b9c',
-                            'line-width': 3
-                        }
-                    });
-                }
+                // Connect the last stop to the origin if destination is provided
+                <?php if (isset($data->dest_lat) && isset($data->dest_long)) : ?>
+                    var lastStop = data.stop_details[data.stop_details.length - 1];
+                    var lastStopCoordinates = { coordinates: { lat: parseFloat(lastStop.lat), lng: parseFloat(lastStop.long) } };
+                    var destinationCoordinates = { coordinates: { lat: <?php echo $data->dest_lat; ?>, lng: <?php echo $data->dest_long; ?> } };
+                    drawLine(lastStopCoordinates, destinationCoordinates);
+                <?php endif; ?>
+            });
 
+            function addMarker(point, type) {
+                var el = document.createElement('div');
+                el.className = 'marker ' + type;
+                if (type === 'stop') {
+                    el.textContent = point.stop_number;
+                }
+                el.style.backgroundColor = point.color; // Set marker color
                 
-                function calculateCenter(locations) {
-                    if (locations.length === 0) {
-                        return [-158.00, 21.43]; // Default center if no locations provided
-                    }
-
-                    var totalLat = 0;
-                    var totalLng = 0;
-                    locations.forEach(function(location) {
-                        totalLat += parseFloat(location.lat);
-                        totalLng += parseFloat(location.long);
-                    });
-
-                    var avgLat = totalLat / locations.length;
-                    var avgLng = totalLng / locations.length;
-
-                    return [avgLng, avgLat];
+                // Create a popup for stop markers
+                if (type === 'stop') {
+                    var popup = new mapboxgl.Popup({ offset: 25, className: 'popup-style' }).setText(point.stop_name);
+                    new mapboxgl.Marker(el)
+                        .setLngLat([point.coordinates.lng, point.coordinates.lat])
+                        .setPopup(popup) // Add popup to the marker
+                        .addTo(map);
+                } else {
+                    new mapboxgl.Marker(el)
+                        .setLngLat([point.coordinates.lng, point.coordinates.lat])
+                        .addTo(map);
                 }
-            } catch (error) {
-                console.error('An error occurred:', error);
             }
-        });
-    </script>
+
+            function drawLine(from, to) {
+                var geojson = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [ [from.coordinates.lng, from.coordinates.lat], [to.coordinates.lng, to.coordinates.lat] ]
+                    }
+                };
+                map.addLayer({
+                    id: 'line-' + from.coordinates.lat + '-' + from.coordinates.lng + '-' + to.coordinates.lat + '-' + to.coordinates.lng,
+                    type: 'line',
+                    source: {
+                        type: 'geojson',
+                        data: geojson
+                    },
+                    layout: {
+                        'line-cap': 'round',
+                        'line-join': 'round'
+                    },
+                    paint: {
+                        'line-color': '#051b9c',
+                        'line-width': 3
+                    }
+                });
+            }
+
+            
+            function calculateCenter(locations) {
+                if (locations.length === 0) {
+                    return [-158.00, 21.43]; // Default center if no locations provided
+                }
+
+                var totalLat = 0;
+                var totalLng = 0;
+                locations.forEach(function(location) {
+                    totalLat += parseFloat(location.lat);
+                    totalLng += parseFloat(location.long);
+                });
+
+                var avgLat = totalLat / locations.length;
+                var avgLng = totalLng / locations.length;
+
+                return [avgLng, avgLat];
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    });
+</script>
+
+
 <?php } ?>
 @endsection

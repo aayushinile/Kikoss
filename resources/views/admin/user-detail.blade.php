@@ -183,7 +183,7 @@
                 <div class="col-md-12">
                     <div class="kikcard">
                         <div class="card-header">
-                            <div class="d-flex align-items-center">
+                            <div class="row d-flex align-items-center">
                                 <div class="mr-auto">
                                     <h4 class="heading-title">Booking Transaction History</h4>
                                 </div>
@@ -271,13 +271,13 @@
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
-                                                <td>{{ $item->Tour->name }}</td>
+                                                <td>{{ $item->Tour->name ?? '' }}</td>
                                                 <td>{{ $item->Tour->duration }} Hours</td>
-                                                <td>{{ date('d M, Y', strtotime($item->booking_date)) }}</td>
+                                                <td>{{ date('M d, Y', strtotime($item->booking_date)) }}</td>
                                                 <td>${{ $item->total_amount }}.00</td>
                                                 <td> {{ $item->no_adults + $item->senior_citizen + $item->no_childerns }}
                                                     People </td>
-                                                <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
+                                                <td>{{ $item->transaction ? date('M d, Y', strtotime($item->transaction->created_at)) : 'N/A' }}
                                                 </td>
                                                 @php
                                                     $PaymentDetail = \App\Models\PaymentDetail::where('booking_id', $item->id)->first();
@@ -335,12 +335,12 @@
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
-                                                <td>{{ $item->Tour->name }}</td>
-                                                <td>{{ $item->Tour->duration }} Hours</td>
+                                                <td>{{ $item->Tour->name ?? '' }}</td>
+                                                <td>{{ $item->Tour->duration ?? '' }} Hours</td>
 
                                                 <td>${{ $item->total_amount }}.00</td>
 
-                                                <td>{{ $item->transaction ? date('d M, Y, h:i:s a', strtotime($item->transaction->created_at)) : 'N/A' }}
+                                                <td>{{ $item->transaction ? date('d M, Y', strtotime($item->transaction->created_at)) : 'N/A' }}
                                                 </td>
 
                                                 @php

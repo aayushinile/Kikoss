@@ -17,6 +17,7 @@ use App\Models\PhotoBoothMedia;
 use App\Models\Master;
 use App\Models\StopDetails;
 use App\Models\TaxiBooking;
+use App\Models\PaymentDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,12 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use GuzzleHttp\Client;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
+use App\Exports\VirtualTourExport;
+use App\Exports\PaymentDetails;
+use App\Exports\TaxiBookingExport;
+use App\Exports\TourCallBackExport;
 
 
 class HomeController extends Controller
@@ -93,18 +100,27 @@ class HomeController extends Controller
     public function users(Request $request)
     {
         $requests = User::query();
-        $requests->where('type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+        $requests->where('type', 2); // 1: Normal tour booking, 2: Virtual tour booking
         $search = $request->search ? $request->search : '';
-        
-        if($request->filled('search')){
-            $requests->Where('fullname', 'LIKE', '%'.$request->search.'%');
-            $requests->orWhere('email', 'LIKE', '%'.$request->search.'%');
-            $requests->orWhere('mobile', 'LIKE', '%'.$request->search.'%');
+
+        if ($request->filled('search')) {
+            $requests->where(function($query) use ($request) {
+                $query->where('fullname', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('email', 'LIKE', '%'.$request->search.'%');
+            });
         }
-        
+
         $requests->orderBy('id', 'DESC');
+        $data = $requests->get();
         $datas = $requests->paginate(10);
-        return view('admin.users', compact('datas','search'));
+        
+        // Check if the download button is clicked
+        if ($request->filled('download')) {
+            // Download Excel with search result data or all data
+            return Excel::download(new UsersExport($data), 'users_data.xlsx');
+        }
+
+        return view('admin.users', compact('datas', 'search'));
     }
 
     /*Get all data of tour archive(4:Archive) */
@@ -731,23 +747,41 @@ class HomeController extends Controller
             $requests->where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
             $search = $request->search ? $request->search : '';
             $tour_id = $request->tour_id ? $request->tour_id : '';
-            $date = $request->date ? $request->date : '';
-            
-            if($request->filled('search')){
+            $date = $request->daterange ? $request->daterange : '';
+            if($request->filled('download_all')){
+                $data = $requests->get();
+            }
+            if($request->filled('search') && $search != null){
+                
                 $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
                 $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
             }
 
-            if($request->filled('tour_id')){
+            if($request->filled('tour_id') && $tour_id != 1){
                 $requests->where('tour_id', $request->tour_id);
             }
 
-            if($request->filled('date')){
-                $requests->whereDate('booking_date', '=', $request->date);
-            }
             
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
+            }
+            if ($request->filled('download')) {
+                if($request->filled('date')){
+                    $dates = explode(' - ', $request->date);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $requests->whereBetween('booking_date', [$startDate, $endDate]);
+                }
+                $data = $requests->get();
+                return Excel::download(new VirtualTourExport($data), 'virtual_tour_details.xlsx');
+            }
             $requests->orderBy('id', 'DESC');
-            $bookings = $requests->paginate(10);
+           
+            $bookings = $requests->paginate(10);   
             
             $tours = VirtualTour::whereIn('status', [0,1])->orderBy('id', 'DESC')->paginate(10);/*1:Active and Inactive Listing*/
             $virtual_tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->paginate(10);/*1:Active Virtual tour Listing*/
@@ -761,6 +795,10 @@ class HomeController extends Controller
     public function ManageBooking(Request $request)
     {
         try {
+            if ($request->isMethod('post')) {
+                // Clear session data for date range
+                session()->forget('daterange');
+            }
             $data = $request->all();
             
             $requests = TourBooking::query();
@@ -772,6 +810,7 @@ class HomeController extends Controller
                 //dd($bookings);
                 $requests->where(function($query) use ($search) {
                     $query->where('user_name', 'LIKE', "%$search%");
+                    $query->orWhere('booking_id','LIKE',"%$search%");
                 });
                 //dd($requests->get());
             }
@@ -782,9 +821,16 @@ class HomeController extends Controller
                 $requests->where('tour_id', $request->tour_id);
             }
 
-            if($request->filled('date')){
-                $requests->whereDate('booking_date', '=', $request->date);
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
             }
+            
+            // if($request->filled('date')){
+            //     $requests->whereDate('booking_date', '=', $request->date);
+            // }
             $requests->where('tour_type', 1)->with('images');//1:Tour, 2:Virtual tour
             $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
@@ -806,24 +852,89 @@ class HomeController extends Controller
     public function PaymentDetails(Request $request)
     {
         try {
-            $payment_details = DB::table('payment_details')->select(
-                'payment_details.booking_id',
+            $requests = PaymentDetail::query();
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $date = $request->date ? $request->date : '';
+            $payment_detail = DB::table('payment_details')
+            ->select(
                 'payment_details.transaction_id',
                 'payment_details.payment_provider',
                 'payment_details.amount',
                 'payment_details.created_at',
                 'payment_details.status',
-                'tour_bookings.tour_type',
+                'payment_details.booking_id',
+                'payment_details.type as tour_type',
+                'photo_booths.title as photo_title',
+                'virtual_tours.name as virtual_title',
                 'tour_bookings.user_name',
                 'tours.title',
+                'tours.id as tour_id'
             )
-            ->leftJoin('tour_bookings', 'tour_bookings.id', '=', 'payment_details.booking_id')
-            ->leftJoin('tours', 'tour_bookings.id', '=', 'tours.id')
-            ->orderBy('payment_details.id', 'DESC')
-            ->get();
+            ->leftJoin('tour_bookings', 'tour_bookings.transaction_id', '=', 'payment_details.transaction_id')
+            ->leftJoin('tours', 'tours.id', '=', 'tour_bookings.tour_id')
+            ->leftJoin('virtual_tours', function ($join) {
+                $join->on('virtual_tours.id', '=', 'tour_bookings.tour_id')
+                    ->where('tour_bookings.tour_type', '=', 2); // Assuming 2 is the type for virtual tours
+            })
+            ->leftJoin('photo_booths', function ($join) {
+                $join->on('photo_booths.id', '=', 'tour_bookings.tour_id')
+                    ->where('tour_bookings.tour_type', '=', 3); // Assuming 3 is the type for photo booths
+            })
+            ->whereNotNull('payment_details.transaction_id')
+            ->whereNotNull('tour_bookings.user_name')
+            ->whereNotNull('tour_bookings.tour_id')
+            ->orderBy('payment_details.created_at', 'DESC')
+            ->distinct();
 
+            if ($request->filled('tour_id') && $tour_id != 2) {
+                $tourId = '%' . $request->tour_id . '%';
+                $payment_detail->where(function ($query) use ($tourId) {
+                    $query->where('tours.title', 'LIKE', $tourId)
+                        ->orWhere('virtual_tours.name', 'LIKE', $tourId)
+                        ->orWhere('photo_booths.title', 'LIKE', $tourId);
+                });
+            }
+
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $payment_detail->whereBetween('payment_details.created_at', [$startDate, $endDate]);
+            }
+
+            if ($request->filled('download')) {
+                if($request->filled('daterange')){
+                    $dates = explode(' - ', $request->daterange);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $payment_detail->whereBetween('payment_details.created_at', [$startDate, $endDate]);
+                }
+                $data = $payment_detail->get();
+                // dd($data);
+                return Excel::download(new PaymentDetails($data), 'payment_details.xlsx');
+            }
+            
+
+            $payment_details = $payment_detail->get();
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            $tourTitles = [];
+            // Fetch titles from tours table
+            $toursTitles = Tour::where('status', 1)->pluck('title')->toArray();
+            $tourTitles = array_merge($tourTitles, $toursTitles);
+
+            // Fetch titles from virtual_tours table
+            $virtualTourTitles = VirtualTour::pluck('name')->toArray();
+            $tourTitles = array_merge($tourTitles, $virtualTourTitles);
+
+            // Fetch titles from photo_booths table
+            $photoBoothTitles = PhotoBooth::pluck('title')->toArray();
+            $tourTitles = array_merge($tourTitles, $photoBoothTitles);
+
+            // Remove duplicates
+            $tourTitles = array_unique($tourTitles);
              //dd($payment_details);
-            return view('admin.payment-details', compact('payment_details'));
+            return view('admin.payment-details', compact('payment_details','search','tour_id','date','tours','tourTitles'));
                 
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -858,12 +969,31 @@ class HomeController extends Controller
                 $requests->where('tour_id', $request->tour_id);
             }
 
-            if($request->filled('date')){
-                $requests->whereDate('preferred_time', '=', $request->date);
+            // if($request->filled('date')){
+            //     $requests->whereDate('preferred_time', '=', $request->date);
+            // }
+
+
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('preferred_time', [$startDate, $endDate]);
             }
+
             $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
             $requests->with('TourName');
+            if ($request->filled('download')) {
+                if($request->filled('daterange')){
+                    $dates = explode(' - ', $request->daterange);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $requests->whereBetween('booking_date', [$startDate, $endDate]);
+                }
+                $data = $requests->get();
+                return Excel::download(new TourCallBackExport($data), 'free-callback.xlsx');
+            }
             $datas = $requests->paginate(10);
             
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
@@ -873,12 +1003,50 @@ class HomeController extends Controller
         }
     }
 
-    public function ViewTransactionHistory()
+    public function ViewTransactionHistory(Request $request)
     {
         try {
-            $datas = TourBooking::where('status', 1)->with('Tour')->orderBy('id', 'DESC')->paginate(10);
+            
+            $requests = TourBooking::query();
+            
+            $date = $request->date ? $request->date : '';
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $data = TourBooking::where('status', 1)->with('Tour');
+            ///dd($search);
+            if($request->filled('search')){
+                $data->where(function($query) use ($request) {
+                    $query->where('user_name', 'LIKE', '%'.$request->search.'%')
+                        ->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
+                });
+            }
+           // dd($data->get());
+            if($request->filled('tour_id')){
+                //dd($request->tour_id);
+                $data->where('tour_id', $request->tour_id);
+            }
+            
+            // if($request->filled('tour_id')){
+            //     //dd($request->tour_id);
+            //     $data->where('tour_id', $request->tour_id);
+            // }
+
+            // if($request->filled('date')){
+            //     $requests->whereDate('preferred_time', '=', $request->date);
+            // }
+
+
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $data->whereBetween('booking_date', [$startDate, $endDate]);
+            }
+            $datas = $data->paginate(10);
+            //dd($datas);
             $count = TourBooking::where('status', 1)->with('Tour')->orderBy('id', 'DESC')->count();
-            return view('admin.view-transaction-history', compact('datas','count'));
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            return view('admin.view-transaction-history', compact('datas','count','tours','search','tour_id','date'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -922,9 +1090,24 @@ class HomeController extends Controller
                 $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
                 $requests->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
             }
+            
 
-            if($request->filled('date')){
-                $requests->whereDate('booking_date', '=', $request->date);
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
+            }
+
+            if ($request->filled('download')) {
+                if($request->filled('daterange')){
+                    $dates = explode(' - ', $request->daterange);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $requests->whereBetween('booking_date', [$startDate, $endDate]);
+                }
+                $data = $requests->get();
+                return Excel::download(new TaxiBookingExport($data), 'taxi-booking.xlsx');
             }
             $requests->where('status', 0);
             $requests->orderBy('id', 'DESC');
@@ -939,12 +1122,52 @@ class HomeController extends Controller
     }
 
     /*Listing of virtual tour transaction history*/
-    public function VirtualTransactionHistory()
+    public function VirtualTransactionHistory(Request $request)
     {
         try {
-            $tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.virtual-transaction-history', compact('tours', 'bookings'));
+            $requests = TourBooking::query();
+            $requests->where('tour_type', 2);/*1:Normal tour booking, 2:Virtual tour bppking*/
+            $search = $request->search ? $request->search : '';
+            $tour_id = $request->tour_id ? $request->tour_id : '';
+            $date = $request->daterange ? $request->daterange : '';
+            if($request->filled('download_all')){
+                $data = $requests->get();
+            }
+            if($request->filled('search') && $search != null){
+                
+                $requests->Where('user_name', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('total_amount', 'LIKE', '%'.$request->search.'%');
+                $requests->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
+            }
+
+            if($request->filled('tour_id') && $tour_id != 1){
+                $requests->where('tour_id', $request->tour_id);
+            }
+
+            
+            if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
+            }
+            if ($request->filled('download')) {
+                if($request->filled('date')){
+                    $dates = explode(' - ', $request->date);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $requests->whereBetween('booking_date', [$startDate, $endDate]);
+                }
+                $data = $requests->get();
+                return Excel::download(new VirtualTourExport($data), 'virtual_tour_details.xlsx');
+            }
+            $requests->orderBy('id', 'DESC');
+           
+            $bookings = $requests->paginate(10);   
+            
+            $tours = VirtualTour::whereIn('status', [0,1])->orderBy('id', 'DESC')->paginate(10);/*1:Active and Inactive Listing*/
+            $virtual_tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->paginate(10);/*1:Active Virtual tour Listing*/
+            return view('admin.virtual-transaction-history', compact('tours', 'bookings','virtual_tours','search','tour_id','date'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -1007,7 +1230,8 @@ class HomeController extends Controller
                         ->where(function ($query) use ($search) {
                             $query->where('users.fullname', 'LIKE', '%' . $search . '%')
                                   ->orWhere('photo_booth_booking.total_amount', 'LIKE', '%' . $search . '%')
-                                  ->orWhere('photo_booths.title', 'LIKE', '%' . $search . '%');
+                                  ->orWhere('photo_booths.title', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booth_booking.booking_id', 'LIKE', '%' . $search . '%');
                         });
             }
             
@@ -1015,8 +1239,11 @@ class HomeController extends Controller
                 $requests->where('booth_id', $booth_id);
             }
            // dd($booth_id,$search);
-            if($date != null){
-                $requests->whereDate('booking_date', '=', $date);
+           if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
             }
             $requests->whereIn('photo_booth_booking.status', [0,1]);
             $requests->orderBy('photo_booth_booking.id', 'DESC');
@@ -1588,5 +1815,42 @@ class HomeController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function downloadExcel(Request $request)
+{
+    try {
+        //dd($request->all());
+        $data = TourBooking::where('status', 1)->with('Tour');
+
+        if($request->filled('search')){
+            $data->where(function($query) use ($request) {
+                $query->where('user_name', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('booking_id', 'LIKE', '%'.$request->search.'%');
+            });
+        }
+
+        if($request->filled('tour_id')){
+            $data->where('tour_id', $request->tour_id);
+        }
+
+        if($request->filled('daterange')){
+            $dates = explode(' - ', $request->daterange);
+            $startDate = date('Y-m-d', strtotime($dates[0]));
+            $endDate = date('Y-m-d', strtotime($dates[1]));
+            $data->whereBetween('booking_date', [$startDate, $endDate]);
+        }
+
+        $transactions = $data->get();
+
+        // If filters are applied, use the filtered data; otherwise, retrieve all data
+        // if ($request->filled('search') || $request->filled('tour_id') || $request->filled('daterange')) {
+        //     return Excel::download(new TransactionHistoryExport($transactions), 'transaction_history.xlsx');
+        // } else {
+        //     return Excel::download(new TransactionHistoryExport(TourBooking::where('status', 1)->with('Tour')->get()), 'transaction_history.xlsx');
+        // }
+    } catch (\Exception $e) {
+        return errorMsg("Exception -> " . $e->getMessage());
+    }
+}
 
 }

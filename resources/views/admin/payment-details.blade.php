@@ -12,6 +12,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.1/umd/popper.min.js"></script>
+    <style>
+        .daterangepicker.show-calendar .drp-buttons {
+            display: none !important;
+        }
+        /* Custom CSS to adjust date colors in the calendar */
+        .daterangepicker td.available:hover, .daterangepicker td.available.active {
+            background-color: #337ab7; /* Adjust the background color of hovered and active dates */
+            color: #fff; /* Adjust the text color of hovered and active dates */
+        }
+
+        .daterangepicker td.available {
+            background-color: #fff; /* Adjust the background color of available dates */
+            color: #000; /* Adjust the text color of available dates */
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
@@ -26,22 +41,89 @@
                         <div class="tasks-content-info tab-content">
                             <div class="tab-pane active" id="BookingRequest">
                                 <div class="kikcard">
+                                <div class="card-header">
+                            <div class="d-flex">
+                                <div class="btn-option-info w-100">
+                                    <div class="search-filter">
+                                        <form action="{{ route('PaymentDetails') }}" method="POST">
+                                            @csrf
+                                            <div class="row g-1">
+                                                
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <div class="search-form-group">
+                                                            <input type="text" name="search"
+                                                                value="{{ $search ? $search : '' }}" class="form-control"
+                                                                placeholder="Search User name, Transaction Id, Booking Id">
+                                                            <span class="search-icon"><img
+                                                                    src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                <div class="form-group">
+    <select class="form-control" name="tour_id" id="tour_id">
+        <option value="">Select By Tour Name</option>
+        @if (!$tours->isEmpty())
+            @foreach ($tourTitles as $tour)
+                <option value="{{ $tour }}" {{ $tour_id == $tour ? 'selected' : '' }}>
+                    {{ $tour}}
+                </option>
+            @endforeach
+        @endif
+    </select>
+</div>
+
+                                                </div>
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                    <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date Range">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <a href="{{ url('payments') }}" class="btn-gr"><i
+                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                    <a href="{{ route('PaymentDetails', ['download' => 1, 'search' => $search,'tour_id' => $tour_id,'daterange' => $date]) }}" class="btn-gr"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
                                     <div class="card-body">
                                         <div class="kik-table">
                                             <table class="table xp-table  " id="customer-table">
                                                 <thead>
                                                     <tr class="table-hd">
                                                         <th>Sr No.</th>
-                                                        <th>Tour Name</th>
-                                                        <th>User Name</th>
                                                         <th>Booking Id</th>
                                                         <th>Transaction Id</th>
+                                                        <th>Tour Name</th>
+                                                        <th>User Name</th>
                                                         <th>Payment Method</th>
-                                                        <th>Type</th>
+                                                        <th>Tour Type</th>
                                                         <th>Amount</th>
                                                         <th>Status</th>
                                                         <th>Date</th>
-                                                        <th>Action</th>
+                                                        <!-- <th>Action</th> -->
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -54,19 +136,25 @@
                                                     @elseif(!$payment_details->isEmpty())
                                                         <?php $s_no = 1; ?> 
                                                         @foreach ($payment_details as $val)
-                                                        @if(!empty($s_no) && !empty($val->title) && !empty($val->user_name) && !empty($val->booking_id) && !empty($val->transaction_id) && !empty($val->payment_provider) && !empty($val->tour_type) && !empty($val->amount) && !empty($val->status) && !empty($val->created_at))
                                                         <tr>
                                                             <td>
                                                                 <div class="sno">{{ $s_no }}</div>
                                                             </td>
-                                                            <td>{{ $val->title }}</td>
-                                                            <td>{{ $val->user_name }}</td>
-                                                            <td>{{ $val->booking_id }}</td>
+                                                            <td>{{ $val->booking_id}}</td>
                                                             <td>{{ $val->transaction_id }}</td>
+                                                            @if($val->tour_type == 1)
+                                                            <td>{{ $val->title }}</td>
+                                                            @elseif($val->tour_type == 2)
+                                                            <td>{{ $val->virtual_title }}</td>
+                                                            @else
+                                                            <td>{{ $val->photo_title }}</td>
+                                                            @endif
+                                                            <td>{{ $val->user_name }}</td>
+                                                           
                                                             <td>{{ $val->payment_provider }}</td>
                                                             <td>
                                                                 @if ($val->tour_type == 1)
-                                                                    Normal Tour
+                                                                   Tour
                                                                 @elseif ($val->tour_type == 2)
                                                                     Virtual Tour
                                                                 @elseif ($val->tour_type == 3)
@@ -87,14 +175,13 @@
                                                                     Null
                                                                 @endif
                                                             </td>
-                                                            <td>{{ date('d M, Y H:i:s', strtotime($val->created_at)) }}</td>
-                                                            <td>
+                                                            <td>{{ date('M d, Y', strtotime($val->created_at)) }}</td>
+                                                            <!-- <td>
                                                                 <div class="action-btn-info">
                                                                     <a class="btn btn-outline-primary" href="#" data-bs-toggle="modal" data-bs-target="#refundConfirmationModal">Refund</a>
                                                                 </div>
-                                                            </td>
+                                                            </td> -->
                                                         </tr>
-                                                    @endif
 
                                                             <?php $s_no++; ?>
                                                         @endforeach
@@ -102,7 +189,6 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -178,5 +264,22 @@
         });
     });
 </script>
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+    $(function() {
+        // Bind the initialization of date range picker to focus event of the input field
+        $('input[name="daterange"]').on('focus', function() {
+            $(this).daterangepicker({
+                showSelector: false,
+                opens: 'left'
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                // Update the visible input field with the selected date range
+                $('input[name="dateranges"]').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+        });
+    });
+</script>
 @endsection

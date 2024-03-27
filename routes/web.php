@@ -61,7 +61,7 @@ Route::post('/get-date-graph', [App\Http\Controllers\AjaxController::class, 'fil
 
 Route::post('/get-year-graph', [App\Http\Controllers\AjaxController::class, 'filterByYear'])->name('filterByYear');
 Route::match(['get', 'post'],'/tour-callback-request', [App\Http\Controllers\HomeController::class, 'CallbackRequest'])->name('CallbackRequest');
-Route::get('/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
+Route::match(['get', 'post'],'/view-transaction-history', [App\Http\Controllers\HomeController::class, 'ViewTransactionHistory'])->name('ViewTransactionHistory');
 Route::get('/accept-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'AcceptTourBooking'])->name('AcceptTourBooking');
 Route::get('/reject-tour-booking/{id}', [App\Http\Controllers\HomeController::class, 'RejectTourBooking'])->name('RejectTourBooking');
 Route::post('/delete-tour', [App\Http\Controllers\HomeController::class, 'DeleteTour'])->name('DeleteTour');
@@ -84,7 +84,7 @@ Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 
 
 
 Route::match(['get', 'post'],'taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
-Route::get('/virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
+Route::match(['get', 'post'],'virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
 Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
 Route::get('/load-sectors', [App\Http\Controllers\HomeController::class, 'loadSectors'])->name('load-sectors');
 Route::get('/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('Profile');
@@ -103,3 +103,4 @@ Route::get('/add-edit-setting',[App\Http\Controllers\HomeController::class, 'Add
 Route::post('/update-setting',[App\Http\Controllers\HomeController::class, 'UpdateSettings'])->name('UpdateSettings');
 Route::get('/DownloadWithWatermark',[App\Http\Controllers\HomeController::class, 'DownloadWithWatermark'])->name('DownloadWithWatermark');
 Route::get('place-suggestions', [App\Http\Controllers\HomeController::class, 'fetchPlaceSuggestions'])->name('place-suggestions');
+Route::get('/download-excel', [App\Http\Controllers\HomeController::class,'downloadExcel'])->name('downloadExcel');

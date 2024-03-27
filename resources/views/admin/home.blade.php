@@ -197,7 +197,7 @@
                                                         {{ $val->Tour->duration ?? '' }} Hours
                                                     </td>
                                                     <td>
-                                                        {{ date('d M, Y', strtotime($val->booking_date)) ?? '' }}
+                                                        {{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                     </td>
 
                                                     <td>
@@ -210,7 +210,7 @@
                                                         <div class="action-btn-info">
                                                             <a class="dropdown-item view-btn" data-bs-toggle="modal"
                                                                 href="#BookingRequest"
-                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{$val->total_amount}}","{{$val->transaction_id}}",
+                                                                onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title ?? 0 }}","{{ $val->booking_date }}","{{ $val->Tour->duration ?? 0 }}","{{$val->total_amount}}","{{$val->transaction_id}}",
                                                                 "{{$image}}")'><i
                                                                     class="las la-eye"></i> View</a>
                                                             {{-- <div class="dropdown-menu">
@@ -286,11 +286,11 @@
                                                         <input type="date" name="" class="form-control">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <!-- <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a href="#" class="btn-gr">Download Excel</a>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <a href="#" class="btn-bl">Tour Booking</a>

@@ -23,7 +23,7 @@
                     @csrf
                     <input type="hidden" name="pid" value="1" id="pid">
                     <div class="row">
-                        <div class="col-md-12">
+                        <!-- <div class="col-md-12">
                             <div class="form-group">
                                 <h4>Device Token</h4>
                                 <input type="text" class="form-control" name="device_token"
@@ -33,7 +33,7 @@
                             @error('name')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div> -->
 
 
                         <div class="col-md-4">

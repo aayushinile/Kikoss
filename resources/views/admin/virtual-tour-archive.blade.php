@@ -77,7 +77,7 @@
                                                         {{ $val->duration ?? '' }}
                                                     </td>
                                                     <td>
-                                                        {{ date('d M, Y, h:i:s a', strtotime($val->created_at)) }}
+                                                        {{ date('M d, Y, h:i:s a', strtotime($val->created_at)) }}
                                                     </td>
                                                     <td>
                                                         <label class="toggle" for="myToggle">
