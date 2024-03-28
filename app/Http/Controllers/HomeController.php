@@ -34,6 +34,7 @@ use App\Exports\PaymentDetails;
 use App\Exports\TaxiBookingExport;
 use App\Exports\TourCallBackExport;
 use App\Exports\PhotoBoothExport;
+use App\Exports\ManageBookingExport;
 
 
 class HomeController extends Controller
@@ -1023,7 +1024,7 @@ class HomeController extends Controller
             $date = $request->date ? $request->date : '';
             $search = $request->search ? $request->search : '';
             $tour_id = $request->tour_id ? $request->tour_id : '';
-            $data = TourBooking::where('status', 1)->with('Tour');
+            $data = TourBooking::whereIn('status', [1,2])->with('Tour');
             ///dd($search);
             if($request->filled('search')){
                 $data->where(function($query) use ($request) {
@@ -1053,12 +1054,25 @@ class HomeController extends Controller
                 $endDate = date('Y-m-d', strtotime($dates[1]));
                 $data->whereBetween('booking_date', [$startDate, $endDate]);
             }
+
+            if ($request->filled('download')) {
+                //dd($request->all());
+                if($request->filled('date')){
+                    $dates = explode(' - ', $request->date);
+                    $startDate = date('Y-m-d', strtotime($dates[0]));
+                    $endDate = date('Y-m-d', strtotime($dates[1]));
+                    $data->whereBetween('booking_date', [$startDate, $endDate]);
+                }
+                $data_exp = $data->get();
+                return Excel::download(new ManageBookingExport($data_exp), 'tour_booking_details.xlsx');
+            }
             $datas = $data->paginate(10);
             //dd($datas);
-            $count = TourBooking::where('status', 1)->with('Tour')->orderBy('id', 'DESC')->count();
+            $count = TourBooking::whereIn('status', [1,2])->with('Tour')->orderBy('id', 'DESC')->count();
             $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
             return view('admin.view-transaction-history', compact('datas','count','tours','search','tour_id','date'));
         } catch (\Exception $e) {
+            dd($e);
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }

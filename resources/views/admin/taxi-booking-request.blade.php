@@ -73,16 +73,17 @@
                                                 </div>
                                                 <div class="col-md-1">
                                                     <div class="form-group">
-                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
-                                                                aria-hidden="true"></i></button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <div class="form-group">
                                                         <a href="{{ url('taxi-booking-request') }}" class="btn-gr"><i
                                                                 class="fa fa-refresh" aria-hidden="true"></i></a>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                                
                                                 <div class="col-md-1">
                                                     <div class="form-group">
                                                        <a href="{{ route('TaxiBookingRequest', ['download' => 1, 'search' => $search,'daterange' => $date]) }}" class="btn-gr"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
@@ -100,11 +101,12 @@
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
+                                            <th>Booking ID</th>
                                             <th>User Name</th>
                                             <th>Booked For</th>
                                             <th>Phone</th>
-                                            <th>Booking ID</th>
-                                            <th>Booking Date & Time</th>
+                                            
+                                            <th>Booking Date</th>
                                             <th>Pickup Location</th>
                                             <th>Drop Off Location</th>
                                             <th>Travel Distance </th>
@@ -118,10 +120,11 @@
                                                 <td>
                                                     <div class="sno">{{ $i + 1 }}</div>
                                                 </td>
+                                                <td>{{ $item->booking_id ?? 'N/A' }}</td>
                                                 <td>{{ $item->user_name }}</td>
                                                 <td>{{ $item->fullname }}</td>
                                                 <td>{{ $item->mobile }}</td>
-                                                <td>{{ $item->booking_id ?? 'N/A' }}</td>
+                                                
                                                 <td>{{ date('M d, Y', strtotime($item->booking_time)) }}
 
                                                 <td>{{ $item->pickup_location }}</td>

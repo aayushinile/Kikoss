@@ -107,14 +107,15 @@
                                         <thead>
                                             <tr class="table-hd">
                                                 <th>Sr No.</th>
+                                                <th>Booking Id</th>
+                                                <th>Transaction ID</th>
                                                 <th>Name</th>
                                                 <th>Tour Name</th>
-                                                <th>Booking Id</th>
                                                 <th>Amount Paid</th>
                                                 <th>Amount Recieved On</th>
                                                 <th>Media Purchase</th>
                                                 <th>Payment Made Via</th>
-                                                <th>Transaction ID</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,9 +131,11 @@
                                                     <td>
                                                         <div class="sno">{{ $s_no }}</div>
                                                     </td>
+                                                    <td>{{ $val->booking_id ?? '' }}</td>
+                                                    <td>{{$val->transaction_id ?? ''}}</td>
                                                     <td>{{ $val->Users->fullname ?? '' }}</td>
                                                     <td>{{ $val->booth->title ?? '' }}</td>
-                                                    <td>{{ $val->booking_id ?? '' }}</td>
+                                                    
                                                     <td>${{ $val->total_amount ?? '' }} <a class="infoprice"
                                                             data-bs-toggle="modal" href="#infoprice" role="button"
                                                             onclick='GetDataPrice("{{ $val->total_amount }}","{{ $val->amount }}","{{ $val->tax_percent }}","{{ $val->tax }}")'><i
@@ -151,17 +154,17 @@
                                                                     src="{{ assets('assets/admin-images/video-play.svg') }}">
                                                                 {{ $val->video_count }}
                                                                 Videos</div>
-                                                                <div class="videos-action">
+                                                                <!-- <div class="videos-action">
                                                                     @foreach ($val->images as $image)
                                                                         <a href="{{ assets('upload/photo-booth/' . $image->media) }}" data-fancybox="gallery{{ $val->id }}" class="viewbtn" style="display: none;"></a>
                                                                     @endforeach
                                                                     <a href="#" class="viewbtn" onclick="showGallery('{{ $val->id }}')">View</a>
-                                                                </div>
+                                                                </div> -->
                                                         </div>
                                                     </td>
                                                     
                                                     <td>PayPal</td>
-                                                    <td>{{$val->transaction_id ?? ''}}</td>
+                                                    
                                                     </tr>
                                                     <?php $s_no++; ?>
                                                 @endforeach

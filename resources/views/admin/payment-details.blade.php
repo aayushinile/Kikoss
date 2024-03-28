@@ -62,17 +62,17 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                 <div class="form-group">
-    <select class="form-control" name="tour_id" id="tour_id">
-        <option value="">Select By Tour Name</option>
-        @if (!$tours->isEmpty())
-            @foreach ($tourTitles as $tour)
-                <option value="{{ $tour }}" {{ $tour_id == $tour ? 'selected' : '' }}>
-                    {{ $tour}}
-                </option>
-            @endforeach
-        @endif
-    </select>
-</div>
+                                                    <select class="form-control" name="tour_id" id="tour_id">
+                                                        <option value="">Select By Tour Name</option>
+                                                        @if (!$tours->isEmpty())
+                                                            @foreach ($tourTitles as $tour)
+                                                                <option value="{{ $tour }}" {{ $tour_id == $tour ? 'selected' : '' }}>
+                                                                    {{ $tour}}
+                                                                </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
 
                                                 </div>
 
@@ -82,19 +82,19 @@
                                                     <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date Range">
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-1">
-                                                    <div class="form-group">
-                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
-                                                                aria-hidden="true"></i></button>
-                                                    </div>
-                                                </div>
                                                 <div class="col-md-1">
                                                     <div class="form-group">
                                                         <a href="{{ url('payments') }}" class="btn-gr"><i
                                                                 class="fa fa-refresh" aria-hidden="true"></i></a>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn-gr"><i class="fa fa-search"
+                                                                aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                                
 
                                                 <div class="col-md-1">
                                                     <div class="form-group">

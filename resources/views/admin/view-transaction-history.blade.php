@@ -33,12 +33,11 @@
                 <div class="col-md-12">
                     <div class="kikcard">
                         <div class="card-header">
-                            <div class="d-flex align-items-center">
-                                <div class="btn-option-info">
+                            <div class="d-flex">
                                     <div class="search-filter">
                                     <form action="{{ route('ViewTransactionHistory') }}" method="POST">
                                     @csrf
-                                        <div class="row">
+                                        <div class="row g-1" style="width: 106%;">
 
                                             <div class="col-md-2">
                                                 <div class="form-group">
@@ -47,12 +46,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
-                                            <div class="form-group">
-                                                        <a href="{{ url('/view-transaction-history') }}" class="btn-gr"><i
-                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                    </div>
-                                            </div>
+                                            
                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <div class="search-form-group">
@@ -66,7 +60,7 @@
 
                                             
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <select class="form-control" name="tour_id" id="tour_id">
                                                     <option value="">Select Tour</option>
@@ -87,20 +81,25 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
+                                            <div class="form-group">
+                                                        <a href="{{ url('/view-transaction-history') }}" class="btn-gr"><i
+                                                                class="fa fa-refresh" aria-hidden="true"></i></a>
+                                                    </div>
+                                            </div>
+                                            <div class="col-md-1">
                                                     <div class="form-group">
                                                         <button type="submit" class="btn-gr"><i class="fa fa-search"
                                                                 aria-hidden="true"></i></button>
                                                     </div>
                                                 </div>
-                                            <div class="col-md-2">
+                                                <div class="col-md-1">
                                                 <div class="form-group">
-                                                    <a href="#" class="btn-gr">Download Excel</a>
+                                                    <a href="{{ route('ViewTransactionHistory', ['download' => 1, 'search' => $search,'tour_id' => $tour_id,'daterange' => $date]) }}" class="btn-gr"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
                                     </div>
-                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -109,16 +108,17 @@
                                     <thead>
                                         <tr class="table-hd">
                                             <th>Sr No.</th>
+                                            <th>Booking Id</th>
+                                            <th>Transaction ID</th>
                                             <th>Name</th>
                                             <th>Tour Name</th>
                                             <th>Duration</th>
-                                            <th>Amount Paid</th>
+                                            <th>Amount</th>
                                             <th>Tour Book Date</th>
                                             <th>Person</th>
-                                            <th>Booking Id</th>
-                                            <th>Payment Made Via</th>
+                                            <th>Payment Mode</th>
                                             <th>Status</th>
-                                            <th>Transaction ID</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -135,13 +135,15 @@
                                             <td>
                                                 <div class="sno">{{ $s_no }}</div>
                                             </td>
+                                            <td>{{$val->booking_id ?? ''}}</td>
+                                            <td>{{$val->transaction_id ?? ''}}</td>
                                             <td>{{$val->user_name ?? ''}}</td>
                                             <td>{{$val->Tour['name'] ?? 'Null'}}</td>
                                             <td>{{$val->Tour['duration'] ?? ''}} Hours</td>
                                             <td>${{$val->total_amount ?? ''}}</td>
-                                            <td>{{ date('M d, Y H:i:s',strtotime($val->booking_date))  ?? ''}}</td>
+                                            <td>{{ date('M d, Y',strtotime($val->booking_date))  ?? ''}}</td>
                                             <td> {{$val->Tour['total_people'] ?? 0}} </td>
-                                            <td>{{$val->booking_id ?? ''}}</td>
+                                            
                                             <td> PayPal </td>
                                             <td> @if ($val->status == 1)
                                                     Accepted
@@ -151,7 +153,7 @@
                                                     Null
                                                 @endif
                                             </td>
-                                            <td>{{$val->transaction_id ?? ''}}</td>
+                                            
                                         </tr>
                                         <?php $s_no++; ?>
                                         @endforeach

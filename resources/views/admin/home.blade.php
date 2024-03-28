@@ -212,7 +212,7 @@
                                                                 href="#BookingRequest"
                                                                 onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title ?? 0 }}","{{ $val->booking_date }}","{{ $val->Tour->duration ?? 0 }}","{{$val->total_amount}}","{{$val->transaction_id}}",
                                                                 "{{$image}}")'><i
-                                                                    class="las la-eye"></i> View</a>
+                                                                    class="las la-eye" style="font-size: 25px;"></i></a>
                                                             {{-- <div class="dropdown-menu">
                                                                 <a class="dropdown-item view-btn" href="#"><i
                                                                         class="las la-eye"></i> View</a>

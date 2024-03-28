@@ -169,17 +169,9 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <input type="text" name="daterange" value="" class="form-control form-control-solid" autocomplete="off" id="datepicker" placeholder="Select Date">
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                    <button type="submit" class="btn-gr"><i
-                                                                            class="fa fa-search"
-                                                                            aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-1">
@@ -189,11 +181,19 @@
                                                             </div>
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
+                                                                    <button type="submit" class="btn-gr"><i
+                                                                            class="fa fa-search"
+                                                                            aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- <div class="col-md-1">
+                                                                <div class="form-group">
                                                                     <a href="#" id="refresh-btn-booking-request" class="btn-gr">
                                                                         <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                                                                     </a>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                         </div>
                                                     </form>
                                                 </div>
@@ -206,10 +206,11 @@
                                                 <thead>
                                                     <tr class="table-hd">
                                                         <th>Sr No.</th>
+                                                        <th>Booking Id</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
-                                                        <th>Booking Id</th>
-                                                        <th>Duration</th>
+                                                        
+                                                        <!-- <th>Duration</th> -->
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
@@ -228,10 +229,11 @@
                                                                 <td>
                                                                     <div class="sno">{{ $s_no }}</div>
                                                                 </td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
-                                                                <td>{{ $val->booking_id ?? '' }}</td>
-                                                                <td>{{ $val->Tour->duration ?? '' }} Hours</td>
+                                                                
+                                                                <!-- <td>{{ $val->Tour->duration ?? '' }} Hours</td> -->
                                                                 <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
@@ -248,7 +250,7 @@
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestPending"
                                                                             onclick='accept_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
-                                                                            role="button"><i class="las la-eye"></i>
+                                                                            role="button"><i class="las la-eye" style="font-size: 25px;"></i>
                                                                             </a>
 
                                                                     </div>
@@ -305,16 +307,9 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="form-group">
                                                                 <input type="text" name="daterange" value="" class="form-control" autocomplete="off" id="datepicker" placeholder="Select Date">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                    <button type="submit" class="btn-gr"><i
-                                                                            class="fa fa-search"
-                                                                            aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-1">
@@ -324,11 +319,19 @@
                                                             </div>
                                                             <div class="col-md-1">
                                                                 <div class="form-group">
+                                                                    <button type="submit" class="btn-gr"><i
+                                                                            class="fa fa-search"
+                                                                            aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- <div class="col-md-1">
+                                                                <div class="form-group">
                                                                     <a href="#" id="refresh-btn-booking-request" class="btn-gr">
                                                                         <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                                                                     </a>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                         </div>
                                                     </form>
                                                 </div>
@@ -341,10 +344,11 @@
                                                 <thead>
                                                     <tr class="table-hd">
                                                         <th>Sr No.</th>
+                                                        <th>Booking Id</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
-                                                        <th>Booking Id</th>
-                                                        <th>Duration</th>
+                                                        
+                                                        <!-- <th>Duration</th> -->
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
@@ -363,10 +367,11 @@
                                                                 <td>
                                                                     <div class="sno">{{ $s_no }}</div>
                                                                 </td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
-                                                                <td>{{ $val->booking_id ?? '' }}</td>
-                                                                <td>{{ $val->Tour->duration ?? '' }} Hours</td>
+                                                               
+                                                                <!-- <td>{{ $val->Tour->duration ?? '' }} Hours</td> -->
                                                                 <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
@@ -383,7 +388,7 @@
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestAccepted"
                                                                             onclick='accepted_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
-                                                                            role="button"><i class="las la-eye"></i></a>
+                                                                            role="button"><i class="las la-eye" style="font-size: 25px;"></i></a>
 
                                                                     </div>
                                                                 </td>
@@ -438,9 +443,15 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="form-group">
                                                                 <input type="text" name="daterange" value="" class="form-control" autocomplete="off" id="datepicker" placeholder="Select Date">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                
+                                                                <a href="{{ url('manage-booking') }}"  id="refresh-btn-booking-rejected" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRejectedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-1">
@@ -450,18 +461,14 @@
                                                                             aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
-                                                             <div class="col-md-1">
-                                                                <div class="form-group">
-                                                                <a href="#" id="refresh-btn-booking-rejected" class="btn-gr" onclick="handleRefreshButtonClick('#BookingRejectedRequest')"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-1">
+                                                             
+                                                            <!-- <div class="col-md-1">
                                                                 <div class="form-group">
                                                                     <a href="#" id="" class="btn-gr">
                                                                         <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                                                                     </a>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
 
                                                         </div>
                                                     </form>
@@ -476,10 +483,10 @@
                                                 <thead>
                                                     <tr class="table-hd">
                                                         <th>Sr No.</th>
+                                                        <th>Booking Id</th>
                                                         <th>Name</th>
                                                         <th>Tour Name</th>
-                                                        <th>Booking Id</th>
-                                                        <th>Duration</th>
+                                                        <!-- <th>Duration</th> -->
                                                         <th>Tour Book Date</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
@@ -498,10 +505,11 @@
                                                                 <td>
                                                                     <div class="sno">{{ $s_no }}</div>
                                                                 </td>
+                                                                <td>{{ $val->booking_id ?? '' }}</td>
                                                                 <td>{{ $val->Users->fullname ?? '' }}</td>
                                                                 <td>{{ $val->Tour->title ?? '' }}</td>
-                                                                <td>{{ $val->booking_id ?? '' }}</td>
-                                                                <td>{{ $val->Tour->duration ?? '' }} Hours</td>
+                                                                
+                                                                <!-- <td>{{ $val->Tour->duration ?? '' }} Hours</td> -->
                                                                 <td>{{ date('M d, Y', strtotime($val->booking_date)) ?? '' }}
                                                                 </td>
                                                                 <td>
@@ -517,7 +525,7 @@
                                                                             data-bs-toggle="modal"
                                                                             href="#BookingRequestRejected"
                                                                             onclick='rejected_tour("{{ $val->id }}","{{ $val->booking_id }}","{{ $val->Tour->title }}","{{ $val->booking_date }}","{{ $val->Tour->duration }}","{{ $val->transaction_id }}","{{ $val->total_amount }}","{{$image}}")'
-                                                                            role="button"><i class="las la-eye"></i>
+                                                                            role="button"><i class="las la-eye" style="font-size: 25px;"></i>
                                                                             </a>
 
                                                                     </div>

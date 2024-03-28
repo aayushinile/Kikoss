@@ -107,7 +107,7 @@
                                             <th>Tour Name</th>
                                             <th>Contact number</th>
                                             <th>Duration</th>
-                                            <th>Tour Book Date & Time</th>
+                                            <th>Tour Book Date</th>
                                             <th>Read Status</th>
                                             {{-- <th>Request Message</th> --}}
                                             <th>Action</th>
