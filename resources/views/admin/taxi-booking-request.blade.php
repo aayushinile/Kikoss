@@ -61,7 +61,7 @@
                                                     <div class="search-form-group">
                                                         <input type="text" name="search" class="form-control"
                                                             value="{{ $search ? $search : '' }}"
-                                                            placeholder=" Search User Name,Booking ID">
+                                                            placeholder=" Search">
                                                         <span class="search-icon"><img
                                                                 src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                     </div>

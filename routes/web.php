@@ -85,7 +85,7 @@ Route::post('/update-photo-booth', [App\Http\Controllers\HomeController::class, 
 
 Route::match(['get', 'post'],'taxi-booking-request', [App\Http\Controllers\HomeController::class, 'TaxiBookingRequest'])->name('TaxiBookingRequest');
 Route::match(['get', 'post'],'virtual-transaction-history', [App\Http\Controllers\HomeController::class, 'VirtualTransactionHistory'])->name('VirtualTransactionHistory');
-Route::get('/photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
+Route::match(['get','post'],'photo-transaction-history', [App\Http\Controllers\HomeController::class, 'PhotoTransactionHistory'])->name('PhotoTransactionHistory');
 Route::get('/load-sectors', [App\Http\Controllers\HomeController::class, 'loadSectors'])->name('load-sectors');
 Route::get('/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('Profile');
 Route::post('/update-password', [App\Http\Controllers\HomeController::class, 'UpdatePassword'])->name('UpdatePassword');

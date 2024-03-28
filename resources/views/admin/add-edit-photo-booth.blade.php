@@ -66,7 +66,7 @@
                             <div class="form-group">
                                 <h4>Title Name</h4>
                                 <input type="text" class="form-control" name="title"
-                                    value="{{ $data ? $data->title : old('title') }}" placeholder="Enter Title">
+                                    value="{{ $data ? $data->title : old('title') }}" placeholder="Enter Title" maxlength="65">
                             </div>
                             @error('title')
                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -157,7 +157,7 @@
 
                         {{-- <div class="col-md-6 ">
                             <div class="form-group">
-                                <h4>Browse & Upload Photos</h4>
+                                <h4>Upload Photos</h4>
                                 <input type="file" class="file-form-control" id="imageInput" name="image[]"
                                     accept=".png, .jpg, .jpeg" multiple>
                             </div>
@@ -186,7 +186,7 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <h4>Browse & Upload Videos</h4>
+                                <h4>Upload Videos</h4>
                                 <input type="file" class="file-form-control" name="video[]" accept=".mp4"
                                     id="videoInput" multiple>
                             </div>
@@ -217,8 +217,8 @@
                         </div> --}}
                         <div class="col-md-12">
                             <div class="create-review-form-group form-group">
-                                <h4>Browse & Upload photos <a class="addmorefile" onclick="addImageBox()"><img
-                                            src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
+                                <h4>Upload photos <a class="addmorefile" onclick="addImageBox()"><img
+                                            src="{{ assets('assets/admin-images/add-file.svg') }}"></a>
                                 </h4>
                                 <div class="create-review-form-input">
                                     <div class="row" id="images_container">
@@ -256,10 +256,10 @@
                                                             <div class="upload-file-item">
                                                                 <div class="upload-media">
                                                                     <img id="image_addfile"
-                                                                        src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                        src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                                 </div>
                                                                 <div class="upload-text">
-                                                                    <span>Browse & Upload File</span>
+                                                                    <span>Upload File</span>
                                                                 </div>
                                                             </div>
                                                         </label>
@@ -273,8 +273,8 @@
 
                             <div class="col-md-12">
                                 <div class="create-review-form-group form-group">
-                                    <h4>Browse & Upload Videos <a class="addmorefile" onclick="addVideoBox()"><img
-                                                src="{{ asset('assets/admin-images/add-file.svg') }}"></a>
+                                    <h4>Upload Videos <a class="addmorefile" onclick="addVideoBox()"><img
+                                                src="{{ assets('assets/admin-images/add-file.svg') }}"></a>
                                     </h4>
                                     <div class="create-review-form-input">
                                         <div class="row" id="videos_container">
@@ -318,10 +318,10 @@
                                                                 <div class="upload-file-item">
                                                                     <div class="upload-media">
                                                                         <img id="video_addvideo"
-                                                                            src="{{ asset('assets/admin-images/upload-icon.svg') }}">
+                                                                            src="{{ assets('assets/admin-images/upload-icon.svg') }}">
                                                                     </div>
                                                                     <div class="upload-text">
-                                                                        <span>Browse & Upload File</span>
+                                                                        <span> Upload File</span>
                                                                     </div>
                                                                 </div>
 
@@ -546,7 +546,7 @@
                                         <img id="image_addfile${imgCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
                                     </div>
                                     <div class="upload-text">
-                                        <span>Browse & Upload File</span>
+                                        <span>Upload File</span>
                                     </div>
                                 </div>
                             </label>
@@ -571,7 +571,7 @@
                                         <img id="video_addvideo${viCount}" src="{{ asset('assets/admin-images/upload-icon.svg') }}">
                                     </div>
                                     <div class="upload-text">
-                                        <span>Browse & Upload File</span>
+                                        <span>Upload File</span>
                                     </div>
                                 </div>
 

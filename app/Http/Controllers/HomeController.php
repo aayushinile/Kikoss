@@ -33,6 +33,7 @@ use App\Exports\VirtualTourExport;
 use App\Exports\PaymentDetails;
 use App\Exports\TaxiBookingExport;
 use App\Exports\TourCallBackExport;
+use App\Exports\PhotoBoothExport;
 
 
 class HomeController extends Controller
@@ -625,7 +626,11 @@ class HomeController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
             $validated = $validator->validated();
-           //dd($validated);
+          //dd($data['end_location']);
+            if($data['end_location'] == Null){
+                $request['end_location_long'] = null;
+                $request['end_location_lat'] = null;
+            }
             $Tour = VirtualTour::find($request->pid);
             if ($file = $request->file('audio')) {
                 try {
@@ -648,6 +653,11 @@ class HomeController extends Controller
                 } catch (\Throwable $th) {
                     //throw $th;
                 }
+                // if($data['end_location'] == null){
+                //     dd('in');
+                //     $end_lat = null;
+                //     $end_long = null;
+                // }
 
                 $destination = public_path('upload/virtual-audio');
                 $name = 'IMG_' . date('Ymd') . '_' . date('His') . '_' . rand(1000, 9999) . '.' . $file->extension();
@@ -663,6 +673,7 @@ class HomeController extends Controller
                 $files->move($destination_file, $name_file);
                 $Tour->thumbnail_file = $name_file;
             }
+            
 
             $Tour->name = $request->name;
             $Tour->price = $request->price;
@@ -1174,12 +1185,61 @@ class HomeController extends Controller
     }
 
     /*Listing of virtual tour transaction history*/
-    public function PhotoTransactionHistory()
+    public function PhotoTransactionHistory(Request $request)
     {
         try {
-            $tours = VirtualTour::where('status', 1)->orderBy('id', 'DESC')->get();
-            $bookings = TourBooking::where('tour_type', 2)->where('status', 0)->orderBy('id', 'DESC')->paginate(10);/*1:Normal tour booking, 2:Virtual tour bppking*/
-            return view('admin.photo-transaction-history', compact('tours', 'bookings'));
+            $requests = BookingPhotoBooth::query();
+            $validator = Validator::make($request->all(), [
+                'search' => 'nullable|string',
+                'booth_id' => 'nullable|not_in:', // Ensure booth_id is not the default option
+                'daterange' => 'nullable',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            $validated = $validator->validated();
+            $search = isset($validated['search']) ? $validated['search'] : null;
+            $booth_id = isset($validated['booth_id']) ? $validated['booth_id'] : null;
+            $date = isset($validated['daterange']) ? $validated['daterange'] : null;
+             //dd($requests->get());
+             //dd($search);
+             if ($search!=null) {
+                $requests->leftJoin('users', 'users.id', '=', 'photo_booth_booking.userid')
+                        ->leftJoin('photo_booths', 'photo_booths.id', '=', 'photo_booth_booking.booth_id')
+                        ->where(function ($query) use ($search) {
+                            $query->where('users.fullname', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booth_booking.total_amount', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booths.title', 'LIKE', '%' . $search . '%')
+                                  ->orWhere('photo_booth_booking.booking_id', 'LIKE', '%' . $search . '%');
+                        });
+            }
+            
+            if($booth_id != null && $booth_id != 'Select By Photo Booth Name'){
+                $requests->where('booth_id', $booth_id);
+            }
+           // dd($booth_id,$search);
+           if($request->filled('daterange')){
+                $dates = explode(' - ', $request->daterange);
+                $startDate = date('Y-m-d', strtotime($dates[0]));
+                $endDate = date('Y-m-d', strtotime($dates[1]));
+                $requests->whereBetween('booking_date', [$startDate, $endDate]);
+            }
+            $requests->whereIn('photo_booth_booking.status', [0,1]);
+            $requests->orderBy('photo_booth_booking.id', 'DESC');
+            $data = $requests->get();
+            //dd($requests->get());
+            if ($request->filled('download')) {
+                $data = $requests->get();
+                return Excel::download(new PhotoBoothExport($data), 'photo-booth-details.xlsx');
+            }
+            $bookings = $requests->paginate(10);
+           // dd($bookings);
+            
+            $PhotoBooths = PhotoBooth::where('status', 1)->orderBy('id', 'DESC')->get();
+            // dd($PhotoBooths);
+            $tours = Tour::where('status', 1)->orderBy('id', 'DESC')->get();
+            
+            return view('admin.photo-transaction-history', compact('PhotoBooths', 'bookings', 'tours','search','date','booth_id'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

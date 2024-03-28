@@ -54,7 +54,7 @@
                                                         <div class="search-form-group">
                                                             <input type="text" name="search"
                                                                 value="{{ $search ? $search : '' }}" class="form-control"
-                                                                placeholder="Search User name, Transaction Id, Booking Id">
+                                                                placeholder="Search">
                                                             <span class="search-icon"><img
                                                                     src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                         </div>

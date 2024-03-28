@@ -46,17 +46,80 @@
             background-color: #fff; /* Adjust the background color of available dates */
             color: #000; /* Adjust the text color of available dates */
         }
+        .select2-selection__clear span {
+            display: none;
+        }
+
+        .card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 20px;
+}
+
+.kik-request-item-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.kik-request-item-card-body {
+    padding: 20px;
+}
+
+.request-package-card-media img {
+    width: 100%;
+    height: auto;
+}
+
+.request-package-card-text {
+    padding: 10px 0;
+}
+
+.request-package-card-text h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.gallery-text {
+    margin-bottom: 5px;
+}
+
+.request-price-text {
+    font-weight: bold;
+}
+
+.request-cancellation-btn {
+    padding: 10px;
+    text-align: center;
+}
+
+.request-cancellation-btn a {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.request-cancellation-btn a:hover {
+    background-color: #0056b3;
+}
+
     </style>
 @endpush
 @section('content')
     <div class="page-breadcrumb-title-section">
         <h4>Manage Photo Booth</h4>
         <div class="page-breadcrumb-action wd4">
-            <div class="row g-2" style="float: right;">
-                <!-- <div class="col-md-6">
+            <div class="row g-2">
+                <div class="col-md-6">
                     <a href="{{ url('photo-transaction-history') }}" class="wh-btn">View Transaction History</a>
-                </div> -->
-                <div class="col-md-12" >
+                </div>
+                <div class="col-md-6" >
                     <a href="{{ url('add-photo-booth') }}" class="wh-btn">Upload new tour Photos/Videos</a>
                 </div>
             </div>
@@ -88,62 +151,58 @@
 
 
             <div class="booking-tour-section">
-                <div id="managevertualtour" class="owl-carousel owl-theme">
-                    @if ($PhotoBooths->isEmpty())
-                        <tr>
-                            <td colspan="11" class="text-center">
-                                No record found
-                            </td>
-                        </tr>
-                    @elseif(!$PhotoBooths->isEmpty())
-                        @foreach ($PhotoBooths as $val)
-                            <div class="item">
-                                <div class="kik-request-item-card">
-                                    <div class="kik-request-item-card-body">
-                                        <div class="request-package-card mb-0">
-                                            <div class="request-package-card-media">
-                                                @php
-                                                    $PhotoBoothMedia = \App\Models\PhotoBoothMedia::where('booth_id', $val->id)
-                                                        ->where('media_type', 'Image')
-                                                        ->first();
-                                                @endphp
-                                                @if ($PhotoBoothMedia)
-                                                    <img
-                                                        src="{{ assets('upload/photo-booth/' . $PhotoBoothMedia->media) }}">
-                                                @else
-                                                    <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
-                                                @endif
-
-                                            </div>
-                                            <div class="request-package-card-text">
-                                                <h2>{{ $val->TourNameBooth->name }}</h2>
-                                                <div class="gallery-text"><img
-                                                        src="{{ assets('assets/admin-images/gallery.svg') }}">
-                                                    {{ PhotoCount($val->id) }}
-                                                    Photos</div>
-                                                <div class="gallery-text"><img
-                                                        src="{{ assets('assets/admin-images/video-play.svg') }}">
-                                                    {{ VideoCount($val->id) }} Videos</div>
-                                            </div>
-                                        </div>
+    <div class="card-container">
+        @if ($PhotoBooths->isEmpty())
+            <p>No record found</p>
+        @elseif (!$PhotoBooths->isEmpty())
+            @foreach ($PhotoBooths as $val)
+                <div class="item">
+                    <div class="kik-request-item-card">
+                        <div class="kik-request-item-card-body">
+                            <div class="request-package-card mb-0">
+                                <div class="request-package-card-media">
+                                    @php
+                                        $PhotoBoothMedia = \App\Models\PhotoBoothMedia::where('booth_id', $val->id)
+                                            ->where('media_type', 'Image')
+                                            ->first();
+                                    @endphp
+                                    @if ($PhotoBoothMedia)
+                                        <img src="{{ assets('upload/photo-booth/' . $PhotoBoothMedia->media) }}">
+                                    @else
+                                        <img src="{{ assets('assets/admin-images/IMG_9838.jpg') }}">
+                                    @endif
+                                </div>
+                                <div class="request-package-card-text">
+                                    <h2>{{ $val->TourNameBooth->name }}</h2>
+                                    <div class="gallery-text">
+                                        <img src="{{ assets('assets/admin-images/gallery.svg') }}">
+                                        {{ PhotoCount($val->id) }} Photos
                                     </div>
-                                    <div class="kik-request-item-card-foot">
-                                        <div class="request-price-text">Price:<span>${{ $val->price }}</span></div>
-                                        <div class="request-cancellation-btn">
-                                            <a href=""data-bs-toggle="modal" data-bs-target="#deletepopup"
-                                                class="rejectbtn"onclick='GetData("{{ $val->id }}","{{ $val->TourNameBooth->name }}")'>Delete</a>
-                                            <a href="{{ url('edit-photo-booth/' . encrypt_decrypt('encrypt', $val->id)) }}"
-                                                class="acceptbtn">Edit</a>
-                                        </div>
+                                    <div class="gallery-text">
+                                        <img src="{{ assets('assets/admin-images/video-play.svg') }}">
+                                        {{ VideoCount($val->id) }} Videos
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    @endif
+                        </div>
+                        <div class="kik-request-item-card-foot">
+                            <div class="request-price-text">Price: <span>${{ $val->price }}</span></div>
+                            <div class="request-cancellation-btn">
+                                <a href="" data-bs-toggle="modal" data-bs-target="#deletepopup" class="rejectbtn"
+                                    onclick='GetData("{{ $val->id }}","{{ $val->TourNameBooth->name }}")'>Delete</a>
+                                <a href="{{ url('edit-photo-booth/' . encrypt_decrypt('encrypt', $val->id)) }}"
+                                    class="acceptbtn">Edit</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endforeach
+        @endif
+    </div>
+</div>
 
-            <div class="booking-availability-section">
+
+            <!-- <div class="booking-availability-section">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="kikcard">
@@ -161,7 +220,7 @@
                                                                 <input type="text" name="search"
                                                                     value="{{ $search ? $search : '' }}"
                                                                     class="form-control"
-                                                                    placeholder="Search User name, Amount ,virtual tour name & Booking Id..">
+                                                                    placeholder="Search">
                                                                 <span class="search-icon"><img
                                                                         src="{{ assets('assets/admin-images/search-icon.svg') }}"></span>
                                                             </div>
@@ -200,9 +259,9 @@
                                                                     aria-hidden="true"></i></button>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-2">
+                                                    <div class="col-md-1">
                                                         <div class="form-group">
-                                                        <a href="#" class="btn-gr">Download Excel</a>
+                                                        <a href="{{ route('ManagePhotoBooth', ['download' => 1, 'search' => $search,'tour_id' => $tour->id ?? '','daterange' => $date]) }}" class="btn-gr"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -283,7 +342,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 

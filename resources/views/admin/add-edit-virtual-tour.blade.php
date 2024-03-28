@@ -182,7 +182,7 @@
                                 <h4>Virtual Tour Name</h4>
                                 <input type="text" class="form-control" name="name"
                                     value="{{ $data ? $data->name : old('name') }}"
-                                    placeholder="Enter Virtual Tour Name Here…">
+                                    placeholder="Enter Virtual Tour Name Here…" maxlength="65">
                             </div>
                             @error('name')
                                 <div class="alert alert-danger">{{ $message }}</div>
